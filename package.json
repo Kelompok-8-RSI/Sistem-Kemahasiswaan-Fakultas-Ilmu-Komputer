@@ -1,0 +1,15 @@
+{
+  "name": "sistem-kemahasiswaan-filkom",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sistem Informasi Pengajuan Dokumen Kemahasiswaan Fakultas Ilmu Komputer Universitas Brawijaya",
+  "scripts": {
+    "dev": "pnpm --parallel --filter ./apps/* run dev",
+    "dev:api": "pnpm --filter api run dev",
+    "dev:web": "pnpm --filter web run dev",
+    "build": "pnpm --recursive run build"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}
