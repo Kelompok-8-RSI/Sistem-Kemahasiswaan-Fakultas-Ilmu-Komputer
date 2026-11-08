@@ -3,7 +3,7 @@
 -- Data awal berdasarkan contoh studi kasus Modul 1 & Modul 2
 -- ===================================================================
 
-USE `kemahasiswaan_filkom`;
+USE `layanan_kemahasiswaan`;
 
 -- 1. Seeder AkunPengguna
 INSERT INTO `AkunPengguna` (`idPengguna`, `username`, `password`, `nama`, `nimNip`, `email`, `noTelepon`, `peran`, `sessionToken`)

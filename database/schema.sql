@@ -4,11 +4,11 @@
 -- Modul 3: Evaluasi Dokumen - Bagian 3.1
 -- ===================================================================
 
-CREATE DATABASE IF NOT EXISTS `kemahasiswaan_filkom`
+CREATE DATABASE IF NOT EXISTS `layanan_kemahasiswaan`
   DEFAULT CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
-USE `kemahasiswaan_filkom`;
+USE `layanan_kemahasiswaan`;
 
 -- 1. [AA] Tabel AkunPengguna
 CREATE TABLE IF NOT EXISTS `AkunPengguna` (
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS `PersyaratanDokumen` (
   `idJenisDokumen`  INT          NOT NULL,
   `namaPersyaratan` VARCHAR(100) NOT NULL,
   `wajib`           BOOLEAN      NOT NULL DEFAULT TRUE,
-  CONSTRAINT `fk_persyaratan_jenis` FOREIGN KEY (`idJenisDokumen`) REFERENCES `JenisDokumen`(`idJenisDokumen`) ON DELETE CASCADE
+  CONSTRAINT `fk_persyaratan_jenis` FOREIGN KEY (`idJenisDokumen`) REFERENCES `JenisDokumen`(`idJenisDokumen`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 4. [MR] Tabel Pengajuan
@@ -53,8 +53,8 @@ CREATE TABLE IF NOT EXISTS `Pengajuan` (
   `tanggalPengajuan` DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `tanggalTenggat`   DATE        NULL,
   `status`           VARCHAR(30) NOT NULL DEFAULT 'Draft',
-  CONSTRAINT `fk_pengajuan_pengguna` FOREIGN KEY (`idPengguna`) REFERENCES `AkunPengguna`(`idPengguna`) ON DELETE CASCADE,
-  CONSTRAINT `fk_pengajuan_jenis` FOREIGN KEY (`idJenisDokumen`) REFERENCES `JenisDokumen`(`idJenisDokumen`) ON DELETE CASCADE,
+  CONSTRAINT `fk_pengajuan_pengguna` FOREIGN KEY (`idPengguna`) REFERENCES `AkunPengguna`(`idPengguna`),
+  CONSTRAINT `fk_pengajuan_jenis` FOREIGN KEY (`idJenisDokumen`) REFERENCES `JenisDokumen`(`idJenisDokumen`),
   CONSTRAINT `chk_pengajuan_tenggat` CHECK (`tanggalTenggat` >= DATE(`tanggalPengajuan`)),
   CONSTRAINT `chk_pengajuan_status` CHECK (`status` IN ('Draft','Menunggu Verifikasi','Sedang Diproses','Revisi','Menunggu Legalisasi Pejabat','Selesai'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -75,9 +75,9 @@ CREATE TABLE IF NOT EXISTS `BerkasLampiran` (
   `waktuValidasi`   DATETIME     NULL,
   `tanggalUnggah`   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT `uq_lampiran_versi` UNIQUE (`idPengajuan`, `idPersyaratan`, `versi`),
-  CONSTRAINT `fk_lampiran_pengajuan` FOREIGN KEY (`idPengajuan`) REFERENCES `Pengajuan`(`idPengajuan`) ON DELETE CASCADE,
-  CONSTRAINT `fk_lampiran_persyaratan` FOREIGN KEY (`idPersyaratan`) REFERENCES `PersyaratanDokumen`(`idPersyaratan`) ON DELETE CASCADE,
-  CONSTRAINT `fk_lampiran_validator` FOREIGN KEY (`idStafValidator`) REFERENCES `AkunPengguna`(`idPengguna`) ON DELETE SET NULL,
+  CONSTRAINT `fk_lampiran_pengajuan` FOREIGN KEY (`idPengajuan`) REFERENCES `Pengajuan`(`idPengajuan`),
+  CONSTRAINT `fk_lampiran_persyaratan` FOREIGN KEY (`idPersyaratan`) REFERENCES `PersyaratanDokumen`(`idPersyaratan`),
+  CONSTRAINT `fk_lampiran_validator` FOREIGN KEY (`idStafValidator`) REFERENCES `AkunPengguna`(`idPengguna`),
   CONSTRAINT `chk_lampiran_ukuran` CHECK (`ukuranKB` > 0),
   CONSTRAINT `chk_lampiran_statusitem` CHECK (`statusItem` IN ('Terunggah','Diganti')),
   CONSTRAINT `chk_lampiran_statusvalidasi` CHECK (`statusValidasi` IN ('Belum Diperiksa','Lengkap','Tidak Lengkap'))
@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS `AntreanVerifikasi` (
   `idPengajuan`   INT         NOT NULL UNIQUE,
   `statusAntrean` VARCHAR(20) NOT NULL DEFAULT 'Menunggu',
   `waktuMasuk`    DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT `fk_antrean_pengajuan` FOREIGN KEY (`idPengajuan`) REFERENCES `Pengajuan`(`idPengajuan`) ON DELETE CASCADE,
+  CONSTRAINT `fk_antrean_pengajuan` FOREIGN KEY (`idPengajuan`) REFERENCES `Pengajuan`(`idPengajuan`),
   CONSTRAINT `chk_antrean_status` CHECK (`statusAntrean` IN ('Menunggu','Diproses','Selesai'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS `RiwayatStatus` (
   `status`      VARCHAR(30)  NOT NULL,
   `catatan`     VARCHAR(255) NULL,
   `timestamp`   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT `fk_riwayat_pengajuan` FOREIGN KEY (`idPengajuan`) REFERENCES `Pengajuan`(`idPengajuan`) ON DELETE CASCADE,
-  CONSTRAINT `fk_riwayat_pelaku` FOREIGN KEY (`idPelaku`) REFERENCES `AkunPengguna`(`idPengguna`) ON DELETE CASCADE,
+  CONSTRAINT `fk_riwayat_pengajuan` FOREIGN KEY (`idPengajuan`) REFERENCES `Pengajuan`(`idPengajuan`),
+  CONSTRAINT `fk_riwayat_pelaku` FOREIGN KEY (`idPelaku`) REFERENCES `AkunPengguna`(`idPengguna`),
   CONSTRAINT `chk_riwayat_status` CHECK (`status` IN ('Draft','Menunggu Verifikasi','Sedang Diproses','Revisi','Menunggu Legalisasi Pejabat','Selesai'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
