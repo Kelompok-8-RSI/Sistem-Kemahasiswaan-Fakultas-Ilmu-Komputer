@@ -1,29 +1,28 @@
-# Dependencies
-node_modules
-.pnpm-store
+# Maven build output
+target/
 
-# Production build output
-dist
-.next
-out
-build
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+.factorypath
+bin/
+out/
 
 # Environment variables
 .env
-.env.local
-.env.production
-.env.development
+.env.*
 
 # Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
+*.log
+logs/
 
-# Uploaded files
-uploads/
-apps/api/uploads/*
-!apps/api/uploads/.gitkeep
+# Berkas lampiran yang diunggah (folder uploads tetap ada lewat .gitkeep)
+uploads/*
+!uploads/.gitkeep
 
 # OS generated files
 .DS_Store
