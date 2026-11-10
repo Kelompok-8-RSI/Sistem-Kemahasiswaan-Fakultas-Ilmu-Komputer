@@ -8,7 +8,7 @@ Aturan dan rencana lengkap: `docs/ai/PROMPT.md`. Cara pakai untuk anggota: `docs
 |---|---|---|---|---|---|
 | T01 | Fondasi proyek, workflow AI, entity akun dan jenis dokumen | AA | Ammar | ammar/t01-fondasi-entity-akun | Selesai |
 | T02 | Konfigurasi, keamanan, layout, dan CSS | MR | Rasil | rasil/t02-konfigurasi-keamanan-layout | Selesai |
-| T03 | Entity lampiran dan antrean verifikasi | AT | Ammar | - | Belum |
+| T03 | Entity lampiran dan antrean verifikasi | AT | Ammar | ammar/t03-entity-lampiran-antrean | Selesai |
 | T04 | Entity persyaratan dokumen dan pengajuan | MR | Rasil | - | Belum |
 | T05 | Entity riwayat status dan paket DTO | JA | Jasmine | - | Belum |
 | T06 | Login ke sistem | AA | Amirah | - | Belum |
@@ -27,7 +27,7 @@ Aturan dan rencana lengkap: `docs/ai/PROMPT.md`. Cara pakai untuk anggota: `docs
 
 ## Task berikutnya
 
-T03: Entity lampiran dan antrean verifikasi. Pelaksana: Ammar (AT).
+T04: Entity persyaratan dokumen dan pengajuan. Pelaksana: Rasil (MR).
 
 ## Log pengerjaan
 
@@ -69,3 +69,22 @@ T03: Entity lampiran dan antrean verifikasi. Pelaksana: Ammar (AT).
   - `AuthInterceptor` sekarang melindungi semua rute kecuali `/login`, `/css/**`, `/img/**`, dan `/error`.
   - Sisa `.gitkeep` berada di folder `controller`, `dto`, `service`, dan `src/test`. Hapus `.gitkeep` di folder yang mulai diisi pada task terkait.
   - Aset `src/main/resources/static/img/logo-filkom-ub.png` sudah siap dipakai oleh `fragments/layout.html` dan `login.html` (T06).
+
+### T03: Entity lampiran dan antrean verifikasi
+- Tanggal: 2026-11-19
+- Pelaksana: Ammar (AT)
+- Ringkasan: Entity `BerkasLampiran` dan `AntreanVerifikasi` serta `BerkasLampiranRepository` (SC08) disalin dari kode Modul 3 tanpa komentar. `AntreanVerifikasiRepository` dengan method `findByIdPengajuan` ditambahkan untuk dipakai T10, T14, dan T16.
+- File dibuat atau diubah:
+  - Dibuat: `src/main/java/id/ac/ub/layanan/entity/BerkasLampiran.java`, `src/main/java/id/ac/ub/layanan/entity/AntreanVerifikasi.java`, `src/main/java/id/ac/ub/layanan/repository/BerkasLampiranRepository.java`, `src/main/java/id/ac/ub/layanan/repository/AntreanVerifikasiRepository.java`
+  - Diubah: `PROGRESS.md`
+  - Dihapus: Tidak ada (`.gitkeep` di `entity` dan `repository` sudah dihapus pada T01)
+- Keputusan dan penyimpangan dari modul (beserta alasannya):
+  - Ketiga berkas dari `R3` disalin identik, hanya komentar yang dihapus (sudah dibandingkan dengan `diff`).
+  - `AntreanVerifikasiRepository` tidak ada di Modul 3. Repository ini ditambahkan sesuai cakupan T03 pada `docs/ai/PROMPT.md`.
+- Perubahan di luar cakupan: Tidak ada
+- Status build: Lulus (`./mvnw -q -DskipTests package`)
+- Catatan untuk task berikutnya:
+  - Konstruktor tanpa argumen di `BerkasLampiran` dan `AntreanVerifikasi` bersifat `protected` (sesuai Modul 3), jadi service di package lain tidak bisa memanggil `new BerkasLampiran()` atau `new AntreanVerifikasi()`. Task yang membuat baris baru (T10 untuk lampiran dan antrean, T16 untuk lampiran versi baru) perlu menambahkan konstruktor `public` atau factory method secara minimal, lalu mencatatnya di "Perubahan di luar cakupan". `Pengajuan` dari T04 kemungkinan punya pola yang sama dan dibutuhkan T08.
+  - `AntreanVerifikasi.waktuMasuk` tidak punya `@PrePersist` dan tidak diisi otomatis, padahal kolomnya `NOT NULL`. Hibernate tetap menyertakan nilai `null` saat insert, sehingga MySQL akan menolaknya. T10 wajib mengisi `waktuMasuk` dengan `LocalDateTime.now(clock)` sebelum `save`.
+  - `BerkasLampiran.tanggalUnggah` sudah terisi otomatis lewat `@PrePersist` (zona WIB).
+  - Sisa `.gitkeep`: `controller`, `dto`, `service`, dan `src/test`.
