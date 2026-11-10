@@ -1,0 +1,1141 @@
+                     Modul Praktikum
+
+
+Rekayasa Sistem Informasi
+             Program Studi Sistem Informasi
+
+             Dosen Pengampu Kelas SI - E
+
+          Dr. Achmad Arwan, S.Kom., M.Kom. ​
+
+
+
+                     Penyusun
+
+
+
+                      Kelompok 8
+
+Ayu Amirah Kusumaningtyas A. - NIM. 255150407111070 - AA
+Mohammad Rahardian Atsil Q. - NIM. 255150401111028 - MR
+    M. Ammar F. Triwahyu - NIM. 255150400111037 - AT
+  Jasmine Aqilah Rahmadia - NIM. 255150400111053 - JA​
+
+
+
+
+                        Asisten
+
+      M Takhta Ali Sulthon - NIM. 235150400111055
+    Gracyella Exaudi Girsang - NIM. 245150400111018
+
+
+
+
+  Program Studi Sistem Informasi​
+     Jurusan Sistem Informasi​
+      Fakultas Ilmu Komputer ​
+       Universitas Brawijaya
+                2026
+Daftar Isi
+Daftar Isi​                                          3
+1. Requirement Engineering​                          4
+    1.1 User Story​                                  4
+    1.3 User Requirement​                           22
+            User Requirement​                       22
+            System Requirement​                     24
+    1.4 Software Requirement Specification (SRS)​   26
+        Software Requirement Specification​         26
+            Functional Requirement​                 26
+            Non-Functional Requirement​             28
+1.​Requirement Engineering
+       Sistem Informasi Pengajuan Dokumen Kemahasiswaan merupakan sistem yang
+digunakan untuk memfasilitasi proses pengajuan, pengelolaan, dan pemantauan dokumen
+kemahasiswaan secara terintegrasi. Sistem ini membantu mahasiswa dalam memilih jenis
+dokumen sesuai kebutuhan, melihat persyaratan dokumen, mengunggah lampiran,
+mencantumkan tenggat kebutuhan, serta memantau perkembangan pengajuan. Di sisi lain,
+sistem membantu staf kemahasiswaan dalam mengelola antrean pengajuan, memeriksa
+kelengkapan lampiran, memperbarui status proses, serta mencatat riwayat pengajuan.
+
+
+1.1 User Story
+Sebagai pengguna sistem, baik mahasiswa, staf kemahasiswaan, maupun pejabat terkait,
+saya ingin login menggunakan username dan password, agar sistem dapat mengenali
+identitas dan peran saya sebelum mengakses fitur sesuai wewenang saya.
+​
+Sebagai pengguna sistem, baik mahasiswa, staf kemahasiswaan, maupun pejabat terkait,
+saya ingin melihat dan memperbarui data profil saya yang meliputi nama, NIM/NIP, email,
+dan nomor telepon, agar data identitas yang dipakai sistem pada setiap pengajuan,verifikasi,
+dan pengiriman dokumen selalu akurat.
+
+AA ​
+Sebagai Mahasiswa, saya ingin melihat pilihan jenis dokumen kemahasiswaan melalui
+dropdown yang terstruktur berdasarkan kebutuhan saya, agar saya tidak salah memilih form
+pengajuan.
+
+AA
+Sebagai Mahasiswa, saya ingin melihat seluruh persyaratan dokumen yang saya ajukan
+sekaligus mengunggah lampiran yang diperlukan dalam satu tampilan, agar saya bisa
+memastikan kelengkapan berkas sebelum submit dan mengurangi risiko pengajuan ditolak.
+
+AT
+Sebagai mahasiswa, saya ingin mencantumkan tanggal tenggat kebutuhan saya saat
+mengajukan dokumen, agar staf kemahasiswaan mengetahui urgensi pengajuan saya dan
+memprosesnya sebelum tanggal tenggat tersebut terlewat.
+
+AT
+Sebagai staf kemahasiswaan, saya ingin melihat daftar antrean pengajuan yang secara
+otomatis diurutkan berdasarkan sisa waktu tenggat beserta label prioritasnya agar saya
+dapat memprioritaskan pemrosesan dokumen yang batas waktunya paling mendesak
+(misalnya deadline lomba mahasiswa).
+
+JA
+Sebagai staf kemahasiswaan, saya ingin memvalidasi dan menampilkan checklist
+kelengkapan lampiran yang diunggah mahasiswa setelah pengajuan disubmit, agar
+kelengkapan dokumen dapat diperiksa secara jelas dan terstruktur sebelum pengajuan
+diproses ke tahap selanjutnya.
+
+MR
+Sebagai staf kemahasiswaan, saya ingin memperbarui status pengajuan dokumen di mana
+sistem menentukan jalurnya secara otomatis berdasarkan jenis dokumen, baik untuk alur
+standar (Menunggu Verifikasi, Sedang Diproses, Revisi, Selesai) maupun alur legalisasi
+(Menunggu Verifikasi, Sedang Diproses, Revisi, Menunggu Legalisasi Pejabat, Selesai),
+agar pencatatan riwayat pemrosesan selalu akurat dan terarah. ​
+
+MR
+Sebagai pejabat fakultas (misal: Wakil Dekan 3), saya ingin memberikan keputusan
+persetujuan (approve) atau penolakan (reject) pada dokumen yang berstatus 'Menunggu
+Legalisasi Pejabat' beserta kolom pengisian catatan alasan penolakan, agar keputusan
+pengesahan terekam resmi di sistem dan dapat segera ditindaklanjuti oleh staf atau
+mahasiswa terkait.
+
+JA
+Sebagai mahasiswa, saya ingin merevisi pengajuan pada nomor pengajuan yang sama saat
+staf kemahasiswaan meminta perbaikan (status Revisi) tanpa harus mengulang proses dan
+tenggat dari awal agar saya dapat memperbaiki kekurangan dokumen dengan lebih cepat
+dan efisien tanpa kehilangan riwayat pengajuan sebelumnya.
+
+MR
+Sebagai mahasiswa, saya ingin melihat rekap dan riwayat tahapan pengajuan dokumen
+saya di sistem agar saya mengetahui secara pasti di tahap mana pengajuan saya sedang
+tertahan (misalnya apakah masih diverifikasi staf atau sudah menunggu tanda tangan
+pejabat) tanpa harus terus bertanya ke WA Center.
+
+Sebagai pengguna sistem, baik mahasiswa, staf kemahasiswaan, maupun pejabat terkait,
+saya ingin keluar dari akun saya melalui tombol logout, agar data pengajuan dan identitas
+saya tidak dapat diakses orang lain yang memakai perangkat yang sama.
+
+1.2 Proses Bisnis
+
+
+
+ 1    Proses bisnis/tema   Autentikasi dan Otorisasi Pengguna Sistem
+
+      User Story           Sebagai pengguna sistem, baik mahasiswa, staf UR-01
+                           kemahasiswaan, maupun pejabat terkait, saya ingin
+                           login menggunakan username dan password, agar
+                           sistem dapat mengenali identitas dan peran saya
+                           sebelum mengakses fitur sesuai wewenang saya.
+
+      Task                 Sistem menampilkan       form    login   (username, SR-01
+                           password)
+
+                           Sistem memvalidasi kredensial & mengarahkan ke       SR-02
+                          dashboard sesuai peran
+
+    Acceptance Criteria   Sistem berhasil memverifikasi username dan password yang
+                          diinput oleh pengguna. Jika kredensial tersebut sesuai dengan data
+                          pada database, pengguna akan diarahkan ke dashboard sesuai
+                          dengan perannya masing-masing, baik sebagai mahasiswa, staf
+                          kemahasiswaan maupun pejabat. Apabila username atau
+                          password yang dimasukkan salah, sistem akan menampilkan
+                          pesan error. Setelah proses login berhasil dilakukan, sistem hanya
+                          akan menampilkan menu dan fitur yang relevan dengan peran
+                          (role) pengguna tersebut, sehingga pengguna tidak dapat
+                          mengakses fitur-fitur yang berada di luar batas wewenangnya.
+
+    Aktivitas             Pengguna membuka halaman login dan memasukkan username
+                          serta password. Sistem memvalidasi kredensial tersebut ke
+                          database. Jika valid, sistem mengidentifikasi peran pengguna dan
+                          mengarahkan ke halaman utama sesuai peran tersebut (dashboard
+                          mahasiswa atau dashboard staf kemahasiswaan dan pejabat). Jika
+                          tidak valid, sistem menampilkan pesan kesalahan dan meminta
+                          pengguna mencoba kembali.
+
+    Aktor                 Pengguna (Mahasiswa, Staf Kemahasiswaan, Pejabat), Sistem
+
+    Input                 Email dan password pengguna
+
+    Proses <<as-is>>
+
+    Proses <<to-be>>
+
+
+
+
+    Output                Sesi login aktif (akses ke dashboard sesuai peran) jika kredensial
+                          vali atau pesan error jika kredensial tidak valid.
+
+
+
+2   Proses bisnis/tema    Manajemen dan Pembaruan Data Profil Pengguna
+User Story            Sebagai pengguna, saya ingin melihat dan UR-02
+                      memperbarui data profil saya (nama, NIM/NIP, email,
+                      nomor telepon) agar informasi identitas saya selalu
+                      akurat dan sesuai saat digunakan sistem.
+
+Task                  Sistem menyediakan halaman khusus yang SR-03
+                      menampilkan data identitas pengguna saat ini yang
+                      ditarik dari database.
+
+                      Sistem menyediakan fungsi formulir (edit form) bagi SR-04
+                      pengguna untuk mengubah data nama, NIM/NIP,
+                      email, dan nomor telepon, serta tombol untuk
+                      menyimpannya.
+
+Acceptance Criteria   Sistem berhasil menampilkan data profil terkini. Pengguna dapat
+                      mengubah field nama, NIM/NIP, email, dan nomor telepon tanpa
+                      error, dan sistem berhasil menyimpan pembaruan tersebut ke
+                      dalam database secara real-time.
+
+Aktivitas             Pengguna (yang sudah login) membuka menu profil. Sistem
+                      menampilkan data identitas saat ini. Pengguna mengedit data yang
+                      dirasa perlu diperbarui (misal: nomor telepon baru), lalu menekan
+                      tombol simpan. Sistem memvalidasi dan menyimpan pembaruan
+                      tersebut ke database.
+
+Aktor                 Pengguna (Mahasiswa/Staf Kemahasiswaan/Pejabat Fakultas),
+                      Sistem.
+
+Input                 Karakter teks/angka baru yang dimasukkan pengguna pada kolom
+                      isian (nama, NIM/NIP, email, atau nomor telepon).
+
+Proses <<as-is>>
+
+Proses <<to-be>>
+
+
+
+
+Output                Tampilan data profil yang sudah terperbarui pada antarmuka (User
+                           Interface) dan pembaruan record data identitas pengguna di
+                           database.
+
+AA
+
+3    Proses bisnis/tema    Pemilihan Jenis Dokumen Kemahasiswaan
+
+     User Story            Sebagai Mahasiswa, saya ingin melihat pilihan jenis UR-03
+                           dokumen kemahasiswaan melalui dropdown yang
+                           terstruktur berdasarkan kebutuhan saya, agar saya
+                           tidak salah memilih form pengajuan.
+
+     Task                  Sistem menampilkan dropdown kategori kebutuhan      SR-05
+                           (Lomba, Beasiswa, Organisasi, Akademik/PKL,
+                           Lainnya)
+
+                           Sistem menampilkan sub-dropdown jenis dokumen SR-06
+                           spesifik sesuai kategori yang dipilih, beserta
+                           ringkasan singkat (deskripsi, estimasi waktu proses,
+                           kebutuhan legalisasi)
+
+     Acceptance Criteria   Mahasiswa dapat memilih kategori dan jenis dokumen tanpa error.
+                           Sistem menampilkan jenis dokumen sesuai kategori yang dipilih
+                           dan mengarahkan Mahasiswa ke form pengajuan yang sesuai
+                           dengan jenis dokumen terpilih.
+
+     Aktivitas             Mahasiswa membuka menu “Ajukan Dokumen”, memilih kategori
+                           kebutuhan, kemudian memilih jenis dokumen yang tersedia. Sistem
+                           menampilkan ringkasan informasi dokumen, dan Mahasiswa
+                           meninjau informasi tersebut sebelum diarahkan ke form pengajuan.
+
+     Aktor                 Mahasiswa (pengguna utama), Staf Kemahasiswaan (pengelola
+                           data referensi dropdown).
+
+     Input                 Kategori kebutuhan yang dipilih Mahasiswa, jenis dokumen yang
+                           dipilih Mahasiswa, data referensi jenis dokumen
+
+     Proses <<as-is>>
+     Proses <<to-be>>
+
+
+
+
+     Output                Form pengajuan yang sesuai jenis dokumen yang terpilih dan siap
+                           diisi Mahasiswa
+
+AA
+
+4    Proses bisnis/tema    Pengumpulan Persyaratan Dokumen
+
+     User Story            Sebagai Mahasiswa, saya ingin melihat seluruh UR-04
+                           persyaratan dokumen yang saya ajukan sekaligus
+                           mengunggah lampiran yang diperlukan dalam satu
+                           tampilan, agar saya bisa memastikan kelengkapan
+                           berkas sebelum submit dan mengurangi risiko
+                           pengajuan ditolak.
+
+     Task                  Sistem menampilkan daftar persyaratan wajib sesuai SR-07
+                           jenis dokumen yang telah dipilih Mahasiswa.
+
+                           Sistem dapat menyediakan fitur unggah, tinjau, dan   SR-08
+                           ganti lampiran untuk setiap item persyaratan.
+
+     Acceptance Criteria   Sistem menampilkan status kelengkapan tiap item persyaratan
+                           (terunggah/belum), tombol submit hanya aktif jika seluruh
+                           persyaratan wajib sudah terunggah.
+
+     Aktivitas             Sistem menampilkan daftar persyaratan wajib sesuai jenis
+                           dokumen. Mahasiswa mengunggah lampiran untuk setiap item
+                           persyaratan. Sistem menampilkan status kelengkapan setiap item
+                           dan mengaktifkan tombol submit setelah seluruh persyaratan wajib
+                           terpenuhi. Mahasiswa melakukan submit pengajuan.
+
+     Aktor                 Mahasiswa (pengunggah) dan Sistem (memberikan keterangan
+                           kelengkapan)
+
+     Input                 Jenis dokumen terpilih dari proses pemilihan dokumen sebelumnya
+                           dan file lampiran persyaratan yang diunggah oleh Mahasiswa.
+     Proses <<as-is>>
+
+
+
+
+     Proses <<to-be>>
+
+
+
+
+     Output                Paket pengajuan dengan seluruh lampiran wajib yang lengkap
+                           berstatus "Menunggu Verifikasi", diteruskan otomatis ke Staf
+                           Kemahasiswaan
+
+AT
+
+5    Proses bisnis/tema    Pencantuman Tenggat Kebutuhan pada Pengajuan Dokumen
+
+     User Story            Sebagai mahasiswa, saya ingin mencantumkan UR-05
+                           tanggal tenggat kebutuhan saya saat mengajukan
+                           dokumen, agar staf kemahasiswaan mengetahui
+                           urgensi pengajuan saya dan memprosesnya
+                           sebelum tanggal tenggat tersebut terlewat.
+
+     Task                  Sistem menyediakan kolom tanggal          tenggat SR-09
+                           kebutuhan pada form pengajuan dokumen.
+
+                           Sistem memvalidasi tanggal tenggat yang diisi dan   SR-10
+                           menampilkan peringatan apabila sisa waktu kurang
+                           dari tiga hari kerja.
+
+     Acceptance Criteria   Mahasiswa dapat memilih tanggal tenggat pada form pengajuan.
+                           Sistem menolak tanggal tenggat yang lebih awal dari tanggal
+                           pengajuan. Sistem menampilkan peringatan ketika sisa waktu
+                           kurang dari tiga hari kerja. Tanggal tenggat tersimpan bersama
+                           data pengajuan.
+     Aktivitas            Mahasiswa mengisi form pengajuan lalu memilih tanggal tenggat
+                          kebutuhan. Sistem memvalidasi tanggalnya, menampilkan
+                          peringatan jika tenggat terlalu dekat, lalu menyimpan data tanggal
+                          tenggat sebagai bagian dari pengajuan.
+
+     Aktor                Mahasiswa (pengunggah), staf kemahasiswaan (memproses
+                          pengajuan) dan sistem (validasi dan penyimpan data tenggat)
+
+     Input                Tanggal tenggat kebutuhan
+
+     Proses <<as-is>>
+
+
+
+
+     Proses <<to-be>>
+
+
+
+
+     Output               Data pengajuan yang dilengkapi tanggal tenggat kebutuhan siap
+                          masuk ke antrean verifikasi.
+
+AT
+
+6    Proses bisnis/tema   Manajemen Antrean dan Prioritas Pengajuan Dokumen
+User Story            Sebagai staf kemahasiswaan, saya ingin melihat UR-06
+                      daftar antrean pengajuan yang secara otomatis
+                      diurutkan berdasarkan sisa waktu tenggat beserta
+                      label prioritasnya, agar saya dapat memprioritaskan
+                      pemrosesan dokumen yang mendesak
+
+Task                  Sistem harus dapat menghitung dan memperbarui SR-11
+                      sisa waktu (countdown) antara waktu saat ini dengan
+                      tanggal tenggat pengajuan dokumen.
+
+                      Sistem harus dapat menampilkan daftar antrean SR-12
+                      pengajuan yang diurutkan secara ascending (tenggat
+                      waktu paling dekat di atas) dan memberikan label
+                      visual penanda prioritas.
+
+Acceptance Criteria   Sistem berhasil mengurutkan dokumen dari sisa hari paling sedikit
+                      ke paling banyak di halaman dashboard staf sekaligus
+                      menampilkan visualisasi prioritas (misal: label merah untuk tenggat
+                      kurang dari 3 hari, kuning untuk 3 sampai dengan 7 hari, dan hijau
+                      untuk lebih dari 7 hari).
+
+Aktivitas             Sistem menarik seluruh data antrean pengajuan dokumen yang
+                      masuk. Lalu sistem mengkalkulasi sisa waktu berdasarkan tanggal
+                      tenggat, sistem akan mengurutkan dan memberikan label prioritas
+                      pada tiap dokumen. Staf kemahasiswaan melihat daftar tersebut
+                      dan memproses dokumen mulai dari urutan paling atas
+
+Aktor                 Staf Kemahasiswaan (mengakses daftar antrean) dan Sistem
+                      (mengurutkan daftar antrean)
+
+Input                 Data record pengajuan dokumen dari database (terutama
+                      parameter tanggal_tenggat yang telah diinput mahasiswa).
+
+Proses <<as-is>>
+     Proses <<to-be>>
+
+
+
+
+     Output                Tampilan antarmuka (User Interface) berupa tabel daftar antrean
+                           pengajuan dokumen yang telah terurut rapi beserta label warna
+                           prioritasnya
+
+JA
+
+7    Proses bisnis/tema    Validasi dan Pemeriksaan Kelengkapan Lampiran Pengajuan
+                           Dokumen
+
+     User Story            Sebagai   staf   kemahasiswaan,       saya     ingin UR-07
+                           memvalidasi    dan      menampilkan        checklist
+                           kelengkapan lampiran yang diunggah mahasiswa
+                           setelah pengajuan disubmit agar kelengkapan
+                           dokumen dapat diperiksa secara jelas dan terstruktur
+                           sebelum pengajuan diproses ke tahap selanjutnya.
+
+     Task                  Sistem harus dapat menampilkan daftar persyaratan SR-13
+                           lampiran yang wajib diunggah untuk setiap jenis
+                           dokumen beserta status unggahnya (sudah/belum
+                           diunggah).
+
+                           Sistem harus menyediakan fungsi checklist bagi staf SR-14
+                           kemahasiswaan untuk menandai dan memvalidasi
+                           setiap lampiran yang telah sesuai dengan ketentuan.
+
+     Acceptance Criteria   Sistem berhasil menampilkan checklist berisi seluruh item
+                           persyaratan lampiran suatu pengajuan beserta status validasinya
+                           (belum diperiksa/lengkap/tidak lengkap) dan staf dapat menandai
+                           masing-masing item tersebut secara real-time di database.
+
+     Aktivitas             Staf kemahasiswaan membuka detail pengajuan yang telah
+                           disubmit mahasiswa. Sistem menampilkan daftar lampiran yang
+                           diunggah beserta checklist persyaratan yang harus dipenuhi. Staf
+                           memeriksa satu per satu lampiran, menandai kelengkapannya
+                           pada checklist, lalu sistem menyimpan hasil validasi tersebut.
+     Aktor                Staf Kemahasiswaan, Sistem
+
+     Input                ID Pengajuan, data lampiran yang diunggah mahasiswa, dan daftar
+                          parameter persyaratan dokumen terkait.
+
+     Proses <<as-is>>
+
+
+
+
+     Proses <<to-be>>
+
+
+
+
+     Output               Tampilan checklist kelengkapan lampiran pada halaman detail
+                          pengajuan beserta status validasi tiap item (lengkap/tidak lengkap).
+
+
+MR
+
+8    Proses bisnis/tema   Pembaruan dan Pencatatan Status Pengajuan Dokumen
+
+     User Story           Sebagai     staf    kemahasiswaan,      saya     ingin UR-8
+                          memperbarui status pengajuan dokumen di mana
+                          sistem menentukan jalurnya secara otomatis
+                          berdasarkan jenis dokumen, baik untuk alur standar
+                          (Menunggu Verifikasi, Sedang Diproses, Revisi,
+                          Selesai) maupun alur legalisasi (Menunggu
+                          Verifikasi, Sedang Diproses, Revisi, Menunggu
+                          Legalisasi Pejabat, Selesai), agar pencatatan riwayat
+                          pemrosesan selalu akurat dan terarah.
+Task                  Sistem mengevaluasi jenis dokumen dari ID SR-15
+                      Pengajuan dan secara otomatis menampilkan opsi
+                      status tahapan (dropdown) yang sesuai dengan alur
+                      dokumen tersebut (alur standar atau alur legalisasi).
+
+                      Sistem    menyediakan     fungsi    bagi       staf SR-16
+                      kemahasiswaan untuk memilih dan mengubah status
+                      dokumen dari opsi tahapan yang telah difilter oleh
+                      sistem.
+
+                      Sistem secara otomatis merekam histori (log) setiap SR-17
+                      perubahan status baru beserta waktu pembaruannya
+                      (timestamp) ke dalam database.
+
+Acceptance Criteria   Sistem berhasil mendeteksi jenis dokumen dan hanya
+                      menampilkan opsi status yang relevan (misalnya opsi "Menunggu
+                      Legalisasi Pejabat" tidak akan muncul pada jenis dokumen alur
+                      standar). Sistem berhasil mengubah status dokumen dan mencatat
+                      waktu perubahannya secara real-time.
+
+Aktivitas             Staf kemahasiswaan membuka halaman detail tiket pengajuan.
+                      Sistem membaca data jenis dokumen dan menyajikan opsi status
+                      yang sesuai aturan. Staf memilih status tahapan baru. Sistem
+                      memproses instruksi tersebut, menyimpan status baru, dan
+                      mencatat waktu pembaruan (log) secara otomatis.
+
+Aktor                 Staf Kemahasiswaan, Sistem.
+
+Input                 ID Pengajuan (untuk membaca jenis dokumen), dan aksi pemilihan
+                      status tahapan baru oleh staf.
+
+Proses <<as-is>>
+     Proses <<to-be>>
+
+
+
+
+     Output                Perubahan label status terkini pada pengajuan tersebut sesuai jalur
+                           yang tepat dan penambahan baris data baru pada log riwayat di
+                           database.
+
+MR
+
+9    Proses bisnis/tema    Persetujuan dan Legalisasi Dokumen oleh Pejabat
+
+     User Story            Sebagai pejabat fakultas (misal: Wakil Dekan 3), UR-9
+                           saya ingin memberikan keputusan persetujuan
+                           (approve) atau penolakan (reject) pada dokumen
+                           yang berstatus 'Menunggu Legalisasi Pejabat'
+                           beserta kolom pengisian catatan alasan penolakan,
+                           agar keputusan pengesahan terekam resmi di sistem
+                           dan dapat segera ditindaklanjuti oleh staf atau
+                           mahasiswa terkait.
+
+     Task                  Sistem menampilkan daftar antrean pengajuan SR-18
+                           dokumen yang secara spesifik memiliki status
+                           "Menunggu Legalisasi Pejabat" pada antarmuka
+                           akun Pejabat Fakultas.
+
+                           Sistem menyediakan tombol fungsi persetujuan SR-19
+                           (approve) dan penolakan (reject), yang dilengkapi
+                           dengan field input teks wajib untuk mencatat alasan
+                           apabila pejabat memilih opsi penolakan.
+
+     Acceptance Criteria   Sistem berhasil memproses dan menyimpan keputusan pejabat ke
+                           dalam database. Sistem memblokir/mencegah penyampaian
+                           keputusan penolakan jika kolom catatan alasan dikosongkan.
+                           Status dokumen otomatis diperbarui (misal menjadi "Selesai" jika
+                           disetujui, atau "Revisi" jika ditolak).
+
+     Aktivitas             Pejabat FILKOM membuka detail pengajuan yang butuh legalisasi.
+                           Pejabat meninjau dokumen, lalu menekan tombol setuju atau tolak.
+                           Jika menolak, pejabat mengetik alasan penolakan. Sistem
+                           memvalidasi input, menyimpan keputusan beserta catatannya, dan
+                           memperbarui status dokumen. .
+
+     Aktor                 Pejabat Fakultas, Sistem.
+     Input                Aksi pemilihan keputusan (Approve/Reject) dan string teks pada
+                          kolom catatan alasan penolakan.
+
+     Proses <<as-is>>
+
+
+
+
+     Proses <<to-be>>
+
+
+
+
+     Output               Pembaruan status pengajuan dokumen (Selesai/Revisi) dan
+                          tersimpannya log catatan alasan pejabat di sistem.
+
+JA
+
+10   Proses bisnis/tema   Revisi Pengajuan Dokumen yang Ditolak
+
+     User Story           Sebagai mahasiswa, saya ingin merevisi pengajuan UR-10
+                          pada nomor pengajuan yang sama saat staf
+                          kemahasiswaan meminta perbaikan (status Revisi)
+                          tanpa harus mengulang proses dan tenggat dari
+                          awal agar saya dapat memperbaiki kekurangan
+                          dokumen dengan lebih cepat dan efisien tanpa
+                          kehilangan riwayat pengajuan sebelumnya.
+
+     Task                 Sistem harus menyediakan menu bagi mahasiswa SR-20
+                          untuk mengunggah ulang atau mengganti lampiran
+                          pada pengajuan berstatus "Revisi" tanpa membuat
+                          nomor pengajuan baru.
+
+                          Sistem harus dapat menghapus lampiran lama yang SR-21
+                      tidak sesuai dan menyimpan lampiran baru sebagai
+                      pembaruan pada pengajuan yang sama.
+
+Acceptance Criteria   Sistem berhasil memperbarui data lampiran pada nomor pengajuan
+                      yang sama tanpa mengubah ID pengajuan maupun tanggal
+                      tenggat awal dan status pengajuan otomatis berubah menjadi
+                      "Menunggu Verifikasi" setelah revisi disubmit ulang.
+
+Aktivitas             Mahasiswa menerima notifikasi bahwa pengajuannya ditolak/perlu
+                      revisi beserta catatan alasannya. Mahasiswa membuka kembali
+                      nomor pengajuan tersebut, menghapus lampiran yang tidak sesuai,
+                      mengunggah lampiran perbaikan, lalu submit ulang. Sistem
+                      menyimpan perubahan tersebut pada nomor pengajuan yang sama
+                      dan mengubah statusnya kembali ke tahap verifikasi.
+
+Aktor                 Mahasiswa, Sistem
+
+Input                 ID Pengajuan, catatan/alasan penolakan dari staf, dan file lampiran
+                      revisi yang baru.
+
+Proses <<as-is>>
+
+
+
+
+Proses <<to-be>>
+
+
+
+
+Output                Pembaruan lampiran pada nomor pengajuan yang sama beserta
+                      perubahan status menjadi "Menunggu Verifikasi" dengan riwayat
+                      pengajuan sebelumnya tetap tersimpan.
+MR
+
+11   Proses bisnis/tema    Pemantauan Riwayat Status Pengajuan Dokumen
+
+     User Story            Sebagai mahasiswa, saya ingin melihat rekap dan UR-11
+                           riwayat tahapan pengajuan dokumen saya di sistem
+                           agar saya mengetahui secara pasti di tahap mana
+                           pengajuan saya sedang tertahan (apakah masih
+                           diverifikasi staf atau sudah menunggu tanda tangan
+                           pejabat) tanpa harus terus bertanya ke WA Center.
+
+     Task                  Sistem dapat menarik (query) data log histori status SR-22
+                           dari database berdasarkan ID Pengajuan milik
+                           mahasiswa.
+
+                           Sistem menyajikan data riwayat status tersebut SR-23
+                           secara kronologis (berdasarkan waktu pembaruan)
+                           dalam bentuk visualisasi rekap yang mudah
+                           dipahami.
+
+     Acceptance Criteria   Sistem berhasil menampilkan halaman rekap riwayat yang memuat
+                           urutan waktu (timestamp) dan detail perubahan tahapan status
+                           secara akurat untuk tiket pengajuan yang dipilih oleh mahasiswa
+
+     Aktivitas             Mahasiswa membuka halaman detail tiket pengajuan miliknya di
+                           sistem. Sistem menarik data log histori terkait tiket tersebut dari
+                           database. Kemudian, sistem merender data tersebut menjadi
+                           tampilan riwayat tahapan yang dapat dibaca oleh mahasiswa.
+
+     Aktor                 Mahasiswa, Sistem
+
+     Input                 ID Pengajuan (didapatkan secara otomatis oleh sistem saat
+                           mahasiswa mengklik/mengakses tiket pengajuan tersebut di
+                           antarmuka pengguna).
+     Proses <<as-is>>
+
+
+
+
+     Proses <<to-be>>
+
+
+
+
+     Output               Tampilan antarmuka (User Interface) berupa rekapitulasi riwayat
+                          (misalnya dalam bentuk diagram timeline atau tabel) yang memuat
+                          tanggal, waktu, dan nama tahapan dokumen.
+
+
+
+12   Proses bisnis/tema   Keluar dari Akun Pengguna (Logout)
+
+     User Story           Sebagai pengguna sistem, baik mahasiswa, staf UR-12
+                          kemahasiswaan, maupun pejabat terkait, saya ingin
+                          keluar dari akun saya melalui tombol logout, agar
+                          data pengajuan dan identitas saya tidak dapat
+                          diakses orang lain yang memakai perangkat yang
+                          sama.
+  Task                  Sistem menyediakan tombol logout pada halaman         SR-24
+                        profil pengguna.
+
+                        Sistem mengakhiri sesi pengguna dan mengarahkan       SR-25
+                        pengguna ke halaman log in.
+
+  Acceptance Criteria   Tombol logout tersedia pada halaman profil pengguna. Sistem
+                        menampilkan konfirmasi sebelum sesi diakhiri. Setelah logout, sesi
+                        pengguna berakhir dan halaman yang membutuhkan log in tidak
+                        dapat diakses kembali. Pengguna diarahkan ke halaman log in
+                        disertai pemberitahuan bahwa proses logout berhasil.
+
+  Aktivitas             Pengguna membuka halaman profil, kemudian menekan tombol
+                        logout. Sistem menampilkan dialog konfirmasi. Apabila pengguna
+                        membatalkan, sistem menutup dialog dan pengguna tetap berada
+                        di halaman profil. Apabila pengguna menyetujui, sistem mengakhiri
+                        sesi pengguna kemudian mengarahkan pengguna ke halaman log
+                        in beserta pemberitahuan logout berhasil.
+
+  Aktor                 Pengguna (Mahasiswa, Staf Kemahasiswaan, Pejabat), Sistem
+
+  Input                 Perintah logout dari pengguna, konfirmasi pengguna, dan data sesi
+                        pengguna yang sedang aktif
+
+  Proses <<as-is>>
+
+
+  Proses <<to-be>>
+
+
+
+
+  Output                Sesi pengguna berakhir dan pengguna berada pada halaman log
+                        in, sehingga data pengajuan serta identitasnya tidak dapat diakses
+                        tanpa log in ulang.
+
+
+1.​ Adakah aktor yang berperan sebagai “Sistem” dalam gambaran sistem yang
+    diuraikan dalam User Story? Mengapa? Jelaskan dengan detail dan spesifik!
+    Jawab : Tidak ada di bagian User Story, tapi muncul di bagian Task dan Proses
+    Bisnis. Pada kedelapan narasi User Story (bagian 1.1), semuanya murni ditulis dari
+    sudut pandang manusia pemohon dan pemroses, yaitu "Mahasiswa" dan "Staf
+    Kemahasiswaan". Namun, saat kebutuhan tersebut diturunkan menjadi Task dan
+    Proses Bisnis (bagian 1.2), "Sistem" jelas berperan sebagai aktor pengeksekusi yang
+    bekerja di balik layar. Contohnya, sistem bertugas memvalidasi tanggal tenggat,
+    mengurutkan antrean sesuai prioritas waktu, mencatat riwayat perubahan status
+        secara otomatis ke database, dan menarik data riwayat tersebut untuk ditampilkan
+        ke antarmuka pengguna.
+    2.​ Adakah/perlukah fungsionalitas sistem: Log in dalam gambaran sistem yang
+        diuraikan dalam User Story? Mengapa? Jelaskan dengan detail dan spesifik!
+        Jawab : Ya, fitur log in sangat diperlukan, meskipun kata "log in" tidak disebutkan
+        secara eksplisit di dalam narasi User Story. Sistem ini sangat bergantung pada
+        pemisahan identitas dan hak akses. Mahasiswa harus dikenali oleh sistem agar bisa
+        melihat riwayat pengajuan miliknya secara spesifik dan merevisi dokumennya sendiri
+        jika ditolak. Di sisi lain, staf butuh log in karena mereka memiliki wewenang
+        administratif untuk mengelola antrean seluruh mahasiswa, memvalidasi kelengkapan
+        berkas, dan mengubah tahapan status dokumen. Sebagai bukti pendukung, di
+        bagian User Requirement (bagian 1.3 dan 1.4), dokumen kalian juga sudah secara
+        tegas merencanakan fitur registrasi menggunakan akun, OTP, username, dan
+        password.
+    3.​ Siapa saja aktor yang harus log in ke dalam sistem? Mengapa? Jelaskan dengan
+        detail dan spesifik!
+        Jawab : Ada dua aktor utama yang wajib melakukan log in:
+        a. Mahasiswa: Mereka harus log in agar sistem dapat mengikat dokumen yang
+        diunggah dengan identitas pemiliknya. Ini penting agar mahasiswa hanya bisa
+        mengakses dan melihat riwayat pengajuannya sendiri tanpa bisa melihat data orang
+        lain, serta memberikan akses yang aman saat mereka perlu memperbaiki dokumen
+        yang ditolak.
+        b. Staf Kemahasiswaan: Mereka wajib log in untuk membedakan perannya dari
+        pengguna biasa dan mendapatkan akses level pengelola (admin). Hak akses ini
+        dibutuhkan staff untuk membuka dashboard antrean pengajuan se-fakultas,
+        memeriksa kelengkapan lampiran, dan memperbarui status tahapan dokumen
+        hingga selesai.
+        c. Pejabat (misalnya Wakil Dekan 3): Mereka wajib log in agar sistem dapat
+        memverifikasi wewenang legalisasi yang dimiliki sebelum menampilkan dashboard
+        dokumen yang menunggu persetujuannya. Log in di sini penting bukan sekadar
+        identifikasi, tapi juga sebagai bentuk otentikasi keputusan resmi setiap
+        persetujuan/tanda tangan digital yang diberikan pejabat harus tercatat sistem
+        sebagai berasal dari akun pejabat yang sah, sehingga status "Selesai" pada
+        dokumen punya jejak pertanggungjawaban yang jelas dan tidak bisa dipalsukan oleh
+        pihak lain.
+
+
+
+1.3 User Requirement
+User Requirement
+
+No.    [PGN] Pengguna                                                                    Ins.
+
+       Kode UR       Requirement
+
+1      PGN-UR-01 Sebagai pengguna sistem, baik mahasiswa, staf kemahasiswaan,
+                 maupun pejabat terkait, saya ingin login menggunakan username
+                 dan password, agar sistem dapat mengenali identitas dan peran
+                 saya sebelum mengakses fitur sesuai wewenang saya.
+
+2   PGN-UR-02 Sebagai pengguna sistem, baik mahasiswa, staf kemahasiswaan,
+              maupun pejabat terkait, saya ingin melihat dan memperbarui data
+              profil saya yang meliputi nama, NIM/NIP, email, dan nomor telepon,
+              agar data identitas yang dipakai sistem pada setiap
+              pengajuan,verifikasi, dan pengiriman dokumen selalu akurat.
+
+
+3   PGN-UR-12 Sebagai pengguna sistem, baik mahasiswa, staf kemahasiswaan,
+              maupun pejabat terkait, saya ingin keluar dari akun saya melalui
+              tombol logout, agar data pengajuan dan identitas saya tidak dapat
+              diakses orang lain yang memakai perangkat yang sama.
+
+    [MHS] Mahasiswa
+
+    Kode UR      Requirement
+
+1   MHS-UR-0     Sebagai Mahasiswa, saya ingin melihat pilihan jenis dokumen AA
+    3            kemahasiswaan melalui dropdown yang terstruktur berdasarkan
+                 kebutuhan saya, agar saya tidak salah memilih form pengajuan.
+
+2   MHS-UR-0     Sebagai Mahasiswa, saya ingin melihat seluruh persyaratan         AA
+    4            dokumen yang saya ajukan sekaligus mengunggah lampiran yang
+                 diperlukan dalam satu tampilan, agar saya bisa memastikan
+                 kelengkapan berkas sebelum submit dan mengurangi risiko
+                 pengajuan ditolak.
+
+3   MHS-UR-0     Sebagai mahasiswa, saya ingin mencantumkan tanggal tenggat AT
+    5            kebutuhan saya saat mengajukan dokumen, agar staf
+                 kemahasiswaan mengetahui urgensi pengajuan saya dan
+                 memprosesnya sebelum tanggal tenggat tersebut terlewat.
+
+4   MHS-UR-1     Sebagai mahasiswa, saya ingin merevisi pengajuan pada nomor JA
+    0            pengajuan yang sama saat staf kemahasiswaan meminta
+                 perbaikan (status Revisi) tanpa harus mengulang proses dan
+                 tenggat dari awal agar saya dapat memperbaiki kekurangan
+                 dokumen dengan lebih cepat dan efisien tanpa kehilangan riwayat
+                 pengajuan sebelumnya.
+
+5   MHS-UR-11 Sebagai mahasiswa, saya ingin melihat rekap dan riwayat tahapan MR
+              pengajuan dokumen saya di sistem agar saya mengetahui secara
+              pasti di tahap mana pengajuan saya sedang tertahan (apakah
+              masih diverifikasi staf atau sudah menunggu tanda tangan pejabat)
+              tanpa harus terus bertanya ke WA Center.
+
+    [KMA] Kemahasiswaan
+
+    Kode UR      Requirement
+
+1   KMA-UR-06 Sebagai staf kemahasiswaan, saya ingin melihat daftar antrean AT
+              pengajuan yang secara otomatis diurutkan berdasarkan sisa waktu
+              tenggat   beserta  label  prioritasnya,    agar   saya    dapat
+              memprioritaskan pemrosesan dokumen yang batas waktunya
+                      paling mendesak.
+
+2     KMA-UR-07 Sebagai staf kemahasiswaan, saya ingin memvalidasi dan                        JA
+                menampilkan checklist kelengkapan lampiran yang diunggah
+                mahasiswa setelah pengajuan disubmit agar kelengkapan
+                dokumen dapat diperiksa secara jelas dan terstruktur sebelum
+                pengajuan diproses ke tahap selanjutnya.
+
+3     KMA-UR-08 Sebagai staf kemahasiswaan, saya ingin memperbarui status MR
+                pengajuan dokumen di mana sistem menentukan jalurnya secara
+                otomatis berdasarkan jenis dokumen, baik untuk alur standar
+                (Menunggu Verifikasi, Sedang Diproses, Revisi, Selesai) maupun
+                alur legalisasi (Menunggu Verifikasi, Sedang Diproses, Revisi,
+                Menunggu Legalisasi Pejabat, Selesai), agar pencatatan riwayat
+                pemrosesan selalu akurat dan terarah.
+
+      [PJB] Pejabat
+
+      Kode UR         Requirement
+
+1     PJB-UR-09       Sebagai pejabat fakultas (misal: Wakil Dekan 3), saya ingin MR
+                      memberikan keputusan persetujuan (approve) atau penolakan
+                      (reject) pada dokumen yang berstatus 'Menunggu Legalisasi
+                      Pejabat' beserta kolom pengisian catatan alasan penolakan, aga
+                      keputusan pengesahan terekam resmi di sistem dan dapat segera
+                      ditindaklanjuti oleh staf atau mahasiswa terkait.
+
+
+System Requirement
+
+No.   Kode SR         Requirement                                                             Ins.
+
+1     SR-01           Sistem dapat menampilkan form login (username, password)
+
+2     SR-02           Sistem dapat memvalidasi kredensial dan mengarahkan pengguna
+                      ke dashboard sesuai peran
+
+3     SR-03           Sistem menyediakan halaman khusus yang menampilkan data
+                      identitas pengguna saat ini yang ditarik dari database.
+
+4     SR-04           Sistem menyediakan fungsi formulir (edit form) bagi pengguna
+                      untuk mengubah data nama, NIM/NIP, email, dan nomor telepon,
+                      serta tombol untuk menyimpannya.
+
+5     AA-SR-05        Sistem menampilkan dropdown kategori kebutuhan (Lomba,                  AA
+                      Beasiswa, Organisasi, Akademik/PKL, Lainnya)
+
+6     AA-SR-06        Sistem menampilkan sub-dropdown jenis dokumen spesifik sesuai           AA
+                      kategori yang dipilih, beserta ringkasan singkat (deskripsi, estimasi
+                      waktu proses, kebutuhan legalisasi)
+
+7     AA-SR-07        Sistem menampilkan daftar persyaratan wajib sesuai jenis                AA
+                      dokumen yang telah dipilih Mahasiswa.
+
+8     AA-SR-08        Sistem dapat menyediakan fitur unggah, tinjau, dan ganti lampiran       AA
+                      untuk setiap item persyaratan.
+9    AT-SR-09   Sistem menyediakan kolom tanggal tenggat kebutuhan pada form AT
+                pengajuan dokumen.
+
+10   AT-SR-10   Sistem memvalidasi tanggal tenggat yang diisi dan menampilkan AT
+                peringatan apabila sisa waktu kurang dari tiga hari kerja.
+
+11   AT-SR-11   Sistem dapat menghitung dan memperbarui sisa waktu AT
+                (countdown) antara waktu saat ini dengan tanggal tenggat
+                pengajuan dokumen.
+
+12   AT-SR-12   Sistem dapat menampilkan daftar antrean pengajuan yang AT
+                diurutkan secara ascending dan memberikan label visual penanda
+                prioritas.
+
+13   JA-SR-13   Sistem harus dapat menampilkan daftar persyaratan lampiran yang JA
+                wajib diunggah untuk setiap jenis dokumen beserta status
+                unggahnya (sudah/belum diunggah).
+
+14   JA-SR-14   Sistem harus menyediakan fungsi checklist bagi staf JA
+                kemahasiswaan untuk menandai dan memvalidasi setiap lampiran
+                yang telah sesuai dengan ketentuan.
+
+15   MR-SR-15   Sistem mengevaluasi jenis dokumen dari ID Pengajuan dan secara MR
+                otomatis menampilkan opsi status tahapan (dropdown) yang
+                sesuai dengan alur dokumen tersebut (alur standar atau alur
+                legalisasi).
+
+16   MR-SR-16   Sistem menyediakan fungsi bagi staf kemahasiswaan untuk MR
+                memilih dan mengubah status dokumen dari opsi tahapan yang
+                telah difilter oleh sistem.
+
+17   MR-SR-17   Sistem secara otomatis merekam histori (log) setiap perubahan MR
+                status baru beserta waktu pembaruannya (timestamp) ke dalam
+                database.
+
+18   MR-SR-18   Sistem menampilkan daftar antrean pengajuan dokumen yang MR
+                secara spesifik memiliki status "Menunggu Legalisasi Pejabat"
+                pada antarmuka akun Pejabat Fakultas.
+
+19   MR-SR-19   Sistem menyediakan tombol fungsi persetujuan (approve) dan MR
+                penolakan (reject), yang dilengkapi dengan field input teks wajib
+                untuk mencatat alasan apabila pejabat memilih opsi penolakan. .
+
+20   JA-SR-20   Sistem harus menyediakan menu bagi mahasiswa untuk JA
+                mengunggah ulang atau mengganti lampiran pada pengajuan
+                berstatus "Revisi" tanpa membuat nomor pengajuan baru.
+
+21   JA-SR-21   Sistem harus dapat mengubah status pengajuan secara otomatis JA
+                menjadi "Menunggu Verifikasi" setelah mahasiswa submit ulang
+                hasil revisi serta mencatat perubahan tersebut sebagai baris baru
+                pada log riwayat.
+
+22   MR-SR-22   Sistem dapat menarik (query) data log histori status dari database MR
+                berdasarkan ID Pengajuan milik mahasiswa.
+23   MR-SR-23       Sistem menyajikan data riwayat status tersebut secara kronologis MR
+                    (berdasarkan waktu pembaruan) dalam bentuk visualisasi rekap
+                    yang mudah dipahami.
+
+24   SR-24          Sistem menyediakan tombol logout pada halaman profil pengguna.
+
+25   SR-25          Sistem mengakhiri sesi pengguna dan mengarahkan pengguna ke
+                    halaman log in.
+
+
+1.4 Software Requirement Specification (SRS)
+
+Software Requirement Specification
+
+Functional Requirement
+No. [PGN] Pengguna
+                                                                                          Ins.
+     Kode    Kode     Software Requirement Statement                             Level
+     UR      SRS
+
+1    PGN-    PGN-     Sistem dapat menampilkan form login (username,             Normal
+     UR-01   SRS-     password)
+             01
+
+2    PGN-    PGN-     Sistem dapat memvalidasi kredensial dan mengarahkan        Normal
+     UR-01   SRS-     pengguna ke dashboard sesuai peran
+             02
+
+3    PGN-    PGN-     Sistem       menyediakan halaman   khusus    yang Normal
+     UR-02   SRS-     menampilkan data identitas pengguna saat ini yang
+             03       ditarik dari database.
+
+4    PGN-    PGN-     Sistem menyediakan fungsi formulir (edit form) bagi Normal
+     UR-02   SRS-     pengguna untuk mengubah data nama, NIM/NIP, email,
+             04       dan nomor telepon, serta tombol untuk menyimpannya.
+
+5    PGN-    PGN-     Sistem menyediakan tombol logout pada halaman profil Normal
+     UR-12   SRS-     pengguna.
+             05
+
+6    PGN-    PGN-     Sistem mengakhiri sesi pengguna dan mengarahkan            Normal
+     UR-12   SRS-     pengguna ke halaman log in.
+             06
+
+     [MHS] Mahasiswa
+
+7    MHS-    MHS-     Sistem menampilkan dropdown kategori kebutuhan             Normal   AA
+     UR-03   SRS-     (Lomba, Beasiswa, Organisasi, Akademik/PKL,
+             01       Lainnya)
+
+8    MHS-    MHS-     Sistem menampilkan sub-dropdown jenis dokumen              Normal   AA
+     UR-03   SRS-     spesifik sesuai kategori yang dipilih, beserta ringkasan
+             02       singkat (deskripsi, estimasi waktu proses, kebutuhan
+                    legalisasi)
+
+9    MHS-    MHS-   Sistem menampilkan daftar persyaratan wajib sesuai          Normal   AA
+     UR-04   SRS-   jenis dokumen yang telah dipilih Mahasiswa.
+             03
+
+10   MHS-    MHS-   Sistem dapat menyediakan fitur unggah, tinjau, dan          Normal   AA
+     UR-04   SRS-   ganti lampiran untuk setiap item persyaratan.
+             04
+
+11   MHS-    MHS-   Sistem menyediakan kolom tanggal tenggat kebutuhan Normal            AT
+     UR-05   SRS-   pada form pengajuan dokumen.
+             05
+
+12   MHS-    MHS-   Sistem memvalidasi tanggal tenggat yang diisi dan Expected           AT
+     UR-05   SRS-   menampilkan peringatan apabila sisa waktu kurang dari
+             06     tiga hari kerja.
+
+13   MHS-    MHS-   Sistem harus menyediakan menu bagi mahasiswa untuk Normal            JA
+     UR-10   SRS-   mengunggah ulang atau mengganti lampiran pada
+     ​       07     pengajuan berstatus "Revisi" tanpa membuat nomor
+                    pengajuan baru.
+
+14   MHS-    MHS-   Sistem harus dapat menghapus lampiran lama yang Normal               JA
+     UR-10   SRS-   tidak sesuai dan menyimpan lampiran baru sebagai
+             08     pembaruan pada pengajuan yang sama.
+
+15   MHS-    MHS-   Sistem dapat menarik (query) data log histori status dari   Normal   MR
+     UR-11   SRS-   database berdasarkan ID Pengajuan milik mahasiswa.
+             09
+
+16   MHS-    MHS-   Sistem menyajikan data riwayat status tersebut secara Normal         MR
+     UR-11   SRS-   kronologis (berdasarkan waktu pembaruan) dalam
+             10     bentuk visualisasi rekap yang mudah dipahami.
+
+     [KMA] Kemahasiswaan
+
+17   KMA-    KMA-   Sistem harus dapat menghitung dan memperbarui sisa Normal            AT
+     UR-06   SRS-   waktu (countdown) antara waktu saat ini dengan tanggal
+             01     tenggat pengajuan dokumen.
+
+18   KMA-    KMA-   Sistem harus dapat menampilkan daftar antrean Normal                 AT
+     UR-06   SRS-   pengajuan yang diurutkan secara ascending (tenggat
+             02     waktu paling dekat di atas) dan memberikan label visual
+                    penanda prioritas.
+
+19   KMA-    KMA-   Sistem menampilkan daftar persyaratan lampiran wajib        Normal   JA
+     UR-07   SRS-   pada halaman detail pengajuan sesuai jenis dokumen
+             03     lengkap dengan status setiap item (sudah
+                    diunggah/belum diunggah).
+
+20   KMA-    KMA-   Sistem harus menyediakan fungsi checklist bagi staf Normal           JA
+     UR-07   SRS-   kemahasiswaan untuk menandai dan memvalidasi
+             04     setiap lampiran yang telah sesuai dengan ketentuan.
+21   KMA-       KMA-   Sistem mengevaluasi jenis dokumen dari ID Pengajuan Normal        MR
+     UR-08      SRS-   dan secara otomatis menampilkan opsi status tahapan
+                05     (dropdown) yang sesuai dengan alur dokumen tersebut
+                       (alur standar atau alur legalisasi).
+
+22   KMA-       KMA-   Sistem menyediakan fungsi bagi staf kemahasiswaan Normal          MR
+     UR-08      SRS-   untuk memilih dan mengubah status dokumen dari opsi
+                06     tahapan yang telah difilter oleh sistem.
+
+23   KMA-       KMA-   Sistem secara otomatis merekam histori (log) setiap Normal        MR
+     UR-08      SRS-   perubahan status baru beserta waktu pembaruannya
+                07     (timestamp) ke dalam database.
+
+[PJB] Pejabat
+
+24   PJB-U      PJB-   Sistem menampilkan daftar antrean pengajuan Normal                MR
+     R-09       SRS-   dokumen yang secara spesifik memiliki status
+                01     "Menunggu Legalisasi Pejabat" pada antarmuka akun
+                       Pejabat terkait.
+
+25   PJB-U      PJB-   Sistem menyediakan tombol fungsi persetujuan Normal               MR
+     R-09       SRS-   (approve) dan penolakan (reject), yang dilengkapi
+                02     dengan field input teks wajib untuk mencatat alasan
+                       apabila pejabat memilih opsi penolakan.
+
+
+Non-Functional Requirement
+No. Kode        Kode   Software Requirement Statement                          Level     Ins.
+    UR          SRS
+
+1    NFR-       NFR-   Sistem harus tersedia secara online dan memiliki tingkat Normal
+     UR-01      SRS-   uptime minimal 99% agar dapat diakses kapan saja.
+                01
+
+2    NFR-       NFR-   Sistem harus mengenkripsi password pengguna di          Normal
+     UR-01      SRS-   dalam database menggunakan algoritma hashing
+                02     standar (misal: bcrypt) untuk menjamin keamanan
+                       kredensial.
+
+3    NFR-       NFR-   Data pribadi pengguna (seperti email dan nomor Normal
+     UR-02      SRS-   telepon)     harus   diproteksi dan    hanya   dapat
+                03     diakses/dilihat oleh pengguna yang bersangkutan serta
+                       staf yang memiliki wewenang (Data Privacy).
+
+4    NFR-       NFR-   Sistem harus dapat diakses secara responsif baik Normal           AA
+     UR-03      SRS-   melalui desktop maupun perangkat mobile (UI/UX yang
+                04     adaptif), mengingat mahasiswa sering mengakses dari
+                       luar ruang kelas/kampus.
+
+5    NFR-       NFR-   Sistem harus membatasi ukuran maksimal setiap file Expected       AA
+     UR-04      SRS-   lampiran pengajuan sebesar 5 MB dan hanya menerima
+                05     ekstensi file standar (misal: .pdf, .jpg, .png) untuk
+                       menjaga kapasitas server.
+6    NFR-    NFR-   Sistem harus mampu menangani lonjakan volume Expected            AA
+     UR-04   SRS-   pengajuan (traffic load) saat musim lomba, LPJ, dan
+             06     beasiswa tanpa mengalami crash atau penurunan
+                    performa yang signifikan.
+
+7    NFR-    NFR-   Sistem harus menerapkan standarisasi zona waktu Normal           AT
+     UR-05   SRS-   tunggal (Waktu Indonesia Barat/GMT+7) di server saat
+             07     mencatat dan mengkalkulasi tanggal tenggat agar tidak
+                    terjadi perbedaan perhitungan waktu lintas perangkat.
+
+8    NFR-    NFR-   Sistem harus mampu mengkalkulasi countdown dan Normal            AT
+     UR-06   SRS-   menyortir hingga 1000 data antrean pengajuan
+             08     berdasarkan sisa waktu tenggat dalam waktu respons
+                    maksimal 3 detik.
+
+9    NFR-    NFR-   Sistem harus menampilkan pembaruan status checklist Normal       JA
+     UR-07   SRS-   ke halaman staf dalam waktu kurang dari 2 detik setelah
+             09     item ditandai (responsif, tanpa perlu memuat ulang
+                    halaman secara keseluruhan).
+
+10   NFR-    NFR-   Sistem harus mencatat secara background setiap Expected          JA
+     UR-07   SRS-   perubahan status validasi checklist beserta identitas staf
+             10     (ID) dan waktu penandaannya untuk keperluan
+                    akuntabilitas audit.
+
+11   NFR-    NFR-   Data log histori riwayat pembaruan status pengajuan Expected     MR
+     UR-08   SRS-   (yang dicatat otomatis oleh sistem) harus bersifat
+             11     immutable (tidak dapat diubah atau dihapus secara
+                    manual oleh pihak manapun) untuk menjamin integritas
+                    rekam jejak dokumen.
+
+12   NFR-    NFR-   Sistem harus menjamin non-repudiation (nir-sangkalan) Expected   MR
+     UR-09   SRS-   pada setiap keputusan persetujuan (approve) atau
+             12     penolakan (reject) Pejabat Fakultas dengan merekam
+                    timestamp absolut dan otorisasi sesi akun secara
+                    presisi.
+
+13   NFR-    NFR-   Sistem harus memberlakukan pembatasan ukuran dan Expected        JA
+     UR-10   SRS-   format file lampiran revisi yang identik dengan
+             13     ketentuan pada pengajuan awal agar konsistensi
+                    keamanan dan validasi tetap terjaga.
+
+14   NFR-    NFR-   Sistem harus mampu melakukan query ke database Normal            MR
+     UR-11   SRS-   dan merender visualisasi diagram/tabel riwayat
+             14     pengajuan mahasiswa dengan waktu tunda (delay)
+                    maksimal 1 detik agar pemantauan terasa real-time.
+
+15   NFR-    NFR-   Sesi login pengguna harus otomatis berakhir (timeout) Normal
+     UR-12   SRS-   setelah 30 menit tidak ada aktivitas (tidak aktif), untuk
+             15     mencegah akses tidak sah jika perangkat ditinggalkan.
+
+16   NFR-    NFR-   Sistem harus segera menghancurkan session token Expected
+     UR-12   SRS-   pengguna secara permanen di sisi server tepat setelah
+             16     tombol logout ditekan.
+

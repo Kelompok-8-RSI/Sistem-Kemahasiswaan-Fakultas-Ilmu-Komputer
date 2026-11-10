@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="kepala(judul)">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${judul} + ' | Layanan Kemahasiswaan FILKOM UB'">Layanan Kemahasiswaan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+
+  <!-- Sidebar: logo, menu sesuai peran, kartu pengguna, tombol Keluar (UI-12) -->
+  <aside class="sidebar" th:fragment="sidebar(aktif)">
+    <div class="merek">
+      <img th:src="@{/img/logo-filkom-ub.png}" alt="FILKOM UB" height="20">
+      <small>Layanan Kemahasiswaan</small>
+    </div>
+    <nav>
+      <p class="judul-menu">Layanan</p>
+      <th:block th:if="${session.peran == 'Mahasiswa'}">
+        <a th:href="@{/pengajuan}" th:classappend="${aktif == 'pengajuan'} ? 'aktif'">
+          <svg th:replace="~{fragments/layout :: ikon('berkas')}"></svg> Pengajuan Saya</a>
+        <a th:href="@{/pengajuan/baru}" th:classappend="${aktif == 'ajukan'} ? 'aktif'">
+          <svg th:replace="~{fragments/layout :: ikon('tambah')}"></svg> Ajukan Dokumen</a>
+      </th:block>
+      <a th:if="${session.peran == 'Staf Kemahasiswaan'}" th:href="@{/antrean}" th:classappend="${aktif == 'antrean'} ? 'aktif'">
+        <svg th:replace="~{fragments/layout :: ikon('daftar')}"></svg> Antrean Pengajuan
+        <span class="hitung" th:if="${jumlahMenu}" th:text="${jumlahMenu}">7</span></a>
+      <a th:if="${session.peran == 'Pejabat'}" th:href="@{/legalisasi}" th:classappend="${aktif == 'legalisasi'} ? 'aktif'">
+        <svg th:replace="~{fragments/layout :: ikon('stempel')}"></svg> Antrean Legalisasi
+        <span class="hitung" th:if="${jumlahMenu}" th:text="${jumlahMenu}">3</span></a>
+      <p class="judul-menu">Akun</p>
+      <a th:href="@{/profil}" th:classappend="${aktif == 'profil'} ? 'aktif'">
+        <svg th:replace="~{fragments/layout :: ikon('pengguna')}"></svg> Profil</a>
+    </nav>
+    <div class="kartu-pengguna">
+      <div class="baris">
+        <span class="avatar" th:text="${session.inisial}">SP</span>
+        <div><b th:text="${session.nama}">Sal Priadi</b><br>
+          <small th:text="${session.peran == 'Pejabat'} ? 'Pejabat Fakultas' : ${session.peran}">Mahasiswa</small></div>
+      </div>
+      <button type="button" class="tautan-keluar" onclick="document.getElementById('dlgKeluar').showModal()">
+        <svg th:replace="~{fragments/layout :: ikon('keluar')}"></svg> Keluar</button>
+    </div>
+
+    <!-- UI-12 Dialog Konfirmasi Keluar -->
+    <dialog id="dlgKeluar">
+      <h3>Keluar dari akun?</h3>
+      <p>Anda perlu login kembali untuk mengakses layanan.</p>
+      <form th:action="@{/logout}" method="post" class="aksi-dialog">
+        <button type="button" class="sekunder" onclick="document.getElementById('dlgKeluar').close()">Tidak</button>
+        <button type="submit">Ya, Keluar</button>
+      </form>
+    </dialog>
+  </aside>
+
+  <!-- Topbar: breadcrumb dan tanggal hari ini (WIB) -->
+  <header class="topbar" th:fragment="topbar(induk, halaman)">
+    <nav class="breadcrumb">
+      <span th:text="${induk}">Layanan</span>
+      <svg th:replace="~{fragments/layout :: ikon('kanan')}"></svg>
+      <b th:text="${halaman}">Antrean Pengajuan</b>
+    </nav>
+    <span class="tanggal"><svg th:replace="~{fragments/layout :: ikon('kalender')}"></svg>
+      <span th:text="${#temporals.format(#temporals.createToday(), 'EEEE, d MMM yyyy')}">Senin, 12 Okt 2026</span></span>
+  </header>
+
+  <!-- Ikon garis 16px (stroke mengikuti warna teks) -->
+  <svg th:fragment="ikon(nama)" class="ikon" viewBox="0 0 24 24" width="16" height="16" fill="none"
+       stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+       th:switch="${nama}">
+    <path th:case="'berkas'" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M8 13h8M8 17h8"/>
+    <path th:case="'tambah'" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M12 18v-6M9 15h6"/>
+    <path th:case="'daftar'" d="M10 6h11M10 12h11M10 18h11M3 6l1 1 2-2M3 12l1 1 2-2M3 18l1 1 2-2"/>
+    <path th:case="'stempel'" d="M5 22h14M19 15H5a2 2 0 0 0-2 2v1h18v-1a2 2 0 0 0-2-2zM14 15V9a2 2 0 1 0-4 0v6"/>
+    <path th:case="'pengguna'" d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/>
+    <path th:case="'keluar'" d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
+    <path th:case="'kanan'" d="M9 18l6-6-6-6"/>
+    <path th:case="'kalender'" d="M3 6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM16 2v4M8 2v4M3 10h18"/>
+    <path th:case="'buka'" d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/>
+    <path th:case="'centang'" d="M20 6L9 17l-5-5"/>
+    <path th:case="'silang'" d="M18 6L6 18M6 6l12 12"/>
+    <path th:case="'pensil'" d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/>
+    <path th:case="'peringatan'" d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0zM12 9v4M12 17h.01"/>
+    <path th:case="'info'" d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 16v-4M12 8h.01"/>
+    <path th:case="'cari'" d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.3-4.3"/>
+    <path th:case="'mata'" d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+    <path th:case="'kotak'" d="M22 12h-6l-2 3h-4l-2-3H2M5.5 5.1L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.8 4H7.2a2 2 0 0 0-1.7 1.1z"/>
+  </svg>
+</body>
+</html>
