@@ -67,7 +67,7 @@ mysql -u root -p < database/schema.sql
 ```bash
 mysql -u root -p < database/seed.sql
 ```
-Skrip ini membuat database `layanan_kemahasiswaan`. Password akun di `seed.sql` sudah dalam bentuk hash bcrypt.
+Skrip ini membuat database `layanan_kemahasiswaan`. Password akun di `seed.sql` disimpan sebagai hash bcrypt. Daftar akunnya ada di bagian Akun demo di bawah.
 
 ### Langkah 2: Atur koneksi database
 Nilai bawaan ada di `src/main/resources/application.properties`. Ubah lewat variabel lingkungan bila berbeda:
@@ -98,24 +98,53 @@ Setelah itu, buka `http://localhost:8080/login`.
 
 Pertama kali dijalankan, wrapper akan mengunduh Maven dan dependensi, jadi butuh koneksi internet.
 
+### Akun demo
+Semua akun di `database/seed.sql` memakai password `password123`.
+
+| Username | Peran |
+|---|---|
+| `sal.priadi` | Mahasiswa |
+| `fajar.nugroho` | Mahasiswa |
+| `dwi.lestari` | Staf Kemahasiswaan |
+| `bayu.santoso` | Pejabat |
+
 ---
 
-## 5. Pembagian Implementasi (Modul 3)
-Setup proyek (`pom.xml`, `application.properties`, kelas `LayananKemahasiswaanApplication`, skema database) sudah tersedia. Kode aplikasi dikerjakan per anggota sesuai laporan:
+## 5. Pembagian Implementasi
+Implementasi kode dikerjakan bergiliran dengan bantuan AI agent, satu task per sesi, dengan urutan T01 sampai T18. Urutan ini disusun supaya build tidak pernah rusak.
 
-| Anggota | Kode Sumber | UI (templates) |
-|---|---|---|
-| **AA** | SC01 `AuthController`, `AuthService` · SC06 entity `AkunPengguna`, `JenisDokumen`, `AkunPenggunaRepository` | IM-01 `login.html` · IM-12 `fragments/layout.html`, `static/css/app.css` |
-| **AT** | SC02 `TenggatController`, `TenggatService` · SC03 `AntreanController`, `AntreanService` · SC07 entity `Pengajuan`, `AntreanVerifikasi`, `PengajuanRepository` | IM-05 `form-tenggat.html` · IM-06 `antrean.html` |
-| **MR** | SC04 `LegalisasiController`, `LegalisasiService` · SC09 entity `RiwayatStatus`, `RiwayatStatusRepository` · SC10 `AppConfig`, `WebConfig`, `RequiredRole`, `AuthInterceptor`, `DataTidakDitemukanException` | IM-09 `legalisasi-antrean.html`, `legalisasi-detail.html` |
-| **JA** | SC05 `ValidasiLampiranController`, `ValidasiLampiranService` · SC08 entity `PersyaratanDokumen`, `BerkasLampiran`, repository-nya, `BerkasController` · SC12 paket `dto` | IM-07 `checklist.html` |
+- Status terkini dan task berikutnya: [`PROGRESS.md`](PROGRESS.md)
+- Cara pakai untuk anggota: [`docs/ai/CARA-PAKAI.md`](docs/ai/CARA-PAKAI.md)
+- Aturan dan rencana lengkap untuk AI agent: [`docs/ai/PROMPT.md`](docs/ai/PROMPT.md)
+- Sumber acuan (kode Modul 3, Modul 1, Modul 2, dan sketsa UI): [`docs/referensi/`](docs/referensi/)
 
-Hampir semua controller bergantung pada SC10 (`AppConfig`, `AuthInterceptor`, `RequiredRole`) dan pada kelas Entity. Karena itu, sebaiknya bagian tersebut di-merge lebih dulu.
+| Task | Judul | Pemilik modul | Pelaksana | Use case / kode modul |
+|---|---|---|---|---|
+| T01 | Fondasi proyek, workflow AI, entity akun dan jenis dokumen | AA | Ammar (mengambil alih AA) | SC11, SC06 |
+| T02 | Konfigurasi, keamanan, layout, dan CSS | MR | Rasil | SC10, IM-12 |
+| T03 | Entity lampiran dan antrean verifikasi | AT | Ammar | SC08 |
+| T04 | Entity persyaratan dokumen dan pengajuan | MR | Rasil | SC07 |
+| T05 | Entity riwayat status dan paket DTO | JA | Jasmine | SC09, SC12 |
+| T06 | Login ke sistem | AA | Amirah | UC-01, SC01, IM-01 |
+| T07 | Keluar dari akun | MR | Rasil | UC-12, PC-45 |
+| T08 | Memilih jenis dokumen | AA | Amirah | UC-03 |
+| T09 | Mencantumkan tenggat kebutuhan | AT | Ammar | UC-05, SC02, IM-05 |
+| T10 | Mengunggah persyaratan dan submit pengajuan | AA | Amirah | UC-04 |
+| T11 | Riwayat status pengajuan (Pengajuan Saya) | MR | Rasil | UC-11 |
+| T12 | Antrean pengajuan berdasarkan prioritas | AT | Ammar | UC-06, SC03, IM-06 |
+| T13 | Validasi kelengkapan lampiran | JA | Jasmine | UC-07, SC05, IM-07 |
+| T14 | Memperbarui status pengajuan | MR | Rasil | UC-08 |
+| T15 | Keputusan legalisasi oleh Pejabat | MR | Rasil | UC-09, SC04, IM-09 |
+| T16 | Merevisi pengajuan yang ditolak | JA | Jasmine | UC-10 |
+| T17 | Melihat dan memperbarui profil | AT | Ammar | UC-02 |
+| T18 | Integrasi akhir, README, dan penutupan | AT | Ammar | Semua |
 
 ### Alur kerja Git
-1. Buat branch dari `main` untuk tiap bagian, misalnya `feat/auth`, `feat/tenggat`, atau `feat/legalisasi`.
-2. Pastikan build lolos sebelum push:
+1. Pastikan task sebelumnya sudah di-merge ke `main`, lalu ambil kode terbaru dengan `git switch main` dan `git pull origin main`.
+2. Ketik `lanjut` ke AI agent. Agent mengerjakan satu task dan memberikan perintah Git untuk diketik sendiri.
+3. Setiap task memakai branch `<nama-pelaksana>/t<nomor>-<deskripsi>`, misalnya `rasil/t02-konfigurasi-keamanan-layout`.
+4. Pastikan build lolos sebelum push:
    ```bash
-   ./mvnw -q package -DskipTests
+   ./mvnw -q -DskipTests package
    ```
-3. Buat Pull Request ke `main`.
+5. Buat Pull Request ke `main` dan merge sebelum anggota berikutnya mulai.
