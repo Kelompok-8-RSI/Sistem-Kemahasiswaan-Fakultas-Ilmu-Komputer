@@ -7,9 +7,11 @@
     "dev": "pnpm --parallel --filter ./apps/* run dev",
     "dev:api": "pnpm --filter api run dev",
     "dev:web": "pnpm --filter web run dev",
-    "build": "pnpm --recursive run build"
+    "build": "pnpm --recursive run build",
+    "prepare": "husky"
   },
   "devDependencies": {
+    "husky": "^9.1.7",
     "typescript": "^5.4.5"
   }
 }
