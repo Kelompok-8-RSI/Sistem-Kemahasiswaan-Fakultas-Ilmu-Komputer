@@ -1,0 +1,3 @@
+# Skrip Maven Wrapper harus tetap LF agar bisa dijalankan di Linux/macOS/Git Bash
+/mvnw text eol=lf
+*.cmd text eol=crlf
