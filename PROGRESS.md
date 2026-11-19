@@ -7,7 +7,7 @@ Aturan dan rencana lengkap: `docs/ai/PROMPT.md`. Cara pakai untuk anggota: `docs
 | Task | Judul | Pemilik | Pelaksana | Branch | Status |
 |---|---|---|---|---|---|
 | T01 | Fondasi proyek, workflow AI, entity akun dan jenis dokumen | AA | Ammar | ammar/t01-fondasi-entity-akun | Selesai |
-| T02 | Konfigurasi, keamanan, layout, dan CSS | MR | Rasil | - | Belum |
+| T02 | Konfigurasi, keamanan, layout, dan CSS | MR | Rasil | rasil/t02-konfigurasi-keamanan-layout | Selesai |
 | T03 | Entity lampiran dan antrean verifikasi | AT | Ammar | - | Belum |
 | T04 | Entity persyaratan dokumen dan pengajuan | MR | Rasil | - | Belum |
 | T05 | Entity riwayat status dan paket DTO | JA | Jasmine | - | Belum |
@@ -27,7 +27,7 @@ Aturan dan rencana lengkap: `docs/ai/PROMPT.md`. Cara pakai untuk anggota: `docs
 
 ## Task berikutnya
 
-T02: Konfigurasi, keamanan, layout, dan CSS. Pelaksana: Rasil (MR).
+T03: Entity lampiran dan antrean verifikasi. Pelaksana: Ammar (AT).
 
 ## Log pengerjaan
 
@@ -51,3 +51,21 @@ T02: Konfigurasi, keamanan, layout, dan CSS. Pelaksana: Rasil (MR).
   - Folder `.gitkeep` yang masih tersisa: `config`, `controller`, `dto`, `exception`, `security`, `service`, `static/css`, `templates/fragments`, dan `src/test`. Hapus `.gitkeep` di folder yang mulai diisi.
   - Logo `src/main/resources/static/img/logo-filkom-ub.png` belum ada. Ini perlu disiapkan pada T02 sesuai instruksi di `docs/ai/PROMPT.md`.
   - Seed pengajuan 1003 (status `Menunggu Legalisasi Pejabat`) belum punya baris `AntreanVerifikasi` dan `RiwayatStatus`, dan lampiran contoh di seed belum punya berkas fisik di `uploads/`. Ini dirapikan pada T18.
+
+### T02: Konfigurasi, keamanan, layout, dan CSS
+- Tanggal: 2026-11-19
+- Pelaksana: Rasil (MR)
+- Ringkasan: Konfigurasi aplikasi (`AppConfig`, `WebConfig`), keamanan sesi dan peran (`AuthInterceptor`, `RequiredRole`), exception `DataTidakDitemukanException` (SC10), serta template layout dasar `fragments/layout.html` dan stylesheet `app.css` (IM-12) beserta logo FILKOM UB ditambahkan ke proyek tanpa komentar.
+- File dibuat atau diubah:
+  - Dibuat: `src/main/java/id/ac/ub/layanan/config/AppConfig.java`, `src/main/java/id/ac/ub/layanan/config/WebConfig.java`, `src/main/java/id/ac/ub/layanan/security/AuthInterceptor.java`, `src/main/java/id/ac/ub/layanan/security/RequiredRole.java`, `src/main/java/id/ac/ub/layanan/exception/DataTidakDitemukanException.java`, `src/main/resources/templates/fragments/layout.html`, `src/main/resources/static/css/app.css` (serta menyertakan `src/main/resources/static/img/logo-filkom-ub.png` yang sudah disiapkan pelaksana)
+  - Diubah: `PROGRESS.md`
+  - Dihapus: `src/main/java/id/ac/ub/layanan/config/.gitkeep`, `src/main/java/id/ac/ub/layanan/security/.gitkeep`, `src/main/java/id/ac/ub/layanan/exception/.gitkeep`, `src/main/resources/static/css/.gitkeep`, `src/main/resources/templates/fragments/.gitkeep`
+- Keputusan dan penyimpangan dari modul (beserta alasannya):
+  - Semua berkas disalin persis dari `docs/referensi/kode-modul-3/` tanpa komentar.
+  - Berkas `src/main/resources/static/img/logo-filkom-ub.png` sudah tersedia di workspace sebelum sesi dijalankan sehingga langsung disertakan pada commit UI tanpa perubahan.
+- Perubahan di luar cakupan: Tidak ada
+- Status build: Lulus (`.\mvnw.cmd -q -DskipTests package`)
+- Catatan untuk task berikutnya:
+  - `AuthInterceptor` sekarang melindungi semua rute kecuali `/login`, `/css/**`, `/img/**`, dan `/error`.
+  - Sisa `.gitkeep` berada di folder `controller`, `dto`, `service`, dan `src/test`. Hapus `.gitkeep` di folder yang mulai diisi pada task terkait.
+  - Aset `src/main/resources/static/img/logo-filkom-ub.png` sudah siap dipakai oleh `fragments/layout.html` dan `login.html` (T06).
