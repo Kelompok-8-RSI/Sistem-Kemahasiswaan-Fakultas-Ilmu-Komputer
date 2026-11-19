@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: kepala('Detail Legalisasi')}"></head>
+<body>
+<div class="aplikasi">
+  <aside th:replace="~{fragments/layout :: sidebar('legalisasi')}"></aside>
+  <div class="utama">
+    <header th:replace="~{fragments/layout :: topbar('Antrean Legalisasi', ${detail != null ? '#' + detail.pengajuan.idPengajuan : 'Detail'})}"></header>
+    <main class="konten">
+      <div class="alert error" th:if="${pesanError}">
+        <svg th:replace="~{fragments/layout :: ikon('info')}"></svg><span th:text="${pesanError}">Pesan error</span>
+      </div>
+
+      <th:block th:if="${detail}" th:with="p=${detail.pengajuan}, d=${detail.diteruskan()}">
+        <div class="judul-halaman"><div>
+          <div class="baris">
+            <h1 th:text="'Pengajuan #' + ${p.idPengajuan}">Pengajuan #1003</h1>
+            <span class="badge menunggu-legalisasi-pejabat" th:text="${p.status}">Menunggu Legalisasi Pejabat</span>
+          </div>
+          <p th:text="${p.jenisDokumen.namaJenis} + (${d} ? ' · diteruskan oleh ' + ${d.namaPelaku} + ', '
+               + ${#temporals.format(d.waktu, 'd MMM yyyy HH.mm')} : '')">Surat Tugas Delegasi Lomba · diteruskan oleh Dwi Lestari, 15 Okt 2026 10.40</p>
+        </div></div>
+
+        <div class="dua-kolom">
+          <div class="kolom">
+            <!-- Dokumen & lampiran -->
+            <section class="kartu">
+              <header><h2>Dokumen &amp; lampiran</h2>
+                <p>Semua lampiran sudah divalidasi Lengkap oleh Staf Kemahasiswaan.</p></header>
+              <div class="lampiran" th:each="l : ${detail.lampiran}">
+                <svg th:replace="~{fragments/layout :: ikon('berkas')}"></svg>
+                <div class="teks"><b th:text="${l.namaFile}">surat_undangan_delegasi.pdf</b>
+                  <small th:text="${l.ukuranKB < 1024} ? ${l.ukuranKB} + ' KB' : ${#numbers.formatDecimal(l.ukuranKB / 1024.0, 1, 1, 'COMMA')} + ' MB'">1,1 MB</small></div>
+                <span class="badge lengkap"><svg th:replace="~{fragments/layout :: ikon('centang')}"></svg> Lengkap</span>
+                <a th:href="@{/lampiran/{id}/berkas(id=${l.idLampiran})}" target="_blank" rel="noopener"><b>Buka</b>
+                  <svg th:replace="~{fragments/layout :: ikon('buka')}"></svg></a>
+              </div>
+            </section>
+
+            <!-- Riwayat status (RiwayatStatus), terbaru di atas -->
+            <section class="kartu">
+              <header><h2>Riwayat</h2></header>
+              <ol class="timeline">
+                <li th:each="l, st : ${detail.riwayat}">
+                  <small th:text="${#temporals.format(l.waktu, 'd MMM yyyy HH.mm')}">15 Okt 2026 10.40</small>
+                  <div class="baris" style="gap:6px;margin:4px 0">
+                    <span class="badge" th:classappend="${#strings.replace(#strings.toLowerCase(l.status), ' ', '-')}" th:text="${l.status}">Menunggu Legalisasi Pejabat</span>
+                    <span class="badge sedang-diproses" th:if="${st.first}">Status terkini</span>
+                  </div>
+                  <span class="redup" style="font-size:14px"
+                        th:text="'oleh ' + ${l.namaPelaku} + ', ' + (${l.peranPelaku == 'Pejabat'} ? 'Pejabat Fakultas' : ${l.peranPelaku})">oleh Dwi Lestari, Staf Kemahasiswaan</span>
+                  <div class="catatan" th:if="${l.status == 'Revisi' and l.catatan != null}">
+                    <b>Catatan</b><br><span th:text="${l.catatan}">Alasan</span></div>
+                </li>
+              </ol>
+            </section>
+          </div>
+
+          <div class="kolom">
+            <!-- Keputusan legalisasi -->
+            <section class="kartu">
+              <header><h2>Keputusan legalisasi</h2><p>Periksa dokumen dan lampiran sebelum memberi keputusan.</p></header>
+              <button type="button" class="penuh" onclick="document.getElementById('dlgSetuju').showModal()">
+                <svg th:replace="~{fragments/layout :: ikon('centang')}"></svg> Setuju</button>
+              <button type="button" class="bahaya penuh" style="margin-top:12px" onclick="document.getElementById('dlgTolak').showModal()">
+                <svg th:replace="~{fragments/layout :: ikon('silang')}"></svg> Tolak</button>
+            </section>
+            <!-- Data pengajuan -->
+            <aside class="kartu">
+              <header><h2>Data pengajuan</h2></header>
+              <dl class="data">
+                <dt>Mahasiswa</dt><dd><span th:text="${p.pengguna.nama}">Sal Priadi</span>
+                  <small style="display:block" th:text="${p.pengguna.nimNip}">215150200111045</small></dd>
+                <dt>Kategori</dt><dd th:text="${p.jenisDokumen.kategori}">Lomba</dd>
+                <dt>Jalur</dt><dd>Legalisasi (perlu persetujuan pejabat)</dd>
+                <dt>Tanggal pengajuan</dt><dd th:text="${#temporals.format(p.tanggalPengajuan, 'd MMM yyyy HH.mm')}">14 Okt 2026 13.02</dd>
+                <dt>Tenggat</dt><dd class="baris" style="gap:8px" th:if="${p.tanggalTenggat}">
+                  <svg th:replace="~{fragments/layout :: ikon('kalender')}"></svg>
+                  <span th:text="${#temporals.format(p.tanggalTenggat, 'd MMM yyyy')}">25 Okt 2026</span></dd>
+              </dl>
+            </aside>
+          </div>
+        </div>
+
+        <!-- UI-09c Konfirmasi Setuju -->
+        <dialog id="dlgSetuju">
+          <h3 th:text="'Setujui legalisasi dokumen #' + ${p.idPengajuan} + '?'">Setujui legalisasi dokumen #1003?</h3>
+          <p>Status pengajuan akan menjadi Selesai dan mahasiswa dapat mengunduh dokumen yang sudah dilegalisasi.</p>
+          <form th:action="@{/legalisasi/{id}/keputusan(id=${p.idPengajuan})}" method="post" class="aksi-dialog">
+            <input type="hidden" name="keputusan" value="Setuju">
+            <button type="button" class="sekunder" onclick="this.closest('dialog').close()">Batal</button>
+            <button type="submit">Ya, Setujui</button>
+          </form>
+        </dialog>
+
+        <!-- UI-09d Tolak; UI-09e alasan kosong -->
+        <dialog id="dlgTolak">
+          <h3 th:text="'Tolak legalisasi dokumen #' + ${p.idPengajuan} + '?'">Tolak legalisasi dokumen #1003?</h3>
+          <p>Pengajuan dikembalikan dengan status Revisi beserta alasan penolakan.</p>
+          <form th:action="@{/legalisasi/{id}/keputusan(id=${p.idPengajuan})}" method="post"
+                onsubmit="const a=this.catatanAlasan; if(!a.value.trim()){a.classList.add('salah');
+                          document.getElementById('galatAlasan').hidden=false; return false;}">
+            <input type="hidden" name="keputusan" value="Tolak">
+            <label for="catatanAlasan">Alasan penolakan (wajib)</label>
+            <textarea id="catatanAlasan" name="catatanAlasan" rows="3" placeholder="Tuliskan alasan"></textarea>
+            <p id="galatAlasan" class="pesan-salah" hidden>Alasan penolakan wajib diisi</p>
+            <p class="bantuan">Alasan dikirim ke mahasiswa dan Staf Kemahasiswaan.</p>
+            <div class="aksi-dialog">
+              <button type="button" class="sekunder" onclick="this.closest('dialog').close()">Batal</button>
+              <button type="submit" class="bahaya">Ya, Tolak</button>
+            </div>
+          </form>
+        </dialog>
+      </th:block>
+    </main>
+  </div>
+</div>
+</body>
+</html>
