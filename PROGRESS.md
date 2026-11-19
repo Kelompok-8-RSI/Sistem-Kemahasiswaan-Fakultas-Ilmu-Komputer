@@ -9,7 +9,7 @@ Aturan dan rencana lengkap: `docs/ai/PROMPT.md`. Cara pakai untuk anggota: `docs
 | T01 | Fondasi proyek, workflow AI, entity akun dan jenis dokumen | AA | Ammar | ammar/t01-fondasi-entity-akun | Selesai |
 | T02 | Konfigurasi, keamanan, layout, dan CSS | MR | Rasil | rasil/t02-konfigurasi-keamanan-layout | Selesai |
 | T03 | Entity lampiran dan antrean verifikasi | AT | Ammar | ammar/t03-entity-lampiran-antrean | Selesai |
-| T04 | Entity persyaratan dokumen dan pengajuan | MR | Rasil | - | Belum |
+| T04 | Entity persyaratan dokumen dan pengajuan | MR | Rasil | rasil/t04-entity-persyaratan-pengajuan | Selesai |
 | T05 | Entity riwayat status dan paket DTO | JA | Jasmine | - | Belum |
 | T06 | Login ke sistem | AA | Amirah | - | Belum |
 | T07 | Keluar dari akun | MR | Rasil | - | Belum |
@@ -27,7 +27,7 @@ Aturan dan rencana lengkap: `docs/ai/PROMPT.md`. Cara pakai untuk anggota: `docs
 
 ## Task berikutnya
 
-T04: Entity persyaratan dokumen dan pengajuan. Pelaksana: Rasil (MR).
+T05: Entity riwayat status dan paket DTO. Pelaksana: Jasmine (JA).
 
 ## Log pengerjaan
 
@@ -88,3 +88,20 @@ T04: Entity persyaratan dokumen dan pengajuan. Pelaksana: Rasil (MR).
   - `AntreanVerifikasi.waktuMasuk` tidak punya `@PrePersist` dan tidak diisi otomatis, padahal kolomnya `NOT NULL`. Hibernate tetap menyertakan nilai `null` saat insert, sehingga MySQL akan menolaknya. T10 wajib mengisi `waktuMasuk` dengan `LocalDateTime.now(clock)` sebelum `save`.
   - `BerkasLampiran.tanggalUnggah` sudah terisi otomatis lewat `@PrePersist` (zona WIB).
   - Sisa `.gitkeep`: `controller`, `dto`, `service`, dan `src/test`.
+
+### T04: Entity persyaratan dokumen dan pengajuan
+- Tanggal: 2026-11-19
+- Pelaksana: Rasil (MR)
+- Ringkasan: Entity `PersyaratanDokumen` dan `Pengajuan` beserta `PersyaratanDokumenRepository` dan `PengajuanRepository` (SC07) disalin dari kode Modul 3 tanpa komentar.
+- File dibuat atau diubah:
+  - Dibuat: `src/main/java/id/ac/ub/layanan/entity/PersyaratanDokumen.java`, `src/main/java/id/ac/ub/layanan/entity/Pengajuan.java`, `src/main/java/id/ac/ub/layanan/repository/PengajuanRepository.java`, `src/main/java/id/ac/ub/layanan/repository/PersyaratanDokumenRepository.java`
+  - Diubah: `PROGRESS.md`
+  - Dihapus: Tidak ada (`.gitkeep` di `entity` dan `repository` sudah dihapus pada T01)
+- Keputusan dan penyimpangan dari modul (beserta alasannya):
+  - Keempat berkas disalin persis dari `docs/referensi/kode-modul-3/` dengan seluruh komentar dihapus.
+- Perubahan di luar cakupan: Tidak ada
+- Status build: Lulus (`.\mvnw.cmd -DskipTests package`)
+- Catatan untuk task berikutnya:
+  - `Pengajuan` sudah memiliki `@PrePersist` untuk `tanggalPengajuan` (zona WIB), method `simpanTenggat`, dan `updateStatusPengajuan`, namun konstruktor tanpa argumennya bersifat `protected` sesuai Modul 3; T08 yang membuat objek `Pengajuan` baru di service perlu menambahkan konstruktor `public` atau factory method secara minimal dan mencatatnya di "Perubahan di luar cakupan".
+  - `PengajuanRepository` menyediakan `getDetailPengajuan`, `getDaftarAntrean`, `getDaftarByStatus`, dan `existsByIdPengajuanAndPenggunaIdPengguna`. Task T11 (`RiwayatController`/`RiwayatService`) yang membutuhkan daftar pengajuan milik seorang mahasiswa dapat menambahkan query method seperti `findByPenggunaIdPenggunaOrderByTanggalPengajuanDesc` saat mengerjakan T11 dan mencatatnya di "Perubahan di luar cakupan".
+  - Sisa `.gitkeep`: `controller`, `dto` (akan dihapus pada T05), `service`, dan `src/test`.
