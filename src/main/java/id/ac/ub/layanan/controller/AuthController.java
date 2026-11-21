@@ -1,6 +1,8 @@
 package id.ac.ub.layanan.controller;
 
+import id.ac.ub.layanan.dto.HasilAksi;
 import id.ac.ub.layanan.dto.HasilLogin;
+import id.ac.ub.layanan.entity.AkunPengguna;
 import id.ac.ub.layanan.security.AuthInterceptor;
 import id.ac.ub.layanan.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,7 +11,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class AuthController {
@@ -58,5 +62,17 @@ public class AuthController {
             case "Staf Kemahasiswaan" -> "redirect:/antrean";
             default -> "redirect:/legalisasi";
         };
+    }
+
+    @PostMapping("/logout")
+    public String prosesLogout(@RequestAttribute(AuthInterceptor.ATTR_AKUN) AkunPengguna akun,
+                               HttpServletRequest request, RedirectAttributes redirect) {
+        HasilAksi hasil = authService.prosesLogout(akun.getIdPengguna());
+        if (hasil.berhasil()) {
+            request.getSession().invalidate();
+            return "redirect:/login?keluar";
+        }
+        redirect.addFlashAttribute("pesanError", hasil.pesan());
+        return redirectKeDashboard(akun.getPeran());
     }
 }

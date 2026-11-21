@@ -1,5 +1,6 @@
 package id.ac.ub.layanan.service;
 
+import id.ac.ub.layanan.dto.HasilAksi;
 import id.ac.ub.layanan.dto.HasilLogin;
 import id.ac.ub.layanan.entity.AkunPengguna;
 import id.ac.ub.layanan.repository.AkunPenggunaRepository;
@@ -50,6 +51,15 @@ public class AuthService {
         };
     }
 
+    @Transactional
+    public HasilAksi prosesLogout(Integer idPengguna) {
+        boolean isDestroyed = hancurkanSessionToken(idPengguna);
+        if (isDestroyed) {
+            return new HasilAksi(true, null);
+        }
+        return new HasilAksi(false, "Gagal mengakhiri sesi akun. Silakan coba lagi.");
+    }
+
     private String buatSessionToken(Integer idPengguna) {
         byte[] acak = new byte[32];
         secureRandom.nextBytes(acak);
@@ -58,5 +68,13 @@ public class AuthService {
         akun.setSessionToken(sessionToken);
         akunRepository.save(akun);
         return sessionToken;
+    }
+
+    private boolean hancurkanSessionToken(Integer idPengguna) {
+        return akunRepository.findById(idPengguna).map(akun -> {
+            akun.setSessionToken(null);
+            akunRepository.save(akun);
+            return true;
+        }).orElse(false);
     }
 }
