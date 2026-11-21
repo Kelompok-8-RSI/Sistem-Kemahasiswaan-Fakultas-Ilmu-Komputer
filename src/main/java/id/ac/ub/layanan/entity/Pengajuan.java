@@ -22,7 +22,7 @@ public class Pengajuan {
     private LocalDate tanggalTenggat;
     private String status = "Draft";
 
-    protected Pengajuan() { }
+    public Pengajuan() { }
 
     @PrePersist
     void saatDibuat() {

@@ -13,7 +13,7 @@ Aturan dan rencana lengkap: `docs/ai/PROMPT.md`. Cara pakai untuk anggota: `docs
 | T05 | Entity riwayat status dan paket DTO | JA | Jasmine | jasmine/t05-entity-riwayat-dto | Selesai |
 | T06 | Login ke sistem | AA | Amirah | amirah/t06-login | Selesai |
 | T07 | Keluar dari akun | MR | Rasil | rasil/t07-logout | Selesai |
-| T08 | Memilih jenis dokumen | AA | Amirah | - | Belum |
+| T08 | Memilih jenis dokumen | AA | Amirah | amirah/t08-pilih-jenis-dokumen | Selesai |
 | T09 | Mencantumkan tenggat kebutuhan | AT | Ammar | - | Belum |
 | T10 | Mengunggah persyaratan dan submit pengajuan | AA | Amirah | - | Belum |
 | T11 | Riwayat status pengajuan (Pengajuan Saya) | MR | Rasil | - | Belum |
@@ -27,7 +27,7 @@ Aturan dan rencana lengkap: `docs/ai/PROMPT.md`. Cara pakai untuk anggota: `docs
 
 ## Task berikutnya
 
-T08: Memilih jenis dokumen. Pelaksana: Amirah (AA).
+T09: Mencantumkan tenggat kebutuhan. Pelaksana: Ammar (AT).
 
 ## Log pengerjaan
 
@@ -157,4 +157,22 @@ T08: Memilih jenis dokumen. Pelaksana: Amirah (AA).
 - Catatan untuk task berikutnya:
   - Alur autentikasi (UC-01 login dan UC-12 logout) sudah lengkap dan tersambung dengan `AuthInterceptor` serta `fragments/layout.html`.
   - Untuk T08 (UC-03 memilih jenis dokumen), ingat catatan T04: konstruktor tanpa argumen di `Pengajuan` bersifat `protected` sesuai Modul 3, sehingga T08 perlu menambahkan konstruktor `public` atau factory method secara minimal pada `Pengajuan` (dicatat di "Perubahan di luar cakupan") agar `PemilihanDokumenService` dapat membuat objek `Pengajuan` baru.
+  - Sisa `.gitkeep`: `src/test` dan `uploads`.
+
+### T08: Memilih jenis dokumen
+- Tanggal: 2026-11-22
+- Pelaksana: Amirah (AA)
+- Ringkasan: Fitur pemilihan jenis dokumen kemahasiswaan (UC-03) diimplementasikan melalui pembuatan `JenisDokumenRepository` dengan method query kategori dan jenis dokumen, `PemilihanDokumenService` untuk menampilkan daftar kategori kebutuhan (PC-08), sub-jenis dokumen berdasarkan kategori terpilih (PC-09), serta penyimpanan record pengajuan baru berstatus Draft dengan tanggal pengajuan dari Clock WIB (PC-10). Controller `PemilihanDokumenController` menangani request GET dan POST di rute `/pengajuan/baru` dengan proteksi `@RequiredRole("Mahasiswa")`, serta template `pilih-dokumen.html` mengimplementasikan tampilan UI-03 dengan stepper langkah 1 "Pilih Jenis", dropdown kategori & jenis, kartu ringkasan estimasi dan legalisasi dokumen, serta daftar persyaratan wajib tanpa komentar.
+- File dibuat atau diubah:
+  - Dibuat: `src/main/java/id/ac/ub/layanan/repository/JenisDokumenRepository.java`, `src/main/java/id/ac/ub/layanan/service/PemilihanDokumenService.java`, `src/main/java/id/ac/ub/layanan/controller/PemilihanDokumenController.java`, `src/main/resources/templates/pilih-dokumen.html`
+  - Diubah: `src/main/java/id/ac/ub/layanan/entity/Pengajuan.java`, `src/main/resources/static/css/app.css`, `PROGRESS.md`
+  - Dihapus: Tidak ada
+- Keputusan dan penyimpangan dari modul (beserta alasannya):
+  - Daftar kategori pada `PemilihanDokumenService` (`DAFTAR_KATEGORI`) menyertakan 5 kategori resmi sesuai DDL dan Modul 2 (`Lomba`, `Beasiswa`, `Organisasi`, `Akademik/PKL`, `Lainnya`), sehingga pilihan "Lainnya" tetap muncul di dropdown dan menampilkan pesan arahan kategori tidak tersedia sesuai Alternative Flow 1 dan PC-09.
+- Perubahan di luar cakupan:
+  - Mengubah visibility konstruktor tanpa argumen di `src/main/java/id/ac/ub/layanan/entity/Pengajuan.java` dari `protected` menjadi `public` agar service dapat menginstansiasi objek pengajuan baru saat submit jenis dokumen (sesuai catatan T04).
+  - Menambahkan styling `.ringkasan-jenis`, `.daftar-syarat`, dan `select:disabled` di akhir `src/main/resources/static/css/app.css` menggunakan variabel warna yang sudah ada untuk mendukung tata letak antarmuka UI-03.
+- Status build: Lulus (`.\mvnw.cmd -q -DskipTests package`)
+- Catatan untuk task berikutnya:
+  - Setelah `POST /pengajuan/baru` berhasil, pengguna dialihkan ke `/pengajuan/{id}/tenggat`. Rute, controller, dan form tenggat ini akan diimplementasikan pada T09 (`TenggatController`, `TenggatService`, dan `form-tenggat.html`).
   - Sisa `.gitkeep`: `src/test` dan `uploads`.

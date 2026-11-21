@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: kepala('Ajukan Dokumen')}"></head>
+<body>
+<div class="aplikasi">
+  <aside th:replace="~{fragments/layout :: sidebar('ajukan')}"></aside>
+  <div class="utama">
+    <header th:replace="~{fragments/layout :: topbar('Layanan', 'Ajukan Dokumen')}"></header>
+    <main class="konten">
+      <div class="judul-halaman">
+        <div>
+          <h1>Ajukan dokumen</h1>
+          <p>Pilih kategori kebutuhan dan jenis dokumen yang ingin diajukan.</p>
+        </div>
+      </div>
+
+      <div class="kartu stepper">
+        <div class="langkah kini">
+          <span class="bulat">1</span>
+          <div><b>Pilih Jenis</b><br><small>Langkah saat ini</small></div>
+        </div>
+        <span class="garis"></span>
+        <div class="langkah">
+          <span class="bulat">2</span>
+          <div><b>Unggah Persyaratan</b><br><small>Berkas &amp; tenggat</small></div>
+        </div>
+        <span class="garis"></span>
+        <div class="langkah">
+          <span class="bulat">3</span>
+          <div><b>Selesai</b><br><small>Konfirmasi &amp; bukti</small></div>
+        </div>
+      </div>
+
+      <div class="dua-kolom">
+        <div class="kolom">
+          <section class="kartu">
+            <header>
+              <h2>Jenis dokumen</h2>
+              <p>Daftar jenis dokumen menyesuaikan kategori yang dipilih.</p>
+            </header>
+
+            <div class="alert error" th:if="${pesanError}">
+              <svg th:replace="~{fragments/layout :: ikon('info')}"></svg>
+              <span th:text="${pesanError}">Terjadi kesalahan.</span>
+            </div>
+
+            <form th:action="@{/pengajuan/baru}" method="post">
+              <div class="field">
+                <label for="kategori">Kategori kebutuhan</label>
+                <select id="kategori" name="kategori" onchange="gantiKategori(this.value)">
+                  <option value="" th:selected="${kategoriTerpilih == null}">Pilih kategori</option>
+                  <option th:each="kat : ${listKategori}" th:value="${kat}" th:text="${kat}"
+                          th:selected="${kat == kategoriTerpilih}">Lomba</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="jenisTerpilih">Jenis dokumen</label>
+                <select id="jenisTerpilih" name="jenisTerpilih"
+                        th:disabled="${listJenisDokumen == null or listJenisDokumen.isEmpty()}"
+                        onchange="gantiJenis(this.value)">
+                  <option value="" th:if="${listJenisDokumen == null or listJenisDokumen.isEmpty()}">Pilih kategori terlebih dahulu</option>
+                  <option value="" th:if="${listJenisDokumen != null and !listJenisDokumen.isEmpty()}"
+                          th:selected="${jenisTerpilih == null}">Pilih jenis dokumen</option>
+                  <option th:each="jd : ${listJenisDokumen}" th:value="${jd.idJenisDokumen}" th:text="${jd.namaJenis}"
+                          th:selected="${jenisTerpilih != null and jenisTerpilih.idJenisDokumen == jd.idJenisDokumen}">Surat Rekomendasi Lomba</option>
+                </select>
+                <p class="bantuan" th:if="${kategoriTerpilih == null}">Pilih kategori terlebih dahulu.</p>
+                <p class="bantuan" th:if="${listJenisDokumen != null and !listJenisDokumen.isEmpty()}"
+                   th:text="${#lists.size(listJenisDokumen)} + ' jenis dokumen tersedia untuk kategori ' + ${kategoriTerpilih} + '.'">2 jenis dokumen tersedia untuk kategori Lomba.</p>
+              </div>
+
+              <div class="alert info" th:if="${pesanTidakTersedia}">
+                <svg th:replace="~{fragments/layout :: ikon('info')}"></svg>
+                <span th:text="${pesanTidakTersedia}">Jenis dokumen tidak tersedia. Pilih kategori Lainnya atau hubungi WA Center Kemahasiswaan.</span>
+              </div>
+
+              <div class="ringkasan-jenis" th:if="${jenisTerpilih != null}">
+                <b th:text="${jenisTerpilih.namaJenis}">Surat Rekomendasi Lomba</b>
+                <p th:text="${jenisTerpilih.deskripsi}">Deskripsi</p>
+                <div class="meta">
+                  <span>Estimasi proses: <b th:text="${jenisTerpilih.estimasiHariKerja} + ' hari kerja'">3 hari kerja</b></span>
+                  <span>Legalisasi pejabat: <b th:text="${jenisTerpilih.perluLegalisasi} ? 'Ya' : 'Tidak'">Tidak</b></span>
+                </div>
+              </div>
+
+              <div class="baris" style="gap:8px;margin-top:16px;color:var(--teks-2);font-size:13px" th:unless="${pesanTidakTersedia}">
+                <svg th:replace="~{fragments/layout :: ikon('info')}"></svg>
+                <span>Tidak menemukan jenis dokumen yang sesuai? Pilih kategori Lainnya atau hubungi WA Center Kemahasiswaan.</span>
+              </div>
+
+              <div class="baris" style="justify-content:space-between;align-items:center;margin-top:24px">
+                <a class="tombol sekunder" style="border-color:transparent;color:var(--teks);padding:8px 0" th:href="@{/pengajuan}">&larr; Kembali</a>
+                <button type="submit" th:disabled="${jenisTerpilih == null}">Lanjutkan</button>
+              </div>
+            </form>
+          </section>
+        </div>
+
+        <aside class="kartu">
+          <header>
+            <h2>Persyaratan</h2>
+            <p th:if="${jenisTerpilih != null}">Siapkan berkas berikut sebelum melanjutkan.</p>
+          </header>
+          <p class="redup" th:if="${jenisTerpilih == null}">Daftar persyaratan muncul setelah Anda memilih jenis dokumen.</p>
+          <th:block th:if="${jenisTerpilih != null}">
+            <ul class="daftar-syarat">
+              <li th:each="p : ${listPersyaratan}">
+                <svg th:replace="~{fragments/layout :: ikon('berkas')}"></svg>
+                <div>
+                  <b style="font-size:14px;color:var(--teks);display:block" th:text="${p.namaPersyaratan}">Bukti pendaftaran lomba</b>
+                </div>
+              </li>
+            </ul>
+            <hr style="border:0;border-top:1px solid var(--garis-2);margin:16px 0">
+            <p class="bantuan" style="margin:0">Format PDF/JPG, maksimal 5 MB per berkas.</p>
+          </th:block>
+        </aside>
+      </div>
+    </main>
+  </div>
+</div>
+<script>
+function gantiKategori(kat) {
+  if (kat) {
+    window.location.href = '/pengajuan/baru?kategori=' + encodeURIComponent(kat);
+  } else {
+    window.location.href = '/pengajuan/baru';
+  }
+}
+function gantiJenis(id) {
+  const kat = document.getElementById('kategori').value;
+  if (id) {
+    window.location.href = '/pengajuan/baru?kategori=' + encodeURIComponent(kat) + '&jenis=' + encodeURIComponent(id);
+  } else if (kat) {
+    window.location.href = '/pengajuan/baru?kategori=' + encodeURIComponent(kat);
+  }
+}
+</script>
+</body>
+</html>
