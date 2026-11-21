@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: kepala('Login')}"></head>
+<body>
+  <main class="halaman-login">
+    <div class="merek">
+      <img th:src="@{/img/logo-filkom-ub.png}" alt="FILKOM UB" height="36">
+      Layanan Kemahasiswaan FILKOM UB
+    </div>
+
+    <section class="kartu kartu-login">
+      <h2>Masuk ke akun Anda</h2>
+      <p>Gunakan NIM untuk mahasiswa atau NIP untuk pegawai.</p>
+
+      <div class="alert error" th:if="${pesanError}">
+        <svg th:replace="~{fragments/layout :: ikon('info')}"></svg>
+        <span>NIM/NIP atau password salah. Periksa kembali data login Anda.</span>
+      </div>
+      <div class="alert sukses" th:if="${param.keluar}">
+        <svg th:replace="~{fragments/layout :: ikon('centang')}"></svg>
+        <span>Anda berhasil keluar dari akun.</span>
+      </div>
+      <div class="alert info" th:if="${param.sesi}">
+        <svg th:replace="~{fragments/layout :: ikon('info')}"></svg>
+        <span>Sesi Anda berakhir karena tidak ada aktivitas selama 30 menit. Silakan login kembali.</span>
+      </div>
+
+      <form th:action="@{/login}" method="post">
+        <div class="field" th:classappend="${pesanError} ? 'salah'">
+          <label for="username">NIM atau NIP</label>
+          <input type="text" id="username" name="username" th:value="${param.username}"
+                 placeholder="Masukkan NIM atau NIP" autocomplete="username" required autofocus>
+          <p class="pesan-salah" th:if="${pesanError}">Periksa kembali NIM/NIP Anda.</p>
+        </div>
+        <div class="field" th:classappend="${pesanError} ? 'salah'">
+          <label for="password">Password</label>
+          <div class="field-sandi">
+            <input type="password" id="password" name="password" placeholder="Masukkan password"
+                   autocomplete="current-password" required>
+            <button type="button" aria-label="Tampilkan password"
+                    onclick="const i=document.getElementById('password'); i.type = i.type === 'password' ? 'text' : 'password'">
+              <svg th:replace="~{fragments/layout :: ikon('mata')}"></svg></button>
+          </div>
+          <p class="pesan-salah" th:if="${pesanError}">Password tidak sesuai.</p>
+        </div>
+        <p class="lupa"><a href="#" onclick="document.getElementById('dlgLupa').showModal(); return false;">Lupa password?</a></p>
+        <button type="submit" class="penuh">Login</button>
+      </form>
+    </section>
+
+    <p class="catatan-kaki">Kendala akun? Hubungi WA Center Kemahasiswaan FILKOM.</p>
+
+    <dialog id="dlgLupa">
+      <h3>Lupa password?</h3>
+      <p>Password akun mengikuti SIAM UB. Atur ulang password melalui menu Lupa Password di SIAM, atau hubungi WA Center Kemahasiswaan FILKOM bila masih mengalami kendala.</p>
+      <div class="aksi-dialog"><button type="button" onclick="this.closest('dialog').close()">Tutup</button></div>
+    </dialog>
+  </main>
+</body>
+</html>
