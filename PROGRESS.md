@@ -11,7 +11,7 @@ Aturan dan rencana lengkap: `docs/ai/PROMPT.md`. Cara pakai untuk anggota: `docs
 | T03 | Entity lampiran dan antrean verifikasi | AT | Ammar | ammar/t03-entity-lampiran-antrean | Selesai |
 | T04 | Entity persyaratan dokumen dan pengajuan | MR | Rasil | rasil/t04-entity-persyaratan-pengajuan | Selesai |
 | T05 | Entity riwayat status dan paket DTO | JA | Jasmine | jasmine/t05-entity-riwayat-dto | Selesai |
-| T06 | Login ke sistem | AA | Amirah | - | Belum |
+| T06 | Login ke sistem | AA | Amirah | amirah/t06-login | Selesai |
 | T07 | Keluar dari akun | MR | Rasil | - | Belum |
 | T08 | Memilih jenis dokumen | AA | Amirah | - | Belum |
 | T09 | Mencantumkan tenggat kebutuhan | AT | Ammar | - | Belum |
@@ -27,7 +27,7 @@ Aturan dan rencana lengkap: `docs/ai/PROMPT.md`. Cara pakai untuk anggota: `docs
 
 ## Task berikutnya
 
-T06: Login ke sistem. Pelaksana: Amirah (AA).
+T07: Keluar dari akun. Pelaksana: Rasil (MR).
 
 ## Log pengerjaan
 
@@ -122,3 +122,21 @@ T06: Login ke sistem. Pelaksana: Amirah (AA).
 - Catatan untuk task berikutnya:
   - DTO `HasilLogin` sudah tersedia dan siap dipakai oleh `AuthService` dan `AuthController` pada T06.
   - Sisa `.gitkeep`: `controller`, `service`, dan `src/test`.
+
+### T06: Login ke sistem
+- Tanggal: 2026-11-21
+- Pelaksana: Amirah (AA)
+- Ringkasan: Implementasi fitur login pengguna (UC-01) dengan validasi kredensial BCrypt (`AuthService.validasiKredensial`), penentuan peran (`AuthService.tentukanPeran`), pembuatan token sesi acak 64 karakter (`AuthService.buatSessionToken`), inisialisasi sesi HTTP baru beserta inisial avatar dan redirect dashboard sesuai peran pada `AuthController`, serta antarmuka `login.html` lengkap dengan alert pesan kesalahan, status keluar, sesi berakhir, dan dialog bantuan lupa password tanpa komentar.
+- File dibuat atau diubah:
+  - Dibuat: `src/main/java/id/ac/ub/layanan/controller/AuthController.java`, `src/main/java/id/ac/ub/layanan/service/AuthService.java`, `src/main/resources/templates/login.html`
+  - Diubah: `PROGRESS.md`
+  - Dihapus: `src/main/java/id/ac/ub/layanan/controller/.gitkeep`, `src/main/java/id/ac/ub/layanan/service/.gitkeep`
+- Keputusan dan penyimpangan dari modul (beserta alasannya):
+  - Mengikuti instruksi cakupan T06 pada `docs/ai/PROMPT.md`, hanya bagian login yang disalin ke `AuthController` dan `AuthService`. Endpoint `POST /logout` dan method `hancurkanSessionToken` tidak disertakan karena menjadi cakupan T07.
+  - Seluruh berkas disalin dari `docs/referensi/kode-modul-3/` dengan seluruh komentar dihapus.
+- Perubahan di luar cakupan: Tidak ada
+- Status build: Lulus (`.\mvnw.cmd -q -DskipTests package`)
+- Catatan untuk task berikutnya:
+  - `AuthController` dan `AuthService` sudah siap ditambahkan endpoint `POST /logout` dan method `hancurkanSessionToken` pada T07.
+  - Dialog konfirmasi keluar (`dlgKeluar`) sudah tersedia di `fragments/layout.html` dan mengarah ke `POST /logout`.
+  - Sisa `.gitkeep`: `src/test` dan `uploads`.
