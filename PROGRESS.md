@@ -10,7 +10,7 @@ Aturan dan rencana lengkap: `docs/ai/PROMPT.md`. Cara pakai untuk anggota: `docs
 | T02 | Konfigurasi, keamanan, layout, dan CSS | MR | Rasil | rasil/t02-konfigurasi-keamanan-layout | Selesai |
 | T03 | Entity lampiran dan antrean verifikasi | AT | Ammar | ammar/t03-entity-lampiran-antrean | Selesai |
 | T04 | Entity persyaratan dokumen dan pengajuan | MR | Rasil | rasil/t04-entity-persyaratan-pengajuan | Selesai |
-| T05 | Entity riwayat status dan paket DTO | JA | Jasmine | - | Belum |
+| T05 | Entity riwayat status dan paket DTO | JA | Jasmine | jasmine/t05-entity-riwayat-dto | Selesai |
 | T06 | Login ke sistem | AA | Amirah | - | Belum |
 | T07 | Keluar dari akun | MR | Rasil | - | Belum |
 | T08 | Memilih jenis dokumen | AA | Amirah | - | Belum |
@@ -27,7 +27,7 @@ Aturan dan rencana lengkap: `docs/ai/PROMPT.md`. Cara pakai untuk anggota: `docs
 
 ## Task berikutnya
 
-T05: Entity riwayat status dan paket DTO. Pelaksana: Jasmine (JA).
+T06: Login ke sistem. Pelaksana: Amirah (AA).
 
 ## Log pengerjaan
 
@@ -105,3 +105,20 @@ T05: Entity riwayat status dan paket DTO. Pelaksana: Jasmine (JA).
   - `Pengajuan` sudah memiliki `@PrePersist` untuk `tanggalPengajuan` (zona WIB), method `simpanTenggat`, dan `updateStatusPengajuan`, namun konstruktor tanpa argumennya bersifat `protected` sesuai Modul 3; T08 yang membuat objek `Pengajuan` baru di service perlu menambahkan konstruktor `public` atau factory method secara minimal dan mencatatnya di "Perubahan di luar cakupan".
   - `PengajuanRepository` menyediakan `getDetailPengajuan`, `getDaftarAntrean`, `getDaftarByStatus`, dan `existsByIdPengajuanAndPenggunaIdPengguna`. Task T11 (`RiwayatController`/`RiwayatService`) yang membutuhkan daftar pengajuan milik seorang mahasiswa dapat menambahkan query method seperti `findByPenggunaIdPenggunaOrderByTanggalPengajuanDesc` saat mengerjakan T11 dan mencatatnya di "Perubahan di luar cakupan".
   - Sisa `.gitkeep`: `controller`, `dto` (akan dihapus pada T05), `service`, dan `src/test`.
+
+### T05: Entity riwayat status dan paket DTO
+- Tanggal: 2026-11-21
+- Pelaksana: Jasmine (JA)
+- Ringkasan: Entity `RiwayatStatus` dan `RiwayatStatusRepository` (SC09) serta seluruh DTO (`HasilAksi`, `HasilLogin`, `BarisAntrean`, `HasilAntrean`, `ItemChecklist`, `HasilValidasiItem`, `DetailLegalisasi`, `BarisLegalisasi`, `LangkahRiwayat`) (SC12) disalin dari kode Modul 3 tanpa komentar. Berkas `.gitkeep` di folder `dto` dihapus.
+- File dibuat atau diubah:
+  - Dibuat: `src/main/java/id/ac/ub/layanan/entity/RiwayatStatus.java`, `src/main/java/id/ac/ub/layanan/repository/RiwayatStatusRepository.java`, `src/main/java/id/ac/ub/layanan/dto/BarisAntrean.java`, `src/main/java/id/ac/ub/layanan/dto/BarisLegalisasi.java`, `src/main/java/id/ac/ub/layanan/dto/DetailLegalisasi.java`, `src/main/java/id/ac/ub/layanan/dto/HasilAksi.java`, `src/main/java/id/ac/ub/layanan/dto/HasilAntrean.java`, `src/main/java/id/ac/ub/layanan/dto/HasilLogin.java`, `src/main/java/id/ac/ub/layanan/dto/HasilValidasiItem.java`, `src/main/java/id/ac/ub/layanan/dto/ItemChecklist.java`, `src/main/java/id/ac/ub/layanan/dto/LangkahRiwayat.java`
+  - Diubah: `PROGRESS.md`
+  - Dihapus: `src/main/java/id/ac/ub/layanan/dto/.gitkeep`
+- Keputusan dan penyimpangan dari modul (beserta alasannya):
+  - Seluruh berkas disalin persis dari `docs/referensi/kode-modul-3/` dengan seluruh komentar dihapus.
+  - `RiwayatStatus` tetap `@Immutable` tanpa setter sesuai NFR-SRS-11.
+- Perubahan di luar cakupan: Tidak ada
+- Status build: Lulus (`.\mvnw.cmd -q -DskipTests package`)
+- Catatan untuk task berikutnya:
+  - DTO `HasilLogin` sudah tersedia dan siap dipakai oleh `AuthService` dan `AuthController` pada T06.
+  - Sisa `.gitkeep`: `controller`, `service`, dan `src/test`.
