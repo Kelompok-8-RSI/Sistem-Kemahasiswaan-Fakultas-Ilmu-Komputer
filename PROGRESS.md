@@ -12,7 +12,7 @@ Aturan dan rencana lengkap: `docs/ai/PROMPT.md`. Cara pakai untuk anggota: `docs
 | T04 | Entity persyaratan dokumen dan pengajuan | MR | Rasil | rasil/t04-entity-persyaratan-pengajuan | Selesai |
 | T05 | Entity riwayat status dan paket DTO | JA | Jasmine | jasmine/t05-entity-riwayat-dto | Selesai |
 | T06 | Login ke sistem | AA | Amirah | amirah/t06-login | Selesai |
-| T07 | Keluar dari akun | MR | Rasil | - | Belum |
+| T07 | Keluar dari akun | MR | Rasil | rasil/t07-logout | Selesai |
 | T08 | Memilih jenis dokumen | AA | Amirah | - | Belum |
 | T09 | Mencantumkan tenggat kebutuhan | AT | Ammar | - | Belum |
 | T10 | Mengunggah persyaratan dan submit pengajuan | AA | Amirah | - | Belum |
@@ -27,7 +27,7 @@ Aturan dan rencana lengkap: `docs/ai/PROMPT.md`. Cara pakai untuk anggota: `docs
 
 ## Task berikutnya
 
-T07: Keluar dari akun. Pelaksana: Rasil (MR).
+T08: Memilih jenis dokumen. Pelaksana: Amirah (AA).
 
 ## Log pengerjaan
 
@@ -139,4 +139,22 @@ T07: Keluar dari akun. Pelaksana: Rasil (MR).
 - Catatan untuk task berikutnya:
   - `AuthController` dan `AuthService` sudah siap ditambahkan endpoint `POST /logout` dan method `hancurkanSessionToken` pada T07.
   - Dialog konfirmasi keluar (`dlgKeluar`) sudah tersedia di `fragments/layout.html` dan mengarah ke `POST /logout`.
+  - Sisa `.gitkeep`: `src/test` dan `uploads`.
+
+### T07: Keluar dari akun
+- Tanggal: 2026-11-22
+- Pelaksana: Rasil (MR)
+- Ringkasan: Fitur keluar dari akun (UC-12, PC-45) ditambahkan pada `AuthController` (`POST /logout` melalui `prosesLogout`) dan `AuthService` (`prosesLogout` dan `hancurkanSessionToken`) sesuai `docs/referensi/kode-modul-3/` tanpa komentar. Saat berhasil, `sessionToken` pada `AkunPengguna` dikosongkan di database, sesi HTTP di-invalidate, dan pengguna diarahkan ke `/login?keluar`; jika gagal, `pesanError` dikirim lewat flash attribute dan pengguna diarahkan kembali ke dashboard peran.
+- File dibuat atau diubah:
+  - Dibuat: Tidak ada
+  - Diubah: `src/main/java/id/ac/ub/layanan/controller/AuthController.java`, `src/main/java/id/ac/ub/layanan/service/AuthService.java`, `PROGRESS.md`
+  - Dihapus: Tidak ada
+- Keputusan dan penyimpangan dari modul (beserta alasannya):
+  - Bagian logout pada `AuthController` dan `AuthService` disalin persis dari `docs/referensi/kode-modul-3/` dengan seluruh komentar dihapus.
+  - Dialog konfirmasi keluar (`dlgKeluar`) di `fragments/layout.html` yang mengarah ke `POST /logout` dan pesan sukses `?keluar` di `login.html` sudah tersedia dari T02 dan T06.
+- Perubahan di luar cakupan: Tidak ada
+- Status build: Lulus (`.\mvnw.cmd -DskipTests package`)
+- Catatan untuk task berikutnya:
+  - Alur autentikasi (UC-01 login dan UC-12 logout) sudah lengkap dan tersambung dengan `AuthInterceptor` serta `fragments/layout.html`.
+  - Untuk T08 (UC-03 memilih jenis dokumen), ingat catatan T04: konstruktor tanpa argumen di `Pengajuan` bersifat `protected` sesuai Modul 3, sehingga T08 perlu menambahkan konstruktor `public` atau factory method secara minimal pada `Pengajuan` (dicatat di "Perubahan di luar cakupan") agar `PemilihanDokumenService` dapat membuat objek `Pengajuan` baru.
   - Sisa `.gitkeep`: `src/test` dan `uploads`.
