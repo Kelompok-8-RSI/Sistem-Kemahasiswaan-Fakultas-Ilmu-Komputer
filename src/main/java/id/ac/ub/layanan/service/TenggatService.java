@@ -39,7 +39,6 @@ public class TenggatService {
         }
 
         pengajuan.simpanTenggat(tanggalTenggat);
-        pengajuan.updateStatusPengajuan("Menunggu Verifikasi");
         pengajuanRepository.save(pengajuan);
         return TENGGAT_TERSIMPAN;
     }
@@ -66,7 +65,6 @@ public class TenggatService {
             return false;
         }
         pengajuan.simpanTenggat(tanggalTenggat);
-        pengajuan.updateStatusPengajuan("Menunggu Verifikasi");
         pengajuanRepository.save(pengajuan);
         return true;
     }

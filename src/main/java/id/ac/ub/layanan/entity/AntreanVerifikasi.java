@@ -13,7 +13,7 @@ public class AntreanVerifikasi {
     private String statusAntrean = "Menunggu";
     private LocalDateTime waktuMasuk;
 
-    protected AntreanVerifikasi() { }
+    public AntreanVerifikasi() { }
 
     public Integer getIdAntrean() { return idAntrean; }
     public void setIdAntrean(Integer idAntrean) { this.idAntrean = idAntrean; }
