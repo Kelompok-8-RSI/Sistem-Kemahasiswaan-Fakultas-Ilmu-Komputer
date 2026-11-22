@@ -67,7 +67,45 @@
               </form>
             </th:block>
           </section>
-          <div id="slotPersyaratan"></div>
+          <section class="kartu persyaratan">
+            <header>
+              <h2>Persyaratan dokumen</h2>
+              <p>Semua persyaratan wajib. Format PDF, JPG, atau PNG, maksimal 5 MB per berkas.</p>
+            </header>
+            <div class="alert sukses" th:if="${pesanSuksesLampiran}" th:text="${pesanSuksesLampiran}"></div>
+            <div class="alert error" th:if="${pesanErrorLampiran}" th:text="${pesanErrorLampiran}"></div>
+            <div class="kelengkapan">
+              <b>Kelengkapan persyaratan wajib</b>
+              <span th:text="${persyaratanLengkap} ? 'Lengkap' : 'Belum lengkap'">Belum lengkap</span>
+            </div>
+            <div class="progres"><span th:classappend="${persyaratanLengkap} ? 'penuh'" th:style="|width: ${persyaratan.size() == 0 ? 100 : (persyaratan.?[statusUnggah == 'Terunggah'].size() * 100 / persyaratan.size())}%;|"></span></div>
+            <article class="item" th:each="item : ${persyaratan}"
+                     th:classappend="${tandaiPersyaratanKosong and item.statusUnggah != 'Terunggah'} ? 'salah'">
+              <div class="kepala">
+                <div>
+                  <h3 th:text="${item.namaPersyaratan}">Bukti pendaftaran lomba</h3>
+                  <span class="badge netral">WAJIB</span>
+                </div>
+                <span class="badge lengkap" th:if="${item.statusUnggah == 'Terunggah'}">Terunggah</span>
+                <span class="badge belum-diperiksa" th:unless="${item.statusUnggah == 'Terunggah'}">Belum diunggah</span>
+              </div>
+              <p class="berkas" th:if="${item.statusUnggah == 'Terunggah'}">
+                <span th:text="${item.namaFile}">bukti.pdf</span>
+                <span th:text="${item.ukuran}">842 KB</span>
+              </p>
+              <p class="pesan-salah" th:if="${tandaiPersyaratanKosong and item.statusUnggah != 'Terunggah'}">Persyaratan ini wajib diunggah.</p>
+              <div class="aksi-lampiran">
+                <form th:action="@{/pengajuan/{id}/lampiran(id=${idPengajuan})}" method="post" enctype="multipart/form-data">
+                  <input type="hidden" name="idPersyaratan" th:value="${item.idPersyaratan}">
+                  <input class="pilih-berkas" type="file" name="file" accept=".pdf,.jpg,.png" required>
+                  <button type="submit" class="sekunder" th:text="${item.statusUnggah == 'Terunggah'} ? 'Ganti File' : 'Pilih File'">Pilih File</button>
+                </form>
+                <form th:if="${item.idLampiran != null}" th:action="@{/pengajuan/{id}/lampiran/{lampiran}/hapus(id=${idPengajuan}, lampiran=${item.idLampiran})}" method="post">
+                  <button type="submit" class="bahaya">Hapus</button>
+                </form>
+              </div>
+            </article>
+          </section>
         </div>
 
         <aside class="kartu">
@@ -85,7 +123,7 @@
             <dd th:if="${pesanError == null and tanggalTenggat == null}" class="redup">Belum diisi</dd>
           </dl>
           <hr style="border:0;border-top:1px solid var(--garis-2);margin:16px 0">
-          <button type="submit" form="formTenggat" class="penuh" th:disabled="${tenggatMendesak}">Submit Pengajuan</button>
+          <button type="submit" form="formTenggat" class="penuh" th:disabled="${tenggatMendesak or !persyaratanLengkap}">Submit Pengajuan</button>
           <p class="bantuan">Submit aktif setelah tenggat diisi dan semua persyaratan wajib terunggah.</p>
           <a class="tombol penuh" style="background:none;border-color:transparent;color:var(--teks)" href="javascript:history.back()">Kembali</a>
         </aside>

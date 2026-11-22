@@ -26,7 +26,7 @@ public class BerkasLampiran {
     @Column(nullable = false, updatable = false)
     private LocalDateTime tanggalUnggah;
 
-    protected BerkasLampiran() { }
+    public BerkasLampiran() { }
 
     @PrePersist
     void saatDibuat() {
