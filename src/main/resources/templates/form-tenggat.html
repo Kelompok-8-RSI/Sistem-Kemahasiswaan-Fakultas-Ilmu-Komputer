@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: kepala('Ajukan Dokumen')}"></head>
+<body>
+<div class="aplikasi">
+  <aside th:replace="~{fragments/layout :: sidebar('ajukan')}"></aside>
+  <div class="utama">
+    <header th:replace="~{fragments/layout :: topbar('Layanan', 'Ajukan Dokumen')}"></header>
+    <main class="konten">
+      <div class="judul-halaman"><div>
+        <h1>Ajukan dokumen</h1>
+        <p th:unless="${terkirim}">Isi tenggat kebutuhan dan unggah seluruh persyaratan wajib.</p>
+      </div></div>
+
+      <div class="kartu stepper">
+        <div class="langkah selesai"><span class="bulat"><svg th:replace="~{fragments/layout :: ikon('centang')}"></svg></span>
+          <div><b>Pilih Jenis</b><br><small>Selesai</small></div></div>
+        <span class="garis penuh"></span>
+        <div class="langkah" th:classappend="${terkirim} ? 'selesai' : 'kini'">
+          <span class="bulat"><th:block th:if="${terkirim}"><svg th:replace="~{fragments/layout :: ikon('centang')}"></svg></th:block><th:block th:unless="${terkirim}">2</th:block></span>
+          <div><b>Unggah Persyaratan</b><br><small th:text="${terkirim} ? 'Selesai' : 'Langkah saat ini'">Langkah saat ini</small></div></div>
+        <span class="garis" th:classappend="${terkirim} ? 'penuh'"></span>
+        <div class="langkah" th:classappend="${terkirim} ? 'selesai'">
+          <span class="bulat"><th:block th:if="${terkirim}"><svg th:replace="~{fragments/layout :: ikon('centang')}"></svg></th:block><th:block th:unless="${terkirim}">3</th:block></span>
+          <div><b>Selesai</b><br><small th:text="${terkirim} ? 'Selesai' : 'Konfirmasi & bukti'">Konfirmasi &amp; bukti</small></div></div>
+      </div>
+
+      <section class="kartu" th:if="${terkirim}">
+        <span class="badge selesai"><svg th:replace="~{fragments/layout :: ikon('centang')}"></svg></span>
+        <h2 style="margin-top:12px">Pengajuan berhasil dikirim</h2>
+        <p class="baris" style="margin:8px 0">
+          <b style="font-size:18px;color:var(--primary)" th:text="'#' + ${idPengajuan}">#1004</b>
+          <span class="badge menunggu-verifikasi" th:text="${pengajuan.status}">Menunggu Verifikasi</span></p>
+        <p class="redup" style="font-size:14px" th:text="'Pengajuan Anda sudah masuk antrean Staf Kemahasiswaan. Pantau statusnya di menu Pengajuan Saya. Estimasi proses '
+             + ${pengajuan.jenisDokumen.estimasiHariKerja} + ' hari kerja.'">Pengajuan Anda sudah masuk antrean Staf Kemahasiswaan.</p>
+        <div class="baris">
+          <a class="tombol" th:href="@{/pengajuan/{id}(id=${idPengajuan})}">Lihat Pengajuan</a>
+          <a class="tombol sekunder" th:href="@{/pengajuan}">Kembali ke Pengajuan Saya</a>
+        </div>
+      </section>
+
+      <div class="dua-kolom" th:unless="${terkirim}">
+        <div class="kolom">
+          <section class="kartu">
+            <header><h2>Tenggat kebutuhan</h2><p>Dipakai Staf Kemahasiswaan untuk mengurutkan antrean.</p></header>
+            <form id="formTenggat" th:action="@{/pengajuan/{id}/tenggat(id=${idPengajuan})}" method="post">
+              <div class="field" style="max-width:280px;margin:0" th:classappend="${pesanError} ? 'salah'">
+                <label for="tanggalTenggat">Tanggal tenggat kebutuhan</label>
+                <input type="date" id="tanggalTenggat" name="tanggalTenggat"
+                       th:value="${tanggalTenggat}" th:min="${tanggalPengajuan}" required>
+                <p class="pesan-salah" th:if="${pesanError}" th:text="${pesanError}">Tanggal tenggat tidak boleh lebih awal dari tanggal pengajuan.</p>
+                <p class="bantuan" th:unless="${pesanError}" th:text="'Tanggal saat dokumen paling lambat Anda butuhkan. Tidak boleh lebih awal dari '
+                     + ${#temporals.format(tanggalPengajuan, 'd MMM yyyy')} + '.'">Tidak boleh lebih awal dari tanggal pengajuan.</p>
+              </div>
+            </form>
+            <th:block th:if="${tenggatMendesak}">
+              <div class="alert peringatan" style="margin-top:16px">
+                <svg th:replace="~{fragments/layout :: ikon('peringatan')}"></svg>
+                <div><b>Tenggat mendesak</b>
+                  <p>Sisa waktu kurang dari 3 hari kerja. Pengajuan akan ditandai mendesak, namun waktu proses tidak dijamin.</p></div>
+              </div>
+              <form th:action="@{/pengajuan/{id}/tenggat/konfirmasi(id=${idPengajuan})}" method="post" class="baris">
+                <input type="hidden" name="tanggalTenggat" th:value="${tanggalTenggat}">
+                <a class="tombol sekunder" style="border-color:transparent;color:var(--teks)"
+                   th:href="@{/pengajuan/{id}/tenggat(id=${idPengajuan})}">Ubah tanggal</a>
+                <button type="submit" class="sekunder">Tetap lanjutkan</button>
+              </form>
+            </th:block>
+          </section>
+          <div id="slotPersyaratan"></div>
+        </div>
+
+        <aside class="kartu">
+          <header><h2>Ringkasan pengajuan</h2></header>
+          <dl class="data">
+            <dt>Jenis dokumen</dt><dd th:text="${pengajuan.jenisDokumen.namaJenis}">Surat Rekomendasi Lomba</dd>
+            <dt>Kategori</dt><dd th:text="${pengajuan.jenisDokumen.kategori}">Lomba</dd>
+            <dt>Estimasi proses</dt><dd th:text="${pengajuan.jenisDokumen.estimasiHariKerja} + ' hari kerja'">3 hari kerja</dd>
+            <dt>Legalisasi pejabat</dt><dd th:text="${pengajuan.jenisDokumen.perluLegalisasi} ? 'Ya' : 'Tidak'">Tidak</dd>
+            <dt>Tenggat</dt>
+            <dd th:if="${pesanError}" class="teks-merah">Belum valid</dd>
+            <dd th:if="${pesanError == null and tanggalTenggat != null}" class="baris" style="gap:8px">
+              <svg th:replace="~{fragments/layout :: ikon('kalender')}"></svg>
+              <span th:text="${#temporals.format(tanggalTenggat, 'd MMM yyyy')}">30 Okt 2026</span></dd>
+            <dd th:if="${pesanError == null and tanggalTenggat == null}" class="redup">Belum diisi</dd>
+          </dl>
+          <hr style="border:0;border-top:1px solid var(--garis-2);margin:16px 0">
+          <button type="submit" form="formTenggat" class="penuh" th:disabled="${tenggatMendesak}">Submit Pengajuan</button>
+          <p class="bantuan">Submit aktif setelah tenggat diisi dan semua persyaratan wajib terunggah.</p>
+          <a class="tombol penuh" style="background:none;border-color:transparent;color:var(--teks)" href="javascript:history.back()">Kembali</a>
+        </aside>
+      </div>
+    </main>
+  </div>
+</div>
+</body>
+</html>
