@@ -15,7 +15,7 @@ Aturan dan rencana lengkap: `docs/ai/PROMPT.md`. Cara pakai untuk anggota: `docs
 | T07 | Keluar dari akun | MR | Rasil | rasil/t07-logout | Selesai |
 | T08 | Memilih jenis dokumen | AA | Amirah | amirah/t08-pilih-jenis-dokumen | Selesai |
 | T09 | Mencantumkan tenggat kebutuhan | AT | Ammar | ammar/t09-tenggat-kebutuhan | Selesai |
-| T10 | Mengunggah persyaratan dan submit pengajuan | AA | Amirah | - | Belum |
+| T10 | Mengunggah persyaratan dan submit pengajuan | AA | Amirah | amirah/t10-unggah-persyaratan | Selesai |
 | T11 | Riwayat status pengajuan (Pengajuan Saya) | MR | Rasil | - | Belum |
 | T12 | Antrean pengajuan berdasarkan prioritas | AT | Ammar | - | Belum |
 | T13 | Validasi kelengkapan lampiran | JA | Jasmine | - | Belum |
@@ -27,7 +27,7 @@ Aturan dan rencana lengkap: `docs/ai/PROMPT.md`. Cara pakai untuk anggota: `docs
 
 ## Task berikutnya
 
-T10: Mengunggah persyaratan dan submit pengajuan. Pelaksana: Amirah (AA).
+T11: Riwayat status pengajuan (Pengajuan Saya). Pelaksana: Rasil (MR).
 
 ## Log pengerjaan
 
@@ -197,4 +197,23 @@ T10: Mengunggah persyaratan dan submit pengajuan. Pelaksana: Amirah (AA).
   - Kartu "Persyaratan dokumen" dipasang pada `<div id="slotPersyaratan"></div>` di kolom kiri `form-tenggat.html`.
   - Ingat catatan T03: `AntreanVerifikasi.waktuMasuk` harus diisi dengan `LocalDateTime.now(clock)` sebelum `save`, dan konstruktor `BerkasLampiran` serta `AntreanVerifikasi` masih `protected`.
   - Tampilan setelah submit memakai flash attribute `terkirim` dan menautkan ke `/pengajuan/{id}` serta `/pengajuan`. Kedua rute itu dibuat pada T11.
+  - Sisa `.gitkeep`: `src/test` dan `uploads`.
+
+### T10: Mengunggah persyaratan dan submit pengajuan
+- Tanggal: 2026-11-22
+- Pelaksana: Amirah (AA)
+- Ringkasan: Fitur unggah persyaratan (UC-04) ditambahkan melalui `UnggahPersyaratanController` dan `UnggahPersyaratanService`. Mahasiswa dapat mengunggah, mengganti, dan menghapus lampiran PDF/JPG/PNG hingga 5 MB untuk setiap persyaratan wajib, serta melihat status dan ukuran berkas pada kartu Persyaratan dokumen di form tenggat. Submit kini memeriksa kelengkapan, menyimpan tenggat, membuat antrean `Menunggu`, dan mencatat `RiwayatStatus` saat status berubah menjadi `Menunggu Verifikasi`.
+- File dibuat atau diubah:
+  - Dibuat: `src/main/java/id/ac/ub/layanan/controller/UnggahPersyaratanController.java`, `src/main/java/id/ac/ub/layanan/service/UnggahPersyaratanService.java`
+  - Diubah: `src/main/java/id/ac/ub/layanan/controller/TenggatController.java`, `src/main/java/id/ac/ub/layanan/service/TenggatService.java`, `src/main/java/id/ac/ub/layanan/entity/BerkasLampiran.java`, `src/main/java/id/ac/ub/layanan/entity/AntreanVerifikasi.java`, `src/main/resources/templates/form-tenggat.html`, `src/main/resources/static/css/app.css`, `PROGRESS.md`
+  - Dihapus: Tidak ada
+- Keputusan dan penyimpangan dari modul (beserta alasannya):
+  - Berkas yang diganti sebelum pengajuan disubmit menghapus berkas fisik dan record lampiran aktif sebelumnya, lalu menyimpan lampiran pengganti sebagai versi 1. Riwayat versi penggantian untuk pengajuan berstatus `Revisi` tetap menjadi cakupan T16.
+- Perubahan di luar cakupan:
+  - Mengubah konstruktor tanpa argumen `BerkasLampiran` dan `AntreanVerifikasi` menjadi `public` agar T10 dapat membuat entity baru, sesuai catatan T03.
+  - Menyesuaikan `TenggatController` dan `TenggatService` agar validasi tenggat tidak lagi langsung mengubah status. Status, antrean, dan riwayat kini dibuat melalui satu jalur submit di `UnggahPersyaratanService`, sehingga tidak ada pengajuan berstatus `Menunggu Verifikasi` tanpa antrean atau log.
+- Status build: Lulus (`mvn -q -DskipTests package` melalui instalasi Maven lokal). Maven Wrapper tidak dapat dipakai di lingkungan agent karena path profil Windows mengandung spasi.
+- Catatan untuk task berikutnya:
+  - T11 dapat memakai rute yang sudah ditautkan pada tampilan berhasil submit: `GET /pengajuan` dan `GET /pengajuan/{idPengajuan}`.
+  - Berkas lampiran disimpan di direktori `app.upload-dir` dengan path absolut. Endpoint untuk menampilkan berkas kepada Staf menjadi cakupan T13 (`BerkasController`).
   - Sisa `.gitkeep`: `src/test` dan `uploads`.
