@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: kepala('Pengajuan Saya')}"></head>
+<body>
+<div class="aplikasi">
+  <aside th:replace="~{fragments/layout :: sidebar('pengajuan')}"></aside>
+  <div class="utama">
+    <header th:replace="~{fragments/layout :: topbar('Layanan', 'Pengajuan Saya')}"></header>
+    <main class="konten">
+      <div class="alert error" th:if="${pesanError}">
+        <svg th:replace="~{fragments/layout :: ikon('info')}"></svg>
+        <span th:text="${pesanError}">Terjadi kesalahan</span>
+      </div>
+      <div class="alert sukses" th:if="${pesanSukses}">
+        <svg th:replace="~{fragments/layout :: ikon('centang')}"></svg>
+        <span th:text="${pesanSukses}">Berhasil</span>
+      </div>
+
+      <div class="judul-halaman">
+        <div>
+          <h1>Pengajuan Saya</h1>
+          <p>Pantau status dan riwayat setiap pengajuan dokumen Anda.</p>
+        </div>
+        <a class="tombol" th:href="@{/pengajuan/baru}">+ Ajukan Dokumen</a>
+      </div>
+
+      <div class="alert peringatan" th:if="${jumlahRevisi > 0}">
+        <svg th:replace="~{fragments/layout :: ikon('peringatan')}"></svg>
+        <div>
+          <b th:text="${jumlahRevisi} + ' pengajuan perlu diperbaiki'">1 pengajuan perlu diperbaiki</b>
+          <p th:text="${ringkasanRevisi}">Pengajuan dikembalikan dengan catatan. Perbaiki lampiran agar pengajuan diproses kembali.</p>
+        </div>
+      </div>
+
+      <section class="kartu kosong" th:if="${#lists.isEmpty(daftarPengajuan)}">
+        <svg th:replace="~{fragments/layout :: ikon('kotak')}"></svg>
+        <b>Belum ada pengajuan</b>
+        <p>Ajukan dokumen pertama Anda melalui menu Ajukan Dokumen.</p>
+        <a class="tombol" style="margin-top:12px" th:href="@{/pengajuan/baru}">Ajukan Dokumen</a>
+      </section>
+
+      <section class="kartu tanpa-isi" th:unless="${#lists.isEmpty(daftarPengajuan)}">
+        <div class="tab" role="tablist">
+          <button type="button" class="aktif" data-kelompok="">Semua
+            <span class="hitung" th:text="${jumlahSemua}">4</span></button>
+          <button type="button" data-kelompok="revisi">Perlu revisi
+            <span class="hitung" th:text="${jumlahRevisi}">1</span></button>
+          <button type="button" data-kelompok="proses">Dalam proses
+            <span class="hitung" th:text="${jumlahDalamProses}">2</span></button>
+          <button type="button" data-kelompok="selesai">Selesai
+            <span class="hitung" th:text="${jumlahSelesai}">1</span></button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>No.</th>
+              <th>Jenis Dokumen</th>
+              <th>Kategori</th>
+              <th>Diajukan</th>
+              <th>Tenggat</th>
+              <th>Status</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tabelPengajuan">
+            <tr th:each="p : ${daftarPengajuan}"
+                th:classappend="${p.status == 'Revisi'} ? 'baris-revisi'"
+                th:data-kelompok="${p.status == 'Revisi' ? 'revisi' : (p.status == 'Selesai' ? 'selesai' : 'proses')}">
+              <td><b th:text="'#' + ${p.idPengajuan}">#1001</b></td>
+              <td th:text="${p.jenisDokumen.namaJenis}">Surat Rekomendasi Lomba</td>
+              <td th:text="${p.jenisDokumen.kategori}">Lomba</td>
+              <td th:text="${#temporals.format(p.tanggalPengajuan, 'd MMM yyyy')}">12 Okt 2026</td>
+              <td>
+                <span class="baris" style="gap:6px" th:if="${p.tanggalTenggat != null}">
+                  <svg th:replace="~{fragments/layout :: ikon('kalender')}"></svg>
+                  <span th:text="${#temporals.format(p.tanggalTenggat, 'd MMM yyyy')}">20 Okt 2026</span>
+                </span>
+                <span class="redup" th:unless="${p.tanggalTenggat != null}">-</span>
+              </td>
+              <td>
+                <span class="badge"
+                      th:classappend="${#strings.replace(#strings.toLowerCase(p.status), ' ', '-')}"
+                      th:text="${p.status}">Menunggu Verifikasi</span>
+              </td>
+              <td>
+                <a th:if="${p.status == 'Draft'}"
+                   th:href="@{/pengajuan/{id}/tenggat(id=${p.idPengajuan})}"><b>Lanjutkan</b></a>
+                <div class="baris" style="gap:10px" th:if="${p.status == 'Revisi'}">
+                  <a th:href="@{/pengajuan/{id}/revisi(id=${p.idPengajuan})}"><b>Perbaiki</b></a>
+                  <a th:href="@{/pengajuan/{id}(id=${p.idPengajuan})}">Lihat detail</a>
+                </div>
+                <a th:if="${p.status != 'Draft' and p.status != 'Revisi'}"
+                   th:href="@{/pengajuan/{id}(id=${p.idPengajuan})}"><b>Lihat detail</b></a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="kaki-tabel" id="kakiTabel"
+             th:text="'Menampilkan ' + ${jumlahSemua} + ' dari ' + ${jumlahSemua} + ' pengajuan'">Menampilkan 4 dari 4 pengajuan</div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script th:unless="${#lists.isEmpty(daftarPengajuan)}">
+  const baris = [...document.querySelectorAll('#tabelPengajuan tr')];
+  document.querySelectorAll('.tab button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelector('.tab .aktif').classList.remove('aktif');
+      btn.classList.add('aktif');
+      const kelompok = btn.dataset.kelompok;
+      let tampil = 0;
+      baris.forEach(tr => {
+        tr.hidden = Boolean(kelompok && tr.dataset.kelompok !== kelompok);
+        if (!tr.hidden) tampil++;
+      });
+      document.getElementById('kakiTabel').textContent = `Menampilkan ${tampil} dari ${baris.length} pengajuan`;
+    });
+  });
+</script>
+</body>
+</html>
