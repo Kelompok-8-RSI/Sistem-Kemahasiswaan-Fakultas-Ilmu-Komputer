@@ -16,7 +16,7 @@ Aturan dan rencana lengkap: `docs/ai/PROMPT.md`. Cara pakai untuk anggota: `docs
 | T08 | Memilih jenis dokumen | AA | Amirah | amirah/t08-pilih-jenis-dokumen | Selesai |
 | T09 | Mencantumkan tenggat kebutuhan | AT | Ammar | ammar/t09-tenggat-kebutuhan | Selesai |
 | T10 | Mengunggah persyaratan dan submit pengajuan | AA | Amirah | amirah/t10-unggah-persyaratan | Selesai |
-| T11 | Riwayat status pengajuan (Pengajuan Saya) | MR | Rasil | - | Belum |
+| T11 | Riwayat status pengajuan (Pengajuan Saya) | MR | Rasil | rasil/t11-riwayat-pengajuan | Selesai |
 | T12 | Antrean pengajuan berdasarkan prioritas | AT | Ammar | - | Belum |
 | T13 | Validasi kelengkapan lampiran | JA | Jasmine | - | Belum |
 | T14 | Memperbarui status pengajuan | MR | Rasil | - | Belum |
@@ -27,7 +27,7 @@ Aturan dan rencana lengkap: `docs/ai/PROMPT.md`. Cara pakai untuk anggota: `docs
 
 ## Task berikutnya
 
-T11: Riwayat status pengajuan (Pengajuan Saya). Pelaksana: Rasil (MR).
+T12: Antrean pengajuan berdasarkan prioritas. Pelaksana: Ammar (AT).
 
 ## Log pengerjaan
 
@@ -216,4 +216,24 @@ T11: Riwayat status pengajuan (Pengajuan Saya). Pelaksana: Rasil (MR).
 - Catatan untuk task berikutnya:
   - T11 dapat memakai rute yang sudah ditautkan pada tampilan berhasil submit: `GET /pengajuan` dan `GET /pengajuan/{idPengajuan}`.
   - Berkas lampiran disimpan di direktori `app.upload-dir` dengan path absolut. Endpoint untuk menampilkan berkas kepada Staf menjadi cakupan T13 (`BerkasController`).
+  - Sisa `.gitkeep`: `src/test` dan `uploads`.
+
+### T11: Riwayat status pengajuan (Pengajuan Saya)
+- Tanggal: 2026-11-22
+- Pelaksana: Rasil (MR)
+- Ringkasan: Implementasi halaman Pengajuan Saya (`GET /pengajuan`) dan detail riwayat status (`GET /pengajuan/{idPengajuan}`) untuk Mahasiswa (UC-11, PC-42 sampai PC-44) melalui `RiwayatController`, `RiwayatService`, `pengajuan-saya.html`, dan `pengajuan-detail.html` tanpa komentar. Halaman daftar menampilkan peringatan revisi, tab penyaringan status, tabel pengajuan milik mahasiswa yang login, serta empty state dengan tombol Ajukan Dokumen; halaman detail menampilkan timeline riwayat status kronologis (terbaru di atas) lengkap dengan catatan perbaikan dan tombol `Perbaiki Pengajuan` ke `/pengajuan/{id}/revisi` untuk status `Revisi`, ringkasan pengajuan, serta daftar lampiran yang dapat dibuka pemiliknya melalui `GET /pengajuan/{idPengajuan}/lampiran/{idLampiran}`. Pengajuan berstatus `Draft` diarahkan kembali ke `/pengajuan/{id}/tenggat`.
+- File dibuat atau diubah:
+  - Dibuat: `src/main/java/id/ac/ub/layanan/controller/RiwayatController.java`, `src/main/java/id/ac/ub/layanan/service/RiwayatService.java`, `src/main/resources/templates/pengajuan-saya.html`, `src/main/resources/templates/pengajuan-detail.html`
+  - Diubah: `src/main/java/id/ac/ub/layanan/repository/PengajuanRepository.java`, `src/main/resources/static/css/app.css`, `PROGRESS.md`
+  - Dihapus: Tidak ada
+- Keputusan dan penyimpangan dari modul (beserta alasannya):
+  - Method `RiwayatService.urutkanKronologis` (PC-44) tetap mengurutkan `RiwayatStatus` secara kronologis (ascending berdasarkan `waktu`), lalu `requestRiwayatStatus` menyusun `LangkahRiwayat` dengan urutan tahapan terbaru paling atas untuk tampilan timeline agar konsisten dengan sketsa `UI-11-001.jpg` ("Tahapan terbaru ditampilkan paling atas") dan pola `LegalisasiService`/`legalisasi-detail.html` pada Modul 3.
+  - Ditambahkan endpoint `GET /pengajuan/{idPengajuan}/lampiran/{idLampiran}` pada `RiwayatController` (khusus pemilik dengan proteksi path traversal) agar tautan "Lihat" pada kartu Lampiran di `UI-11-001.jpg` dapat diakses Mahasiswa, mengingat `BerkasController` (T13) hanya untuk Staf Kemahasiswaan dan Pejabat.
+  - Pada baris tabel berstatus `Revisi` di `pengajuan-saya.html`, disediakan tautan `Perbaiki` (`/pengajuan/{id}/revisi`) sekaligus `Lihat detail` (`/pengajuan/{id}`) agar mahasiswa dapat langsung memperbaiki maupun meninjau timeline riwayatnya.
+- Perubahan di luar cakupan:
+  - Menambahkan query `getPengajuanByMahasiswa` pada `src/main/java/id/ac/ub/layanan/repository/PengajuanRepository.java` (sesuai catatan T04 dan PC-42) dengan `join fetch` ke `pengguna` dan `jenisDokumen`.
+  - Menambahkan gaya `.badge.draft`, `tr.baris-revisi`, warna penanda status pada `.timeline li`, dan `.lampiran-ringkas` di bagian akhir `src/main/resources/static/css/app.css` memakai variabel warna yang sudah ada untuk mendukung tampilan UI-11.
+- Status build: Lulus (`.\mvnw.cmd -DskipTests package`)
+- Catatan untuk task berikutnya:
+  - Rute dashboard Mahasiswa (`GET /pengajuan`) dan detail pengajuan (`GET /pengajuan/{idPengajuan}`) sudah tersedia; pengajuan berstatus `Revisi` sudah memiliki tombol menuju `/pengajuan/{id}/revisi` yang akan diimplementasikan pada T16.
   - Sisa `.gitkeep`: `src/test` dan `uploads`.

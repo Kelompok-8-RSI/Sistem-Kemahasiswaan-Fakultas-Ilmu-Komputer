@@ -176,3 +176,16 @@ select:disabled, input:disabled { background: var(--latar); color: var(--teks-3)
 .aksi-lampiran { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .aksi-lampiran form { display: flex; align-items: center; gap: 8px; }
 .pilih-berkas { max-width: 220px; font: inherit; font-size: 12px; }
+.badge.draft { background: var(--latar); color: var(--teks-2); border: 1px solid var(--garis); }
+tr.baris-revisi { background: rgba(219, 234, 254, .35); }
+.timeline li.revisi::before { background: var(--error); }
+.timeline li.menunggu-verifikasi::before { background: var(--aksen); }
+.timeline li.menunggu-legalisasi-pejabat::before { background: var(--ungu); }
+.timeline li.selesai::before { background: var(--success); }
+.timeline li.draft::before { background: var(--teks-3); }
+.lampiran-ringkas { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-top: 1px solid var(--garis-2); }
+.lampiran-ringkas:first-of-type { border-top: 0; padding-top: 0; }
+.lampiran-ringkas:last-of-type { padding-bottom: 0; }
+.lampiran-ringkas .teks { flex: 1; min-width: 0; }
+.lampiran-ringkas .teks b { display: block; font-size: 13px; }
+.lampiran-ringkas .teks small { display: block; word-break: break-word; }
