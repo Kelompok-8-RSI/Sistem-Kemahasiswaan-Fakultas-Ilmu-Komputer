@@ -36,5 +36,14 @@ public interface PengajuanRepository extends JpaRepository<Pengajuan, Integer> {
            """)
     List<Pengajuan> getDaftarByStatus(@Param("status") String status);
 
+    @Query("""
+           select p from Pengajuan p
+             join fetch p.pengguna
+             join fetch p.jenisDokumen
+            where p.pengguna.idPengguna = :id
+            order by p.tanggalPengajuan desc, p.idPengajuan desc
+           """)
+    List<Pengajuan> getPengajuanByMahasiswa(@Param("id") Integer idMahasiswa);
+
     boolean existsByIdPengajuanAndPenggunaIdPengguna(Integer idPengajuan, Integer idPengguna);
 }
