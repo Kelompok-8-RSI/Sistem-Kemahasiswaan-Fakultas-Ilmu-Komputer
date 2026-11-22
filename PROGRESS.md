@@ -14,7 +14,7 @@ Aturan dan rencana lengkap: `docs/ai/PROMPT.md`. Cara pakai untuk anggota: `docs
 | T06 | Login ke sistem | AA | Amirah | amirah/t06-login | Selesai |
 | T07 | Keluar dari akun | MR | Rasil | rasil/t07-logout | Selesai |
 | T08 | Memilih jenis dokumen | AA | Amirah | amirah/t08-pilih-jenis-dokumen | Selesai |
-| T09 | Mencantumkan tenggat kebutuhan | AT | Ammar | - | Belum |
+| T09 | Mencantumkan tenggat kebutuhan | AT | Ammar | ammar/t09-tenggat-kebutuhan | Selesai |
 | T10 | Mengunggah persyaratan dan submit pengajuan | AA | Amirah | - | Belum |
 | T11 | Riwayat status pengajuan (Pengajuan Saya) | MR | Rasil | - | Belum |
 | T12 | Antrean pengajuan berdasarkan prioritas | AT | Ammar | - | Belum |
@@ -27,7 +27,7 @@ Aturan dan rencana lengkap: `docs/ai/PROMPT.md`. Cara pakai untuk anggota: `docs
 
 ## Task berikutnya
 
-T09: Mencantumkan tenggat kebutuhan. Pelaksana: Ammar (AT).
+T10: Mengunggah persyaratan dan submit pengajuan. Pelaksana: Amirah (AA).
 
 ## Log pengerjaan
 
@@ -175,4 +175,26 @@ T09: Mencantumkan tenggat kebutuhan. Pelaksana: Ammar (AT).
 - Status build: Lulus (`.\mvnw.cmd -q -DskipTests package`)
 - Catatan untuk task berikutnya:
   - Setelah `POST /pengajuan/baru` berhasil, pengguna dialihkan ke `/pengajuan/{id}/tenggat`. Rute, controller, dan form tenggat ini akan diimplementasikan pada T09 (`TenggatController`, `TenggatService`, dan `form-tenggat.html`).
+  - Sisa `.gitkeep`: `src/test` dan `uploads`.
+
+### T09: Mencantumkan tenggat kebutuhan
+- Tanggal: 2026-11-22
+- Pelaksana: Ammar (AT)
+- Ringkasan: Fitur mencantumkan tenggat kebutuhan (UC-05) ditambahkan: `TenggatController` (`GET /pengajuan/{idPengajuan}/tenggat`, `POST /pengajuan/{idPengajuan}/tenggat`, `POST /pengajuan/{idPengajuan}/tenggat/konfirmasi`), `TenggatService` (PC-17 `prosesTenggat`, PC-18 `validasiTanggalTenggat`, PC-19 `hitungSisaHariKerja`, PC-20 `konfirmasiTenggat`), dan template `form-tenggat.html` (UI-05, UI-05a error, UI-05b mendesak, dan tampilan "Pengajuan berhasil dikirim"). Semua disalin dari kode Modul 3 tanpa komentar.
+- File dibuat atau diubah:
+  - Dibuat: `src/main/java/id/ac/ub/layanan/controller/TenggatController.java`, `src/main/java/id/ac/ub/layanan/service/TenggatService.java`, `src/main/resources/templates/form-tenggat.html`
+  - Diubah: `PROGRESS.md`
+  - Dihapus: Tidak ada
+- Keputusan dan penyimpangan dari modul (beserta alasannya):
+  - Ketiga berkas identik dengan `R3` setelah komentar dihapus (sudah dibandingkan dengan `diff`). Komentar di akhir baris (`getDataPengajuan(...); // ...` dan `BATAS_HARI_MENDESAK = 3; // ...`) juga dihapus.
+  - Komentar penanda kartu "Persyaratan dokumen" di kolom kiri `form-tenggat.html` diganti dengan elemen kosong `<div id="slotPersyaratan"></div>` sesuai cakupan T09.
+  - Sketsa UI-05 masih menulis "maksimal 2 MB" dan "tidak boleh lebih awal dari hari ini". Template mengikuti Modul 3 dan keputusan tim (tanggal pengajuan sebagai batas). Batas 5 MB menjadi urusan T10.
+- Perubahan di luar cakupan: Tidak ada
+- Status build: Lulus (`./mvnw -q -DskipTests package`). Aplikasi tidak dijalankan karena kredensial MySQL lokal tidak tersedia untuk agent.
+- Catatan untuk task berikutnya:
+  - Untuk T10: sesuai Modul 3, `prosesTenggat` (PC-17) dan `konfirmasiTenggat` (PC-20) saat ini langsung mengubah status menjadi `Menunggu Verifikasi`, tetapi belum membuat baris `AntreanVerifikasi` dan belum mencatat `RiwayatStatus`. T10 perlu menyatukan jalur submit (PC-14 cek kelengkapan, lalu PC-17 sampai PC-20, lalu PC-16 `submitPengajuan`) sehingga perubahan status, pembuatan antrean, dan `catatLog` terjadi di satu tempat. Catat perubahan pada `TenggatService` dan `TenggatController` di "Perubahan di luar cakupan".
+  - Tombol "Submit Pengajuan" di kartu Ringkasan memakai `form="formTenggat"` dan saat ini hanya dinonaktifkan ketika `tenggatMendesak`. T10 perlu menambahkan syarat nonaktif selama persyaratan wajib belum lengkap.
+  - Kartu "Persyaratan dokumen" dipasang pada `<div id="slotPersyaratan"></div>` di kolom kiri `form-tenggat.html`.
+  - Ingat catatan T03: `AntreanVerifikasi.waktuMasuk` harus diisi dengan `LocalDateTime.now(clock)` sebelum `save`, dan konstruktor `BerkasLampiran` serta `AntreanVerifikasi` masih `protected`.
+  - Tampilan setelah submit memakai flash attribute `terkirim` dan menautkan ke `/pengajuan/{id}` serta `/pengajuan`. Kedua rute itu dibuat pada T11.
   - Sisa `.gitkeep`: `src/test` dan `uploads`.
