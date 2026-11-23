@@ -17,7 +17,7 @@ Aturan dan rencana lengkap: `docs/ai/PROMPT.md`. Cara pakai untuk anggota: `docs
 | T09 | Mencantumkan tenggat kebutuhan | AT | Ammar | ammar/t09-tenggat-kebutuhan | Selesai |
 | T10 | Mengunggah persyaratan dan submit pengajuan | AA | Amirah | amirah/t10-unggah-persyaratan | Selesai |
 | T11 | Riwayat status pengajuan (Pengajuan Saya) | MR | Rasil | rasil/t11-riwayat-pengajuan | Selesai |
-| T12 | Antrean pengajuan berdasarkan prioritas | AT | Ammar | - | Belum |
+| T12 | Antrean pengajuan berdasarkan prioritas | AT | Ammar | ammar/t12-antrean-prioritas | Selesai |
 | T13 | Validasi kelengkapan lampiran | JA | Jasmine | - | Belum |
 | T14 | Memperbarui status pengajuan | MR | Rasil | - | Belum |
 | T15 | Keputusan legalisasi oleh Pejabat | MR | Rasil | - | Belum |
@@ -27,7 +27,7 @@ Aturan dan rencana lengkap: `docs/ai/PROMPT.md`. Cara pakai untuk anggota: `docs
 
 ## Task berikutnya
 
-T12: Antrean pengajuan berdasarkan prioritas. Pelaksana: Ammar (AT).
+T13: Validasi kelengkapan lampiran. Pelaksana: Jasmine (JA).
 
 ## Log pengerjaan
 
@@ -236,4 +236,23 @@ T12: Antrean pengajuan berdasarkan prioritas. Pelaksana: Ammar (AT).
 - Status build: Lulus (`.\mvnw.cmd -DskipTests package`)
 - Catatan untuk task berikutnya:
   - Rute dashboard Mahasiswa (`GET /pengajuan`) dan detail pengajuan (`GET /pengajuan/{idPengajuan}`) sudah tersedia; pengajuan berstatus `Revisi` sudah memiliki tombol menuju `/pengajuan/{id}/revisi` yang akan diimplementasikan pada T16.
+  - Sisa `.gitkeep`: `src/test` dan `uploads`.
+
+### T12: Antrean pengajuan berdasarkan prioritas
+- Tanggal: 2026-11-23
+- Pelaksana: Ammar (AT)
+- Ringkasan: Halaman antrean Staf Kemahasiswaan (UC-06) ditambahkan melalui `AntreanController` (`GET /antrean`, `@RequiredRole("Staf Kemahasiswaan")`), `AntreanService` (PC-21 `requestAntreanPengajuan`, PC-22 `hitungSisaWaktu`, PC-23 `urutkanAntrean`, PC-24 `beriLabelPrioritas`, memakai `Clock` WIB), dan template `antrean.html` (UI-06 tabel prioritas dengan tab status, filter kategori, dan pencarian, serta UI-06b antrean kosong). Semua disalin dari kode Modul 3 tanpa komentar.
+- File dibuat atau diubah:
+  - Dibuat: `src/main/java/id/ac/ub/layanan/controller/AntreanController.java`, `src/main/java/id/ac/ub/layanan/service/AntreanService.java`, `src/main/resources/templates/antrean.html`
+  - Diubah: `PROGRESS.md`
+  - Dihapus: Tidak ada
+- Keputusan dan penyimpangan dari modul (beserta alasannya):
+  - Ketiga berkas identik dengan `R3` setelah komentar dihapus (sudah dibandingkan dengan `diff`), termasuk komentar di akhir baris `BATAS_MERAH` dan `BATAS_KUNING` dan komentar `//` di dalam `<script>`.
+  - Berkas `docs/referensi/sketsa-ui/UI-06-000.jpg` ternyata berisi gambar UI-05b (tenggat mendesak), bukan halaman antrean. Tampilan antrean mengikuti `antrean.html` dari Modul 3, yang berada di urutan prioritas lebih tinggi daripada sketsa.
+  - Pengajuan hasil submit T10 (status `Menunggu Verifikasi`, `AntreanVerifikasi.statusAntrean = Menunggu`, `tanggalTenggat` terisi) sudah memenuhi kondisi query `PengajuanRepository.getDaftarAntrean`, sehingga muncul di antrean tanpa perubahan kode lain. Data seed 1001 (`Diproses`) dan 1004 (`Menunggu`) juga muncul dengan label "Terlewat" karena tenggatnya sudah lewat.
+- Perubahan di luar cakupan: Tidak ada
+- Status build: Lulus (`./mvnw -q -DskipTests package`). Aplikasi tidak dijalankan karena kredensial MySQL lokal tidak tersedia untuk agent.
+- Catatan untuk task berikutnya:
+  - Tombol "Proses" di setiap baris antrean menautkan ke `GET /pengajuan/{idPengajuan}/checklist`, yang dibuat pada T13 (`ValidasiLampiranController`).
+  - `ValidasiLampiranController` di Modul 3 memakai `AntreanService.hitungSisaWaktu` dan `beriLabelPrioritas` untuk kartu sisa waktu di halaman checklist. Kedua method itu sudah `public` dan siap dipakai.
   - Sisa `.gitkeep`: `src/test` dan `uploads`.

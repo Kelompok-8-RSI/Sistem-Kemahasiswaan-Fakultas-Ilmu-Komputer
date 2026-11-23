@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: kepala('Antrean Pengajuan')}"></head>
+<body>
+<div class="aplikasi" th:with="jumlahMenu=${#lists.size(antrean)}">
+  <aside th:replace="~{fragments/layout :: sidebar('antrean')}"></aside>
+  <div class="utama">
+    <header th:replace="~{fragments/layout :: topbar('Layanan', 'Antrean Pengajuan')}"></header>
+    <main class="konten" style="max-width:none">
+      <div class="judul-halaman"><div>
+        <h1>Antrean pengajuan</h1>
+        <p>Diurutkan dari tenggat terdekat. Pengajuan yang melewati tenggat ditampilkan paling atas.</p>
+      </div></div>
+
+      <section class="kartu kosong" th:if="${pesanKosong}">
+        <svg th:replace="~{fragments/layout :: ikon('kotak')}"></svg>
+        <b>Tidak ada pengajuan dalam antrean.</b>
+        Pengajuan baru dari mahasiswa akan muncul di sini dan diurutkan dari tenggat terdekat.
+      </section>
+
+      <section class="kartu tanpa-isi" th:unless="${pesanKosong}">
+        <div class="tab" role="tablist">
+          <button type="button" class="aktif" data-status="">Semua
+            <span class="hitung" th:text="${#lists.size(antrean)}">7</span></button>
+          <button type="button" data-status="Menunggu Verifikasi">Menunggu verifikasi
+            <span class="hitung" th:text="${#lists.size(antrean.?[pengajuan.status == 'Menunggu Verifikasi'])}">5</span></button>
+          <button type="button" data-status="Sedang Diproses">Sedang diproses
+            <span class="hitung" th:text="${#lists.size(antrean.?[pengajuan.status == 'Sedang Diproses'])}">2</span></button>
+        </div>
+        <div class="filter">
+          <div class="cari">
+            <input type="search" id="cari" placeholder="Cari nama atau no. pengajuan" aria-label="Pencarian">
+            <svg th:replace="~{fragments/layout :: ikon('cari')}"></svg>
+          </div>
+          <select id="filterKategori" aria-label="Kategori">
+            <option value="">Semua kategori</option>
+            <option>Lomba</option><option>Beasiswa</option><option>Organisasi</option>
+            <option>Akademik/PKL</option><option>Lainnya</option>
+          </select>
+          <span class="legenda">Prioritas:
+            <span class="badge merah">&lt; 3 hari</span><span class="badge kuning">3–7 hari</span><span class="badge hijau">&gt; 7 hari</span>
+          </span>
+        </div>
+        <table>
+          <thead><tr><th>Prioritas</th><th>Sisa Waktu</th><th>No.</th><th>Mahasiswa</th>
+            <th>Jenis Dokumen</th><th>Masuk</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody id="tabelAntrean">
+            <tr th:each="b : ${antrean}"
+                th:data-status="${b.pengajuan.status}"
+                th:data-kategori="${b.pengajuan.jenisDokumen.kategori}"
+                th:data-teks="${b.pengajuan.idPengajuan + ' ' + b.pengajuan.pengguna.nama}">
+              <td><span class="badge" th:classappend="${b.sisaWaktu <= 0} ? 'terlewat' : ${b.warna()}"
+                        th:text="${b.teksPrioritas()}">&gt; 7 hari</span></td>
+              <td th:classappend="${b.sisaWaktu <= 0} ? 'teks-merah'" th:text="${b.teksSisaWaktu()}">8 hari</td>
+              <td th:text="'#' + ${b.pengajuan.idPengajuan}">#1001</td>
+              <td><span th:text="${b.pengajuan.pengguna.nama}">Sal Priadi</span>
+                <small th:text="${b.pengajuan.pengguna.nimNip}">215150200111045</small></td>
+              <td th:text="${b.pengajuan.jenisDokumen.namaJenis}">Surat Rekomendasi Lomba</td>
+              <td th:text="${#temporals.format(b.pengajuan.tanggalPengajuan, 'd MMM yyyy')}">12 Okt 2026</td>
+              <td><span class="badge" th:classappend="${#strings.replace(#strings.toLowerCase(b.pengajuan.status), ' ', '-')}"
+                        th:text="${b.pengajuan.status}">Menunggu Verifikasi</span></td>
+              <td><a th:href="@{/pengajuan/{id}/checklist(id=${b.pengajuan.idPengajuan})}"><b>Proses</b></a></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="kaki-tabel" id="kakiTabel"
+             th:text="'Menampilkan ' + ${#lists.size(antrean)} + ' dari ' + ${#lists.size(antrean)} + ' pengajuan'">Menampilkan 7 dari 7 pengajuan</div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script>
+  const baris = [...document.querySelectorAll('#tabelAntrean tr')];
+  let status = '';
+  const saring = () => {
+    const k = document.getElementById('filterKategori').value;
+    const q = document.getElementById('cari').value.toLowerCase();
+    let tampil = 0;
+    baris.forEach(tr => {
+      tr.hidden = !((!status || tr.dataset.status === status) && (!k || tr.dataset.kategori === k)
+                    && tr.dataset.teks.toLowerCase().includes(q));
+      if (!tr.hidden) tampil++;
+    });
+    document.getElementById('kakiTabel').textContent = `Menampilkan ${tampil} dari ${baris.length} pengajuan`;
+  };
+  document.querySelectorAll('.tab button').forEach(t => t.addEventListener('click', () => {
+    document.querySelector('.tab .aktif').classList.remove('aktif');
+    t.classList.add('aktif'); status = t.dataset.status; saring();
+  }));
+  ['filterKategori', 'cari'].forEach(id => document.getElementById(id)?.addEventListener('input', saring));
+</script>
+</body>
+</html>
