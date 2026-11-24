@@ -71,7 +71,67 @@
         </section>
 
         <div class="kolom">
-          <div id="slotPerbaruiStatus"></div>
+          <section class="kartu">
+            <header><h2>Perbarui status</h2></header>
+            <div class="alert error" th:if="${pesanErrorStatus}">
+              <svg th:replace="~{fragments/layout :: ikon('info')}"></svg>
+              <span th:text="${pesanErrorStatus}">Pilihan status tidak sah atau catatan perbaikan belum diisi</span>
+            </div>
+            <form id="formStatus" th:action="@{/pengajuan/{id}/status(id=${pengajuan.idPengajuan})}" method="post">
+              <div class="field">
+                <label>Status saat ini</label>
+                <div>
+                  <span class="badge"
+                        th:classappend="${#strings.replace(#strings.toLowerCase(pengajuan.status), ' ', '-')}"
+                        th:text="${pengajuan.status}">Sedang Diproses</span>
+                </div>
+              </div>
+              <div class="field" th:classappend="${pesanErrorStatus} ? 'salah'">
+                <label for="statusBaru">Status baru</label>
+                <select id="statusBaru" name="statusBaru" required
+                        th:disabled="${pengajuan.status == 'Selesai' or pengajuan.status == 'Draft'}">
+                  <option value="">Pilih status baru</option>
+                  <option th:each="opsi : ${opsiStatus}"
+                          th:value="${opsi}"
+                          th:text="${opsi}"
+                          th:selected="${statusBaruDipilih == opsi}">Sedang Diproses</option>
+                </select>
+                <p class="bantuan"
+                   th:text="${pengajuan.jenisDokumen.perluLegalisasi} ? 'Jalur dokumen: Legalisasi. Opsi status menyesuaikan jalur ini.' : 'Jalur dokumen: Standar. Opsi status menyesuaikan jalur ini.'">
+                  Jalur dokumen: Standar. Opsi status menyesuaikan jalur ini.</p>
+              </div>
+              <div class="field" id="grupCatatanStatus"
+                   th:hidden="${statusBaruDipilih != 'Revisi'}"
+                   th:classappend="${pesanErrorCatatanStatus} ? 'salah'">
+                <label for="catatanStatus">Catatan perbaikan (wajib)</label>
+                <textarea id="catatanStatus" name="catatan" rows="4"
+                          placeholder="Tuliskan alasan dan instruksi perbaikan untuk mahasiswa"
+                          th:text="${catatanStatus}"></textarea>
+                <p class="pesan-salah" id="galatCatatanStatus"
+                   th:hidden="${pesanErrorCatatanStatus == null}"
+                   th:text="${pesanErrorCatatanStatus ?: 'Catatan perbaikan wajib diisi'}">Catatan perbaikan wajib diisi</p>
+                <p class="bantuan">Catatan dikirim ke mahasiswa bersama status Revisi.</p>
+              </div>
+              <button type="submit" class="penuh"
+                      th:disabled="${pengajuan.status == 'Selesai' or pengajuan.status == 'Draft'}">Simpan Status</button>
+            </form>
+          </section>
+          <aside class="kartu" th:unless="${#lists.isEmpty(riwayatSingkat)}">
+            <header><h2>Riwayat singkat</h2></header>
+            <ol class="timeline">
+              <li th:each="l, st : ${riwayatSingkat}"
+                  th:class="${#strings.replace(#strings.toLowerCase(l.status), ' ', '-')}">
+                <small th:text="${#temporals.format(l.waktu, 'd MMM yyyy HH.mm')}">12 Okt 2026 13.20</small>
+                <div class="baris" style="gap:6px;margin:4px 0">
+                  <span class="badge"
+                        th:classappend="${#strings.replace(#strings.toLowerCase(l.status), ' ', '-')}"
+                        th:text="${l.status}">Revisi</span>
+                  <span class="badge sedang-diproses" th:if="${st.first}">Status terkini</span>
+                </div>
+                <span class="redup" th:text="'oleh ' + ${l.namaPelaku}">oleh Dwi Lestari</span>
+              </li>
+            </ol>
+          </aside>
           <aside class="kartu">
             <header><h2>Data pengajuan</h2></header>
             <dl class="data">
@@ -89,6 +149,12 @@
         </div>
       </div>
       <div id="notifikasi" class="alert sukses toast" hidden></div>
+      <div id="toastStatus" class="alert sukses toast" th:if="${pesanSuksesStatus}">
+        <svg th:replace="~{fragments/layout :: ikon('centang')}"></svg>
+        <span th:text="${pesanSuksesStatus}">Status berhasil diperbarui.</span>
+        <button type="button" class="hantu" style="margin-left:auto;padding:0 4px"
+                onclick="this.closest('.toast').remove()" aria-label="Tutup">&times;</button>
+      </div>
     </main>
   </div>
 </div>
@@ -139,6 +205,32 @@
       kartu.querySelector('.penilaian').hidden = false; kartu.querySelector('.btn-ubah').hidden = true;
     });
   });
+
+  const selectStatus = document.getElementById('statusBaru');
+  const grupCatatan = document.getElementById('grupCatatanStatus');
+  const inputCatatan = document.getElementById('catatanStatus');
+  const galatCatatan = document.getElementById('galatCatatanStatus');
+  const formStatus = document.getElementById('formStatus');
+  if (selectStatus && grupCatatan && formStatus) {
+    selectStatus.addEventListener('change', () => {
+      const revisi = selectStatus.value === 'Revisi';
+      grupCatatan.hidden = !revisi;
+      if (!revisi) {
+        grupCatatan.classList.remove('salah');
+        galatCatatan.hidden = true;
+      }
+    });
+    formStatus.addEventListener('submit', e => {
+      if (selectStatus.value === 'Revisi' && !inputCatatan.value.trim()) {
+        e.preventDefault();
+        grupCatatan.hidden = false;
+        grupCatatan.classList.add('salah');
+        galatCatatan.textContent = 'Catatan perbaikan wajib diisi';
+        galatCatatan.hidden = false;
+        inputCatatan.focus();
+      }
+    });
+  }
 </script>
 </body>
 </html>
