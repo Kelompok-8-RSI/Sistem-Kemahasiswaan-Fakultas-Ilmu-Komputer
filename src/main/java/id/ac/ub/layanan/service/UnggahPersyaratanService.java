@@ -33,7 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UnggahPersyaratanService {
 
     private static final long UKURAN_MAKSIMAL = 5L * 1024 * 1024;
-    private static final Set<String> FORMAT_DIIJINKAN = Set.of("pdf", "jpg", "png");
+    private static final Set<String> FORMAT_DIIJINKAN = Set.of("pdf", "jpg", "jpeg", "png");
 
     private final PengajuanRepository pengajuanRepository;
     private final PersyaratanDokumenRepository persyaratanDokumenRepository;

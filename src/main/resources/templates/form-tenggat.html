@@ -97,7 +97,7 @@
               <div class="aksi-lampiran">
                 <form th:action="@{/pengajuan/{id}/lampiran(id=${idPengajuan})}" method="post" enctype="multipart/form-data">
                   <input type="hidden" name="idPersyaratan" th:value="${item.idPersyaratan}">
-                  <input class="pilih-berkas" type="file" name="file" accept=".pdf,.jpg,.png" required>
+                  <input class="pilih-berkas" type="file" name="file" accept=".pdf,.jpg,.jpeg,.png" required>
                   <button type="submit" class="sekunder" th:text="${item.statusUnggah == 'Terunggah'} ? 'Ganti File' : 'Pilih File'">Pilih File</button>
                 </form>
                 <form th:if="${item.idLampiran != null}" th:action="@{/pengajuan/{id}/lampiran/{lampiran}/hapus(id=${idPengajuan}, lampiran=${item.idLampiran})}" method="post">
