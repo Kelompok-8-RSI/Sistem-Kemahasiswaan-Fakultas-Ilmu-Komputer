@@ -19,7 +19,7 @@ Aturan dan rencana lengkap: `docs/ai/PROMPT.md`. Cara pakai untuk anggota: `docs
 | T11 | Riwayat status pengajuan (Pengajuan Saya) | MR | Rasil | rasil/t11-riwayat-pengajuan | Selesai |
 | T12 | Antrean pengajuan berdasarkan prioritas | AT | Ammar | ammar/t12-antrean-prioritas | Selesai |
 | T13 | Validasi kelengkapan lampiran | JA | Jasmine | jasmine/t13-validasi-lampiran | Selesai |
-| T14 | Memperbarui status pengajuan | MR | Rasil | - | Belum |
+| T14 | Memperbarui status pengajuan | MR | Rasil | rasil/t14-perbarui-status | Selesai |
 | T15 | Keputusan legalisasi oleh Pejabat | MR | Rasil | - | Belum |
 | T16 | Merevisi pengajuan yang ditolak | JA | Jasmine | - | Belum |
 | T17 | Melihat dan memperbarui profil | AT | Ammar | - | Belum |
@@ -27,7 +27,7 @@ Aturan dan rencana lengkap: `docs/ai/PROMPT.md`. Cara pakai untuk anggota: `docs
 
 ## Task berikutnya
 
-T14: Memperbarui status pengajuan. Pelaksana: Rasil (MR).
+T15: Keputusan legalisasi oleh Pejabat. Pelaksana: Rasil (MR).
 
 ## Log pengerjaan
 
@@ -274,4 +274,23 @@ T14: Memperbarui status pengajuan. Pelaksana: Rasil (MR).
 - Catatan untuk task berikutnya:
   - Kartu "Perbarui status" (UI-08) pada T14 dapat dipasang pada `<div id="slotPerbaruiStatus"></div>` di kolom kanan `checklist.html`.
   - Hasil validasi lampiran (`Lengkap`, `Tidak Lengkap`, `Belum Selesai`) dari `ValidasiLampiranService.hitungHasilValidasi` dapat langsung dimanfaatkan oleh T14 (`PengajuanService`) sebagai syarat penentuan status pengajuan berikutnya.
+  - Sisa `.gitkeep`: `src/test` dan `uploads`.
+
+### T14: Memperbarui status pengajuan
+- Tanggal: 2026-11-24
+- Pelaksana: Rasil (MR)
+- Ringkasan: Implementasi fitur pembaruan status pengajuan oleh Staf Kemahasiswaan (UC-08, PC-30 sampai PC-32) melalui `PengajuanController` (`POST /pengajuan/{idPengajuan}/status`, `@RequiredRole("Staf Kemahasiswaan")`) dan `PengajuanService` (`requestDataPengajuan`, `getOpsiStatusByJalur`, `prosesPembaruanStatus`, `validasiStatus`, `getRiwayatSingkat`) tanpa komentar. Kartu "Perbarui status" dan kartu "Riwayat singkat" dipasang pada slot di kolom kanan `checklist.html`, dilengkapi validasi jalur dokumen (`perluLegalisasi`), catatan perbaikan wajib untuk status `Revisi`, syarat hasil validasi lampiran `Lengkap` sebelum status `Menunggu Legalisasi Pejabat` atau `Selesai`, pembaruan `AntreanVerifikasi.statusAntrean`, pencatatan log `RiwayatStatus` dengan `Clock` WIB, serta toast notifikasi berhasil.
+- File dibuat atau diubah:
+  - Dibuat: `src/main/java/id/ac/ub/layanan/controller/PengajuanController.java`, `src/main/java/id/ac/ub/layanan/service/PengajuanService.java`
+  - Diubah: `src/main/java/id/ac/ub/layanan/controller/ValidasiLampiranController.java`, `src/main/resources/templates/checklist.html`, `PROGRESS.md`
+  - Dihapus: Tidak ada
+- Keputusan dan penyimpangan dari modul (beserta alasannya):
+  - Status `Menunggu Legalisasi Pejabat` dan `Selesai` hanya dapat disimpan apabila hasil validasi lampiran dari `ValidasiLampiranService.hitungHasilValidasi` bernilai `Lengkap`, sesuai ketentuan SR dan alur integrasi T13-T14 pada `docs/ai/PROMPT.md`.
+  - Pembaruan `AntreanVerifikasi.statusAntrean` mengikuti status pengajuan baru: `Menunggu Verifikasi` menjadi `Menunggu`, `Sedang Diproses` menjadi `Diproses`, serta `Revisi`, `Menunggu Legalisasi Pejabat`, dan `Selesai` menjadi `Selesai` agar pengajuan keluar dari antrean aktif Staf sampai direvisi kembali pada T16 atau diputuskan Pejabat pada T15.
+  - Kartu "Riwayat singkat" ditambahkan di kolom kanan `checklist.html` di bawah kartu "Perbarui status" mengikuti `UI-08-003.jpg` dan `UI-08-004.jpg`.
+- Perubahan di luar cakupan:
+  - Menambahkan injeksi `PengajuanService` pada `src/main/java/id/ac/ub/layanan/controller/ValidasiLampiranController.java` untuk mengisi atribut model `opsiStatus` dan `riwayatSingkat` saat merender `checklist.html`.
+- Status build: Lulus (`.\mvnw.cmd -DskipTests package`)
+- Catatan untuk task berikutnya:
+  - Pengajuan berjalur legalisasi yang diperbarui Staf ke `Menunggu Legalisasi Pejabat` kini tercatat di `RiwayatStatus` (beserta pelaku Staf) dan siap tampil pada antrean Pejabat di T15 (`LegalisasiController` dan `LegalisasiService`).
   - Sisa `.gitkeep`: `src/test` dan `uploads`.
