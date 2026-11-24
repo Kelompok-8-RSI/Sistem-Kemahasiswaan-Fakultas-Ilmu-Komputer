@@ -21,13 +21,13 @@ Aturan dan rencana lengkap: `docs/ai/PROMPT.md`. Cara pakai untuk anggota: `docs
 | T13 | Validasi kelengkapan lampiran | JA | Jasmine | jasmine/t13-validasi-lampiran | Selesai |
 | T14 | Memperbarui status pengajuan | MR | Rasil | rasil/t14-perbarui-status | Selesai |
 | T15 | Keputusan legalisasi oleh Pejabat | MR | Rasil | rasil/t15-legalisasi-pejabat | Selesai |
-| T16 | Merevisi pengajuan yang ditolak | JA | Jasmine | - | Belum |
+| T16 | Merevisi pengajuan yang ditolak | JA | Jasmine | jasmine/t16-revisi-pengajuan | Selesai |
 | T17 | Melihat dan memperbarui profil | AT | Ammar | - | Belum |
 | T18 | Integrasi akhir, README, dan penutupan | AT | Ammar | - | Belum |
 
 ## Task berikutnya
 
-T16: Merevisi pengajuan yang ditolak. Pelaksana: Jasmine (JA).
+T17: Melihat dan memperbarui profil. Pelaksana: Ammar (AT).
 
 ## Log pengerjaan
 
@@ -309,4 +309,21 @@ T16: Merevisi pengajuan yang ditolak. Pelaksana: Jasmine (JA).
 - Status build: Lulus (`.\mvnw.cmd -DskipTests package`)
 - Catatan untuk task berikutnya:
   - Pengajuan yang ditolak Pejabat (status `Revisi` beserta catatan alasan di `RiwayatStatus`) maupun yang dikembalikan Staf pada T14 kini dapat direvisi mahasiswa pada T16 (`GET /pengajuan/{idPengajuan}/revisi`).
+  - Sisa `.gitkeep`: `src/test` dan `uploads`.
+
+### T16: Merevisi pengajuan yang ditolak
+- Tanggal: 2026-11-24
+- Pelaksana: Jasmine (JA)
+- Ringkasan: Fitur revisi pengajuan dokumen yang ditolak (UC-10, PC-36 sampai PC-41, SR-20, SR-21) diimplementasikan melalui `RevisiPengajuanController` (`GET /pengajuan/{idPengajuan}/revisi`, `POST /pengajuan/{idPengajuan}/revisi/lampiran`, dan `POST /pengajuan/{idPengajuan}/revisi/submit`, `@RequiredRole("Mahasiswa")`), `RevisiPengajuanService` (`getPengajuanRevisi`, `getCatatanRevisiTerakhir`, `getDaftarItemRevisi`, `cekSemuaItemSesuai`, `gantiLampiran`, `submitRevisi`, `validasiFormatDanUkuran`), serta template `revisi.html` (UI-10 alert catatan alasan revisi dari Staf/Pejabat, ringkasan pengajuan dengan tenggat terkunci, daftar kelengkapan lampiran dengan status `Tidak Lengkap` / `Terunggah` / `Belum diunggah`, form penggantian berkas berversi, submit ulang dengan validasi kelengkapan, dan konfirmasi revisi terkirim) tanpa komentar.
+- File dibuat atau diubah:
+  - Dibuat: `src/main/java/id/ac/ub/layanan/controller/RevisiPengajuanController.java`, `src/main/java/id/ac/ub/layanan/service/RevisiPengajuanService.java`, `src/main/resources/templates/revisi.html`
+  - Diubah: `PROGRESS.md`
+  - Dihapus: Tidak ada
+- Keputusan dan penyimpangan dari modul (beserta alasannya):
+  - Penggantian berkas lampiran saat revisi menandai lampiran lama aktif sebagai `statusItem = Diganti`, dan membuat rekaman `BerkasLampiran` baru dengan `versi = maxVersi + 1` serta `statusValidasi = Belum Diperiksa` sesuai rancangan Modul 2 (PC-37 sampai PC-39) dan arahan `PROMPT.md`.
+  - Submit ulang mengembalikan status pengajuan menjadi `Menunggu Verifikasi`, mengatur ulang `AntreanVerifikasi.statusAntrean = Menunggu` dengan waktu masuk diperbarui (PC-41), serta mencatat log baru pada `RiwayatStatus` memakai `Clock` WIB (PC-40).
+- Perubahan di luar cakupan: Tidak ada
+- Status build: Lulus (`.\mvnw.cmd -q -DskipTests package`)
+- Catatan untuk task berikutnya:
+  - Alur revisi telah terhubung dengan rute detail riwayat (`GET /pengajuan/{idPengajuan}`) dari T11 dan antrean Staf Kemahasiswaan (`GET /antrean`) dari T12.
   - Sisa `.gitkeep`: `src/test` dan `uploads`.
