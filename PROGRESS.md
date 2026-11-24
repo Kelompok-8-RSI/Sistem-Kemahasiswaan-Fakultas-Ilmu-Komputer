@@ -20,14 +20,14 @@ Aturan dan rencana lengkap: `docs/ai/PROMPT.md`. Cara pakai untuk anggota: `docs
 | T12 | Antrean pengajuan berdasarkan prioritas | AT | Ammar | ammar/t12-antrean-prioritas | Selesai |
 | T13 | Validasi kelengkapan lampiran | JA | Jasmine | jasmine/t13-validasi-lampiran | Selesai |
 | T14 | Memperbarui status pengajuan | MR | Rasil | rasil/t14-perbarui-status | Selesai |
-| T15 | Keputusan legalisasi oleh Pejabat | MR | Rasil | - | Belum |
+| T15 | Keputusan legalisasi oleh Pejabat | MR | Rasil | rasil/t15-legalisasi-pejabat | Selesai |
 | T16 | Merevisi pengajuan yang ditolak | JA | Jasmine | - | Belum |
 | T17 | Melihat dan memperbarui profil | AT | Ammar | - | Belum |
 | T18 | Integrasi akhir, README, dan penutupan | AT | Ammar | - | Belum |
 
 ## Task berikutnya
 
-T15: Keputusan legalisasi oleh Pejabat. Pelaksana: Rasil (MR).
+T16: Merevisi pengajuan yang ditolak. Pelaksana: Jasmine (JA).
 
 ## Log pengerjaan
 
@@ -293,4 +293,20 @@ T15: Keputusan legalisasi oleh Pejabat. Pelaksana: Rasil (MR).
 - Status build: Lulus (`.\mvnw.cmd -DskipTests package`)
 - Catatan untuk task berikutnya:
   - Pengajuan berjalur legalisasi yang diperbarui Staf ke `Menunggu Legalisasi Pejabat` kini tercatat di `RiwayatStatus` (beserta pelaku Staf) dan siap tampil pada antrean Pejabat di T15 (`LegalisasiController` dan `LegalisasiService`).
+  - Sisa `.gitkeep`: `src/test` dan `uploads`.
+
+### T15: Keputusan legalisasi oleh Pejabat
+- Tanggal: 2026-11-24
+- Pelaksana: Rasil (MR)
+- Ringkasan: Implementasi fitur keputusan legalisasi oleh Pejabat Fakultas (UC-09, SC04, IM-09, PC-33 sampai PC-35) melalui `LegalisasiController` (`GET /legalisasi`, `GET /legalisasi/{idPengajuan}`, `POST /legalisasi/{idPengajuan}/keputusan`, `@RequiredRole("Pejabat")`), `LegalisasiService` (`requestAntreanLegalisasi`, `requestDetailLegalisasi`, `prosesKeputusan`, `validasiCatatan`), serta template `legalisasi-antrean.html` dan `legalisasi-detail.html` tanpa komentar. Keputusan `Setuju` mengubah status menjadi `Selesai` dengan catatan pengesahan, sedangkan `Tolak` wajib disertai alasan dan mengubah status menjadi `Revisi`; keduanya dicatat di `RiwayatStatus` memakai `Clock` WIB.
+- File dibuat atau diubah:
+  - Dibuat: `src/main/java/id/ac/ub/layanan/controller/LegalisasiController.java`, `src/main/java/id/ac/ub/layanan/service/LegalisasiService.java`, `src/main/resources/templates/legalisasi-antrean.html`, `src/main/resources/templates/legalisasi-detail.html`
+  - Diubah: `PROGRESS.md`
+  - Dihapus: Tidak ada
+- Keputusan dan penyimpangan dari modul (beserta alasannya):
+  - Keempat berkas disalin persis dari `docs/referensi/kode-modul-3/` dengan seluruh komentar dihapus.
+- Perubahan di luar cakupan: Tidak ada
+- Status build: Lulus (`.\mvnw.cmd -DskipTests package`)
+- Catatan untuk task berikutnya:
+  - Pengajuan yang ditolak Pejabat (status `Revisi` beserta catatan alasan di `RiwayatStatus`) maupun yang dikembalikan Staf pada T14 kini dapat direvisi mahasiswa pada T16 (`GET /pengajuan/{idPengajuan}/revisi`).
   - Sisa `.gitkeep`: `src/test` dan `uploads`.
