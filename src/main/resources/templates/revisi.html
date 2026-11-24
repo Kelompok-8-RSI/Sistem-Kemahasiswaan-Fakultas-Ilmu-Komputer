@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: kepala('Revisi Pengajuan')}"></head>
+<body>
+<div class="aplikasi">
+  <aside th:replace="~{fragments/layout :: sidebar('pengajuan')}"></aside>
+  <div class="utama">
+    <header th:replace="~{fragments/layout :: topbar('Pengajuan Saya', ${'#' + pengajuan.idPengajuan + ' · Perbaiki'})}"></header>
+    <main class="konten">
+      <div th:if="${terkirim}">
+        <div class="judul-halaman"><div>
+          <h1>Revisi terkirim</h1>
+        </div></div>
+
+        <div class="alert sukses" style="margin-bottom:24px">
+          <svg th:replace="~{fragments/layout :: ikon('centang')}"></svg>
+          <div>
+            <b>Revisi berhasil dikirim.</b> Status pengajuan kembali menjadi Menunggu Verifikasi.
+          </div>
+        </div>
+
+        <section class="kartu" style="max-width:680px">
+          <span class="badge sukses" style="width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px;background:var(--success-bg);color:var(--success)">
+            <svg th:replace="~{fragments/layout :: ikon('centang')}"></svg>
+          </span>
+          <h2>Revisi berhasil dikirim</h2>
+          <div class="baris" style="margin:8px 0 16px">
+            <b th:text="'#' + ${pengajuan.idPengajuan}">#1001</b>
+            <span class="badge menunggu-verifikasi">Menunggu Verifikasi</span>
+          </div>
+          <p style="color:var(--teks-2);margin-bottom:24px">Status pengajuan kembali menjadi Menunggu Verifikasi. Staf Kemahasiswaan akan memeriksa lampiran pengganti.</p>
+          <a class="tombol" th:href="@{/pengajuan}">Kembali ke Pengajuan Saya</a>
+        </section>
+      </div>
+
+      <div th:unless="${terkirim}">
+        <div class="judul-halaman"><div>
+          <div class="baris">
+            <h1 th:text="'Perbaiki pengajuan #' + ${pengajuan.idPengajuan}">Perbaiki pengajuan #1001</h1>
+            <span class="badge revisi">Revisi</span>
+          </div>
+          <p>Ganti lampiran yang ditandai tidak lengkap, lalu kirim ulang.</p>
+        </div></div>
+
+        <div class="alert" style="background:var(--warning-bg);border-left:4px solid var(--warning);margin-bottom:24px" th:if="${catatanRevisi != null and catatanRevisi.catatan != null}">
+          <svg th:replace="~{fragments/layout :: ikon('peringatan')}" style="color:var(--warning)"></svg>
+          <div>
+            <b th:text="'Catatan dari ' + (${catatanRevisi.peranPelaku != null and !catatanRevisi.peranPelaku.isEmpty() ? (catatanRevisi.peranPelaku == 'Pejabat' ? 'Pejabat Fakultas' : catatanRevisi.peranPelaku) : 'Staf Kemahasiswaan'})">Catatan dari Staf Kemahasiswaan</b>
+            <p style="margin:4px 0" th:text="${catatanRevisi.catatan}">Catatan alasan</p>
+            <small class="redup" th:if="${catatanRevisi.namaPelaku != null}" th:text="${catatanRevisi.namaPelaku} + (${catatanRevisi.waktu != null ? ' · ' + #temporals.format(catatanRevisi.waktu, 'd MMM yyyy HH.mm') : ''})">Dwi Lestari · 12 Okt 2026 13.20</small>
+          </div>
+        </div>
+
+        <div class="alert sukses" th:if="${pesanSuksesLampiran}" th:text="${pesanSuksesLampiran}"></div>
+        <div class="alert error" th:if="${pesanErrorLampiran}" th:text="${pesanErrorLampiran}"></div>
+
+        <div class="dua-kolom">
+          <div class="kolom">
+            <section class="kartu">
+              <header>
+                <h2>Lampiran</h2>
+                <p>Ganti hanya lampiran yang ditandai. Format PDF/JPG/PNG, maksimal 5 MB per berkas.</p>
+              </header>
+
+              <div class="kelengkapan">
+                <b>Kelengkapan lampiran</b>
+                <span th:text="${jumlahSesuai} + ' dari ' + ${totalWajib} + ' lampiran sesuai (' + ${persentaseSesuai} + '%)'">2 dari 3 lampiran sesuai (66%)</span>
+              </div>
+              <div class="progres">
+                <span th:classappend="${semuaSesuai} ? 'penuh'" th:style="|width: ${persentaseSesuai}%;|"></span>
+              </div>
+
+              <article class="item" th:each="item : ${items}"
+                       th:classappend="${!item.sesuai} ? 'salah'">
+                <div class="kepala">
+                  <div>
+                    <h3 th:text="${item.namaPersyaratan}" style="display:inline-block;margin-right:8px">Bukti pendaftaran lomba</h3>
+                    <span class="badge netral">WAJIB</span>
+                  </div>
+                  <span class="badge lengkap" th:if="${item.statusValidasi == 'Lengkap'}">Terunggah</span>
+                  <span class="badge lengkap" th:if="${item.statusValidasi == 'Belum Diperiksa' and item.idLampiran != null}">Terunggah</span>
+                  <span class="badge tidak-lengkap" th:if="${item.statusValidasi == 'Tidak Lengkap'}">Tidak Lengkap</span>
+                  <span class="badge belum-diperiksa" th:if="${item.idLampiran == null}">Belum diunggah</span>
+                </div>
+
+                <p class="berkas" th:if="${item.idLampiran != null}">
+                  <svg th:replace="~{fragments/layout :: ikon('berkas')}"></svg>
+                  <span th:text="${item.namaFile}">bukti.pdf</span>
+                  <span th:text="${item.ukuran}">842 KB</span>
+                  <span class="badge netral" th:if="${item.versi != null and item.versi > 1}" th:text="'versi ' + ${item.versi}">versi 2</span>
+                </p>
+
+                <div class="catatan" th:if="${item.statusValidasi == 'Tidak Lengkap' and item.catatanValidasi != null and !item.catatanValidasi.isEmpty()}"
+                     style="margin:8px 0;background:var(--error-bg);color:var(--error);border-left:4px solid var(--error);padding:8px 12px;border-radius:4px">
+                  <small style="font-weight:600;display:block">Catatan validator:</small>
+                  <span th:text="${item.catatanValidasi}">Alasan penolakan</span>
+                </div>
+
+                <div class="aksi-lampiran" style="margin-top:12px">
+                  <a class="tombol sekunder" th:if="${item.idLampiran != null}"
+                     th:href="@{/pengajuan/{id}/lampiran/{lampiran}(id=${pengajuan.idPengajuan}, lampiran=${item.idLampiran})}"
+                     target="_blank" rel="noopener">
+                    <svg th:replace="~{fragments/layout :: ikon('mata')}"></svg> Lihat
+                  </a>
+                  <form th:action="@{/pengajuan/{id}/revisi/lampiran(id=${pengajuan.idPengajuan})}" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="idPersyaratan" th:value="${item.idPersyaratan}">
+                    <input class="pilih-berkas" type="file" name="file" accept=".pdf,.jpg,.jpeg,.png" required>
+                    <button type="submit" class="sekunder" th:text="${item.statusValidasi == 'Tidak Lengkap'} ? 'Ganti Lampiran' : (${item.idLampiran != null} ? 'Ganti File' : 'Pilih File')">Ganti Lampiran</button>
+                  </form>
+                </div>
+              </article>
+            </section>
+          </div>
+
+          <aside class="kartu">
+            <header><h2>Ringkasan</h2></header>
+            <dl class="data">
+              <dt>No. Pengajuan</dt>
+              <dd th:text="'#' + ${pengajuan.idPengajuan}">#1001</dd>
+              <dt>Jenis dokumen</dt>
+              <dd th:text="${pengajuan.jenisDokumen.namaJenis}">Surat Rekomendasi Lomba</dd>
+              <dt>Tenggat</dt>
+              <dd>
+                <div class="baris" style="gap:8px" th:if="${pengajuan.tanggalTenggat != null}">
+                  <svg th:replace="~{fragments/layout :: ikon('kalender')}"></svg>
+                  <span th:text="${#temporals.format(pengajuan.tanggalTenggat, 'dd/MM/yyyy')}">20/10/2026</span>
+                </div>
+                <small class="redup" style="display:block;margin-top:4px">Tenggat tidak dapat diubah saat revisi.</small>
+              </dd>
+            </dl>
+            <hr style="border:0;border-top:1px solid var(--garis-2);margin:16px 0">
+            <form th:action="@{/pengajuan/{id}/revisi/submit(id=${pengajuan.idPengajuan})}" method="post">
+              <button type="submit" class="penuh" th:disabled="${!semuaSesuai}">
+                <svg th:replace="~{fragments/layout :: ikon('kanan')}"></svg> Submit Ulang
+              </button>
+            </form>
+            <p class="bantuan" th:text="${semuaSesuai} ? 'Lampiran pengganti siap dikirim.' : 'Submit Ulang aktif setelah lampiran bermasalah diganti.'">Submit Ulang aktif setelah lampiran bermasalah diganti.</p>
+            <a class="tombol penuh" style="background:none;border-color:transparent;color:var(--teks);margin-top:8px" th:href="@{/pengajuan/{id}(id=${pengajuan.idPengajuan})}">&larr; Kembali</a>
+          </aside>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+</body>
+</html>
