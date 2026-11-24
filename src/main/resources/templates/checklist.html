@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: kepala('Validasi Lampiran')}"></head>
+<body>
+<div class="aplikasi">
+  <aside th:replace="~{fragments/layout :: sidebar('antrean')}"></aside>
+  <div class="utama">
+    <header th:replace="~{fragments/layout :: topbar('Antrean Pengajuan', ${'#' + pengajuan.idPengajuan})}"></header>
+    <main class="konten">
+      <div class="judul-halaman"><div>
+        <div class="baris">
+          <h1 th:text="'Pengajuan #' + ${pengajuan.idPengajuan}">Pengajuan #1001</h1>
+          <span class="badge" th:classappend="${#strings.replace(#strings.toLowerCase(pengajuan.status), ' ', '-')}"
+                th:text="${pengajuan.status}">Sedang Diproses</span>
+          <span class="badge" th:if="${prioritas}" th:classappend="${prioritas.sisaWaktu <= 0} ? 'terlewat' : ${prioritas.warna()}"
+                th:text="${prioritas.teksPrioritas()}">&gt; 7 hari</span>
+        </div>
+        <p th:text="${pengajuan.jenisDokumen.namaJenis} + ' · diajukan ' + ${#temporals.format(pengajuan.tanggalPengajuan, 'd MMM yyyy HH.mm')}">
+          Surat Rekomendasi Lomba · diajukan 12 Okt 2026 09.30</p>
+      </div></div>
+
+      <div class="dua-kolom">
+        <section class="kartu">
+          <header><h2>Checklist kelengkapan lampiran</h2>
+            <p>Buka setiap lampiran, lalu tandai Lengkap atau Tidak Lengkap.</p></header>
+
+          <div class="item" th:each="item : ${checklist}" th:attr="data-lampiran=${item.idLampiran}">
+            <div class="kepala">
+              <b th:text="${item.namaPersyaratan}">Bukti pendaftaran lomba</b>
+              <span class="badge status" th:classappend="${#strings.replace(#strings.toLowerCase(item.statusValidasi), ' ', '-')}"
+                    th:text="${item.statusValidasi}">Belum Diperiksa</span>
+            </div>
+            <p class="berkas" th:unless="${item.idLampiran}">Belum diunggah oleh mahasiswa</p>
+            <th:block th:if="${item.idLampiran}">
+              <p class="berkas"><svg th:replace="~{fragments/layout :: ikon('berkas')}"></svg>
+                <span th:text="${item.namaFile} + ' · ' + ${item.ukuran()}">bukti_pendaftaran.pdf · 842 KB</span>
+                <a th:href="@{/lampiran/{id}/berkas(id=${item.idLampiran})}" target="_blank" rel="noopener">Buka lampiran
+                  <svg th:replace="~{fragments/layout :: ikon('buka')}"></svg></a></p>
+
+              <div class="baris penilaian" th:hidden="${item.statusValidasi != 'Belum Diperiksa'}">
+                <button type="button" class="sekunder btn-lengkap" th:disabled="${!item.opsiLengkap}">
+                  <svg th:replace="~{fragments/layout :: ikon('centang')}"></svg> Lengkap</button>
+                <button type="button" class="bahaya btn-tidak">
+                  <svg th:replace="~{fragments/layout :: ikon('silang')}"></svg> Tidak Lengkap</button>
+              </div>
+              <button type="button" class="hantu btn-ubah" th:hidden="${item.statusValidasi == 'Belum Diperiksa'}">
+                <svg th:replace="~{fragments/layout :: ikon('pensil')}"></svg> Ubah penilaian</button>
+
+              <div class="kolom-catatan" hidden>
+                <label style="margin-top:12px">Catatan alasan (wajib)</label>
+                <textarea rows="3" class="catatan" placeholder="Tuliskan alasan lampiran tidak lengkap"
+                          th:text="${item.catatanValidasi}"></textarea>
+                <p class="pesan-salah galat" hidden>Catatan alasan wajib diisi</p>
+                <p class="bantuan">Catatan ditampilkan kepada mahasiswa di halaman revisi.</p>
+                <button type="button" class="btn-kirim" style="margin-top:8px">Simpan penilaian</button>
+              </div>
+              <p class="bantuan keterangan" th:text="${item.namaStafValidator} ? 'Divalidasi oleh ' + ${item.namaStafValidator}
+                   + ' · ' + ${#temporals.format(item.waktuValidasi, 'd MMM yyyy HH.mm')} : ''"></p>
+            </th:block>
+          </div>
+
+          <div id="hasilValidasi" class="alert" th:classappend="${hasilValidasi == 'Lengkap'} ? 'sukses' : (${hasilValidasi == 'Tidak Lengkap'} ? 'error' : 'info')">
+            <svg th:replace="~{fragments/layout :: ikon('info')}"></svg>
+            <div><b th:text="'Hasil validasi: ' + ${hasilValidasi}">Hasil validasi: Belum Selesai</b>
+              <div th:switch="${hasilValidasi}">
+                <p th:case="'Lengkap'">Semua lampiran lengkap. Pengajuan dapat diproses ke tahap berikutnya.</p>
+                <p th:case="'Tidak Lengkap'">Ada lampiran tidak lengkap. Ubah status ke Revisi dan sertakan catatan.</p>
+                <p th:case="*">Periksa seluruh lampiran terlebih dahulu.</p>
+              </div></div>
+          </div>
+        </section>
+
+        <div class="kolom">
+          <div id="slotPerbaruiStatus"></div>
+          <aside class="kartu">
+            <header><h2>Data pengajuan</h2></header>
+            <dl class="data">
+              <dt>Mahasiswa</dt><dd><span th:text="${pengajuan.pengguna.nama}">Sal Priadi</span>
+                <small style="display:block" th:text="${pengajuan.pengguna.nimNip}">215150200111045</small></dd>
+              <dt>Kontak</dt><dd><span th:text="${pengajuan.pengguna.email}">sal.priadi@student.ub.ac.id</span>
+                <small style="display:block" th:text="${pengajuan.pengguna.noTelepon}">081234567890</small></dd>
+              <dt>Kategori</dt><dd th:text="${pengajuan.jenisDokumen.kategori}">Lomba</dd>
+              <dt>Jalur</dt><dd th:text="${pengajuan.jenisDokumen.perluLegalisasi} ? 'Legalisasi (perlu persetujuan pejabat)' : 'Standar (tanpa legalisasi)'">Standar (tanpa legalisasi)</dd>
+              <dt>Tenggat</dt><dd class="baris" style="gap:8px" th:if="${pengajuan.tanggalTenggat}">
+                <svg th:replace="~{fragments/layout :: ikon('kalender')}"></svg>
+                <span th:text="${#temporals.format(pengajuan.tanggalTenggat, 'd MMM yyyy')}">20 Okt 2026</span></dd>
+            </dl>
+          </aside>
+        </div>
+      </div>
+      <div id="notifikasi" class="alert sukses toast" hidden></div>
+    </main>
+  </div>
+</div>
+
+<script th:inline="javascript">
+  const idPengajuan = [[${pengajuan.idPengajuan}]];
+  const PESAN = { 'Lengkap': ['sukses', 'Semua lampiran lengkap. Pengajuan dapat diproses ke tahap berikutnya.'],
+                  'Tidak Lengkap': ['error', 'Ada lampiran tidak lengkap. Ubah status ke Revisi dan sertakan catatan.'],
+                  'Belum Selesai': ['info', 'Periksa seluruh lampiran terlebih dahulu.'] };
+  const kelas = s => s.toLowerCase().replaceAll(' ', '-');
+
+  const kirim = async (kartu, statusItem) => {
+    const catatan = kartu.querySelector('.catatan').value;
+    const galat = kartu.querySelector('.galat');
+    if (statusItem === 'Tidak Lengkap' && !catatan.trim()) {
+      galat.textContent = 'Catatan alasan wajib diisi'; galat.hidden = false;
+      kartu.classList.add('salah'); kartu.querySelector('.catatan').classList.add('salah');
+      return;
+    }
+    const res = await fetch('/lampiran/' + kartu.dataset.lampiran + '/validasi',
+        { method: 'POST', body: new URLSearchParams({ idPengajuan, statusItem, catatan }) });
+    const hasil = await res.json();
+    if (!res.ok) { galat.textContent = hasil.pesan; galat.hidden = false; return; }
+
+    const badge = kartu.querySelector('.status');
+    badge.textContent = hasil.statusItem; badge.className = 'badge status ' + kelas(hasil.statusItem);
+    kartu.querySelector('.keterangan').textContent = 'Divalidasi oleh ' + hasil.keteranganValidasi;
+    kartu.classList.remove('salah'); galat.hidden = true;
+    kartu.querySelector('.kolom-catatan').hidden = statusItem !== 'Tidak Lengkap';
+    kartu.querySelector('.penilaian').hidden = true;
+    kartu.querySelector('.btn-ubah').hidden = false;
+
+    const [jenis, teks] = PESAN[hasil.hasilValidasi];
+    const kotak = document.getElementById('hasilValidasi');
+    kotak.className = 'alert ' + jenis;
+    kotak.querySelector('b').textContent = 'Hasil validasi: ' + hasil.hasilValidasi;
+    kotak.querySelector('p').textContent = teks;
+    const n = document.getElementById('notifikasi'); n.textContent = hasil.pesan; n.hidden = false;
+    setTimeout(() => n.hidden = true, 3000);
+  };
+
+  document.querySelectorAll('.item[data-lampiran]').forEach(kartu => {
+    if (!kartu.dataset.lampiran) return;
+    kartu.querySelector('.btn-lengkap').addEventListener('click', () => kirim(kartu, 'Lengkap'));
+    kartu.querySelector('.btn-tidak').addEventListener('click', () => kartu.querySelector('.kolom-catatan').hidden = false);
+    kartu.querySelector('.btn-kirim').addEventListener('click', () => kirim(kartu, 'Tidak Lengkap'));
+    kartu.querySelector('.btn-ubah').addEventListener('click', () => {
+      kartu.querySelector('.penilaian').hidden = false; kartu.querySelector('.btn-ubah').hidden = true;
+    });
+  });
+</script>
+</body>
+</html>
