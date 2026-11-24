@@ -17,6 +17,7 @@ Satu aplikasi **Spring Boot 3.3 (Java 17)** dengan arsitektur berlapis berbasis 
 | Boundary (View) | Template Thymeleaf dan CSS | `src/main/resources/templates`, `static/css` |
 | Control | Controller (Spring MVC) dan Service (aturan bisnis) | `.../layanan/controller`, `.../layanan/service` |
 | Entity | Repository (Spring Data JPA) dan Entity JPA | `.../layanan/repository`, `.../layanan/entity` |
+| Keamanan | `AuthInterceptor` (cek `sessionToken` dan peran lewat `@RequiredRole`), BCrypt | `.../layanan/security`, `.../layanan/config` |
 | Database | MySQL 8, skema dari `database/schema.sql` | `database/` |
 | Storage | Berkas lampiran yang diunggah | `uploads/` |
 
@@ -26,27 +27,33 @@ Satu aplikasi **Spring Boot 3.3 (Java 17)** dengan arsitektur berlapis berbasis 
 ├── pom.xml
 ├── mvnw, mvnw.cmd, .mvn/          Maven Wrapper (tidak perlu instal Maven)
 ├── database/
-│   ├── schema.sql                 DDL 7 tabel (bagian 3.1)
-│   └── seed.sql                   data awal
-├── uploads/                       storage berkas lampiran
+│   ├── schema.sql                 DDL 7 tabel (Modul 3 bagian 3.1)
+│   └── seed.sql                   akun demo dan data contoh
+├── uploads/                       storage berkas lampiran (isinya tidak di-commit)
+├── docs/
+│   ├── ai/                        aturan dan cara pakai workflow AI agent
+│   └── referensi/                 kode Modul 3, Modul 1, Modul 2, dan sketsa UI
 └── src/main/
     ├── java/id/ac/ub/layanan/
     │   ├── LayananKemahasiswaanApplication.java
     │   ├── config/        AppConfig, WebConfig
     │   ├── security/      AuthInterceptor, RequiredRole
-    │   ├── controller/
-    │   ├── service/
-    │   ├── repository/
-    │   ├── entity/
-    │   ├── dto/
+    │   ├── controller/    Auth, Profil, PemilihanDokumen, UnggahPersyaratan, Tenggat,
+    │   │                  Riwayat, Antrean, ValidasiLampiran, Berkas, Pengajuan,
+    │   │                  Legalisasi, RevisiPengajuan
+    │   ├── service/       satu service untuk setiap controller fitur
+    │   ├── repository/    AkunPengguna, JenisDokumen, PersyaratanDokumen, Pengajuan,
+    │   │                  BerkasLampiran, AntreanVerifikasi, RiwayatStatus
+    │   ├── entity/        7 entity sesuai tabel PDM
+    │   ├── dto/           HasilAksi, HasilLogin, BarisAntrean, ItemChecklist, DataProfil, dst.
     │   └── exception/     DataTidakDitemukanException
     └── resources/
         ├── application.properties
-        ├── static/css/    app.css
-        └── templates/     login, form-tenggat, antrean, checklist,
+        ├── static/        css/app.css, img/logo-filkom-ub.png
+        └── templates/     login, profil, pilih-dokumen, form-tenggat, pengajuan-saya,
+                           pengajuan-detail, revisi, antrean, checklist,
                            legalisasi-antrean, legalisasi-detail, fragments/layout
 ```
-Folder yang masih kosong berisi `.gitkeep`. Hapus `.gitkeep` setelah folder tersebut berisi file.
 
 ---
 
@@ -67,7 +74,10 @@ mysql -u root -p < database/schema.sql
 ```bash
 mysql -u root -p < database/seed.sql
 ```
-Skrip ini membuat database `layanan_kemahasiswaan`. Password akun di `seed.sql` disimpan sebagai hash bcrypt. Daftar akunnya ada di bagian Akun demo di bawah.
+Skrip ini membuat database `layanan_kemahasiswaan`. `schema.sql` mengikuti DDL Modul 3 apa adanya (tanpa `IF NOT EXISTS`), jadi hanya bisa dijalankan pada database yang belum berisi tabel. Untuk mengulang dari awal, misalnya setelah `seed.sql` diperbarui, hapus dulu databasenya:
+```sql
+DROP DATABASE layanan_kemahasiswaan;
+```
 
 ### Langkah 2: Atur koneksi database
 Nilai bawaan ada di `src/main/resources/application.properties`. Ubah lewat variabel lingkungan bila berbeda:
@@ -99,22 +109,62 @@ Setelah itu, buka `http://localhost:8080/login`.
 Pertama kali dijalankan, wrapper akan mengunduh Maven dan dependensi, jadi butuh koneksi internet.
 
 ### Akun demo
-Semua akun di `database/seed.sql` memakai password `password123`.
+Login memakai NIM atau NIP di kolom "NIM atau NIP". Semua akun memakai password `password123`.
 
-| Username | Peran |
-|---|---|
-| `sal.priadi` | Mahasiswa |
-| `fajar.nugroho` | Mahasiswa |
-| `dwi.lestari` | Staf Kemahasiswaan |
-| `bayu.santoso` | Pejabat |
+| NIM / NIP | Nama | Peran | Halaman awal setelah login |
+|---|---|---|---|
+| `215150200111045` | Sal Priadi | Mahasiswa | `/pengajuan` |
+| `235150400111058` | Fajar Nugroho | Mahasiswa | `/pengajuan` |
+| `198705122015042001` | Dwi Lestari, S.E. | Staf Kemahasiswaan | `/antrean` |
+| `197811032005011002` | Dr. Bayu Santoso, S.Kom., M.Kom. | Pejabat | `/legalisasi` |
+
+### Data contoh di `seed.sql`
+Semua pengajuan contoh milik Sal Priadi:
+
+| No. | Jenis dokumen | Status | Keterangan |
+|---|---|---|---|
+| #1001 | Surat Rekomendasi Lomba | Sedang Diproses | Ada di antrean Staf. Satu lampiran ditandai `Tidak Lengkap`, cocok untuk mencoba status `Revisi` lalu alur revisi. |
+| #1003 | Surat Tugas Delegasi Lomba | Menunggu Legalisasi Pejabat | Ada di antrean Pejabat. Cocok untuk mencoba Setuju atau Tolak. |
+| #1004 | Surat Rekomendasi Lomba | Menunggu Verifikasi | Ada di antrean Staf. Lampiran belum diperiksa, cocok untuk mencoba checklist validasi. |
+
+Tenggat semua data contoh sudah lewat, jadi di antrean Staf pengajuan itu berlabel "Terlewat". Akun Fajar Nugroho belum punya pengajuan, sehingga cocok untuk mencoba alur pengajuan dari awal.
+
+**Berkas lampiran contoh tidak punya berkas fisik.** Lampiran #5001 sampai #5009 di `seed.sql` hanya berupa baris data dengan `pathFile` seperti `/uploads/1001/...`, sedangkan isi folder `uploads/` tidak ikut di-commit. Tombol untuk membuka berkas lampiran contoh akan menampilkan halaman "tidak ditemukan". Lampiran yang diunggah sendiri lewat aplikasi bisa dibuka seperti biasa.
 
 ---
 
-## 5. Pembagian Implementasi
-Implementasi kode dikerjakan bergiliran dengan bantuan AI agent, satu task per sesi, dengan urutan T01 sampai T18. Urutan ini disusun supaya build tidak pernah rusak.
+## 5. Fitur dan Rute
 
-- Status terkini dan task berikutnya: [`PROGRESS.md`](PROGRESS.md)
-- Cara pakai untuk anggota: [`docs/ai/CARA-PAKAI.md`](docs/ai/CARA-PAKAI.md)
+| Use case | Fitur | Aktor | Rute |
+|---|---|---|---|
+| UC-01 | Login | Semua | `GET/POST /login` |
+| UC-02 | Melihat dan memperbarui profil (email dan nomor telepon) | Semua | `GET/POST /profil`, mode ubah `GET /profil?ubah=true` |
+| UC-03 | Memilih jenis dokumen | Mahasiswa | `GET/POST /pengajuan/baru` |
+| UC-04 | Mengunggah, mengganti, dan menghapus persyaratan, lalu submit | Mahasiswa | `POST /pengajuan/{id}/lampiran`, `POST /pengajuan/{id}/lampiran/{idLampiran}/hapus` |
+| UC-05 | Mencantumkan tenggat kebutuhan (termasuk konfirmasi tenggat mendesak) | Mahasiswa | `GET/POST /pengajuan/{id}/tenggat`, `POST /pengajuan/{id}/tenggat/konfirmasi` |
+| UC-06 | Antrean pengajuan berdasarkan prioritas tenggat | Staf Kemahasiswaan | `GET /antrean` |
+| UC-07 | Validasi kelengkapan lampiran (tanpa reload) dan membuka berkas | Staf Kemahasiswaan | `GET /pengajuan/{id}/checklist`, `POST /lampiran/{idLampiran}/validasi`, `GET /lampiran/{idLampiran}/berkas` |
+| UC-08 | Memperbarui status pengajuan | Staf Kemahasiswaan | `POST /pengajuan/{id}/status` |
+| UC-09 | Keputusan legalisasi (Setuju atau Tolak) | Pejabat | `GET /legalisasi`, `GET /legalisasi/{id}`, `POST /legalisasi/{id}/keputusan` |
+| UC-10 | Merevisi pengajuan yang ditolak | Mahasiswa | `GET /pengajuan/{id}/revisi`, `POST /pengajuan/{id}/revisi/lampiran`, `POST /pengajuan/{id}/revisi/submit` |
+| UC-11 | Pengajuan Saya dan riwayat status | Mahasiswa | `GET /pengajuan`, `GET /pengajuan/{id}`, `GET /pengajuan/{id}/lampiran/{idLampiran}` |
+| UC-12 | Keluar dari akun | Semua | `POST /logout` |
+
+Alur utama:
+1. Mahasiswa memilih jenis dokumen, lalu mengunggah semua persyaratan wajib (PDF, JPG, atau PNG, maksimal 5 MB) dan mengisi tenggat.
+2. Saat Mahasiswa submit, status menjadi `Menunggu Verifikasi` dan pengajuan masuk ke antrean Staf.
+3. Staf memvalidasi lampiran, lalu memperbarui status menjadi `Sedang Diproses`, `Revisi`, `Menunggu Legalisasi Pejabat`, atau `Selesai`.
+4. Untuk dokumen yang butuh legalisasi, Pejabat memilih Setuju (status menjadi `Selesai`) atau Tolak (status menjadi `Revisi`).
+5. Mahasiswa merevisi lampiran yang ditandai, lalu mengirim ulang sehingga pengajuan kembali ke antrean Staf.
+
+Setiap perubahan status tercatat di `RiwayatStatus` beserta pelaku dan waktunya (WIB).
+
+---
+
+## 6. Pembagian Implementasi
+Implementasi kode dikerjakan bergiliran dengan bantuan AI agent, satu task per sesi, dengan urutan T01 sampai T18. Seluruh task sudah selesai. Rincian setiap task, keputusan desain, dan perubahan di luar cakupan tercatat di [`PROGRESS.md`](PROGRESS.md).
+
+- Cara pakai workflow untuk anggota: [`docs/ai/CARA-PAKAI.md`](docs/ai/CARA-PAKAI.md)
 - Aturan dan rencana lengkap untuk AI agent: [`docs/ai/PROMPT.md`](docs/ai/PROMPT.md)
 - Sumber acuan (kode Modul 3, Modul 1, Modul 2, dan sketsa UI): [`docs/referensi/`](docs/referensi/)
 
@@ -140,11 +190,10 @@ Implementasi kode dikerjakan bergiliran dengan bantuan AI agent, satu task per s
 | T18 | Integrasi akhir, README, dan penutupan | AT | Ammar | Semua |
 
 ### Alur kerja Git
-1. Pastikan task sebelumnya sudah di-merge ke `main`, lalu ambil kode terbaru dengan `git switch main` dan `git pull origin main`.
-2. Ketik `lanjut` ke AI agent. Agent mengerjakan satu task dan memberikan perintah Git untuk diketik sendiri.
-3. Setiap task memakai branch `<nama-pelaksana>/t<nomor>-<deskripsi>`, misalnya `rasil/t02-konfigurasi-keamanan-layout`.
-4. Pastikan build lolos sebelum push:
+1. Ambil kode terbaru dengan `git switch main` dan `git pull origin main`.
+2. Buat branch baru dari `main` untuk setiap perubahan, misalnya `<nama>/<deskripsi>`.
+3. Pastikan build lolos sebelum push:
    ```bash
    ./mvnw -q -DskipTests package
    ```
-5. Buat Pull Request ke `main` dan merge sebelum anggota berikutnya mulai.
+4. Buat Pull Request ke `main`.

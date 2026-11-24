@@ -23,11 +23,11 @@ Aturan dan rencana lengkap: `docs/ai/PROMPT.md`. Cara pakai untuk anggota: `docs
 | T15 | Keputusan legalisasi oleh Pejabat | MR | Rasil | rasil/t15-legalisasi-pejabat | Selesai |
 | T16 | Merevisi pengajuan yang ditolak | JA | Jasmine | jasmine/t16-revisi-pengajuan | Selesai |
 | T17 | Melihat dan memperbarui profil | AT | Ammar | ammar/t17-profil-pengguna | Selesai |
-| T18 | Integrasi akhir, README, dan penutupan | AT | Ammar | - | Belum |
+| T18 | Integrasi akhir, README, dan penutupan | AT | Ammar | ammar/t18-integrasi-akhir | Selesai |
 
 ## Task berikutnya
 
-T18: Integrasi akhir, README, dan penutupan. Pelaksana: Ammar (AT).
+Tidak ada. Seluruh task T01 sampai T18 sudah selesai, dan implementasi kode proyek sudah lengkap.
 
 ## Log pengerjaan
 
@@ -350,3 +350,24 @@ T18: Integrasi akhir, README, dan penutupan. Pelaksana: Ammar (AT).
 - Catatan untuk task berikutnya:
   - Untuk T18: menu "Profil" di sidebar ketiga peran sekarang mengarah ke rute yang tersedia. Mohon dicoba langsung di aplikasi bersama alur lain: simpan email dan nomor telepon yang valid, coba email milik akun lain, dan coba nomor berisi huruf.
   - Sisa `.gitkeep`: `src/test` dan `uploads`.
+
+### T18: Integrasi akhir, README, dan penutupan
+- Tanggal: 2026-11-24
+- Pelaksana: Ammar (AT)
+- Ringkasan: Build penuh (`clean package`) lulus. Seluruh `src/`, `database/`, dan `pom.xml` dipindai dan bersih dari komentar, `TODO`, `System.out`, dan `console.log`. Semua rute controller, tautan sidebar, aksi form, `fetch`, redirect, nama template, dan nama ikon sudah dicocokkan dan semuanya mengarah ke rute atau berkas yang ada. Alur utama ditelusuri di kode dari awal sampai akhir: login per peran, pilih jenis, unggah dan tenggat lalu submit, antrean, validasi, perbarui status, legalisasi, revisi, riwayat, profil, dan logout. Empat bug lintas task diperbaiki, `seed.sql` dirapikan, dan README diperbarui.
+- File dibuat atau diubah:
+  - Dibuat: Tidak ada
+  - Diubah: `src/main/java/id/ac/ub/layanan/controller/TenggatController.java`, `src/main/java/id/ac/ub/layanan/service/UnggahPersyaratanService.java`, `src/main/resources/templates/form-tenggat.html`, `src/main/resources/templates/pilih-dokumen.html`, `database/seed.sql`, `README.md`, `PROGRESS.md`
+  - Dihapus: Tidak ada
+- Keputusan dan penyimpangan dari modul (beserta alasannya):
+  - Bug 1, tenggat bisa diubah setelah pengajuan dikirim (T09 dan T10). `TenggatController` menerima POST untuk pengajuan yang statusnya bukan `Draft`, misalnya ketika mahasiswa menekan Back setelah submit lalu submit lagi. `prosesTenggat` sudah menyimpan tenggat baru sebelum `submitPengajuan` menolak pengiriman ulang, sehingga tenggat pengajuan di antrean berubah diam-diam. Sekarang kedua POST menolak pengajuan non-Draft dan mengarahkan ke `/pengajuan/{id}` dengan pesan "Pengajuan sudah dikirim sehingga tenggat tidak dapat diubah.". GET form tenggat untuk pengajuan non-Draft diarahkan ke halaman detail, kecuali tepat setelah submit berhasil (flash `terkirim`).
+  - Bug 2, format `.jpeg` tidak konsisten. Unggah awal (T10) hanya menerima `pdf`, `jpg`, dan `png`, sedangkan revisi (T16) juga menerima `jpeg`. `UnggahPersyaratanService` dan atribut `accept` di `form-tenggat.html` kini juga menerima `jpeg`. Teks bantuan di `pilih-dokumen.html` disamakan menjadi "Format PDF, JPG, atau PNG".
+  - Bug 3, login dengan NIM/NIP selalu gagal. `login.html` meminta "NIM atau NIP", dan `AuthService` (kode Modul 3) mencari akun lewat kolom `username`, padahal `username` di seed berupa `sal.priadi` dan sejenisnya. Supaya kode Modul 3 tidak perlu diubah, `username` keempat akun di `seed.sql` diisi dengan NIM/NIP masing-masing. README kini menulis NIM/NIP sebagai identitas login.
+  - Bug 4, `seed.sql` tidak konsisten. Pengajuan #1003 (`Menunggu Legalisasi Pejabat`) kini punya tiga lampiran `Lengkap` (#5004 sampai #5006), antrean #303 berstatus `Selesai`, dan riwayat #7004 sampai #7006. Pengajuan #1004 (`Menunggu Verifikasi`) kini punya tiga lampiran `Belum Diperiksa` (#5007 sampai #5009) dan riwayat #7007. Urutan waktu #1001 juga diperbaiki: log Draft disamakan dengan `tanggalPengajuan` (09.30), dan submit serta masuk antrean dipindah ke 09.50, setelah lampiran diunggah (09.45). Semua nilai memenuhi CHECK pada DDL.
+  - Status `Selesai` tetap boleh dipilih Staf untuk dokumen jalur legalisasi karena PC-30 sampai PC-32 di Modul 2 memang mengizinkannya. Hal ini tidak diubah.
+  - Berkas fisik lampiran contoh di seed (#5001 sampai #5009) tidak tersedia, dan isi `uploads/` memang tidak di-commit. Hal ini dicatat di README bagian "Data contoh di `seed.sql`".
+  - Dua `.gitkeep` yang tersisa sengaja dipertahankan: `src/test/java/id/ac/ub/layanan/.gitkeep` (folder test tidak boleh diisi) dan `uploads/.gitkeep` (folder storage harus ada).
+- Perubahan di luar cakupan: Perbaikan bug 1 sampai 4 di atas menyentuh berkas milik T09 (`TenggatController`), T10 (`UnggahPersyaratanService`, `form-tenggat.html`), T08 (`pilih-dokumen.html`), dan T01 (`seed.sql`). Semua perubahan dibuat seminimal mungkin.
+- Status build: Lulus (`./mvnw -q -DskipTests clean package`, lalu `package` lagi setelah perbaikan). Aplikasi tidak dijalankan karena kredensial MySQL lokal tidak tersedia untuk agent, sehingga `seed.sql` yang baru dan alur menyeluruh belum dicoba langsung di database.
+- Catatan untuk task berikutnya:
+  - Tidak ada task berikutnya. Sebelum demo, jalankan ulang `DROP DATABASE layanan_kemahasiswaan;`, lalu `schema.sql` dan `seed.sql`, kemudian coba alur lengkap tiap peran memakai akun demo di README.
