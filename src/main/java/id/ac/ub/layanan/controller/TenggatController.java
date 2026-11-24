@@ -37,6 +37,9 @@ public class TenggatController {
     public String bukaFormTenggat(@PathVariable Integer idPengajuan,
                                   @RequestAttribute(AuthInterceptor.ATTR_AKUN) AkunPengguna akun, Model model) {
         pastikanPemilik(idPengajuan, akun);
+        if (!masihDraft(idPengajuan) && !model.containsAttribute("terkirim")) {
+            return "redirect:/pengajuan/" + idPengajuan;
+        }
         return tampilkanForm(idPengajuan, model);
     }
 
@@ -47,6 +50,9 @@ public class TenggatController {
                                   @RequestAttribute(AuthInterceptor.ATTR_AKUN) AkunPengguna akun,
                                   Model model, RedirectAttributes redirect) {
         pastikanPemilik(idPengajuan, akun);
+        if (!masihDraft(idPengajuan)) {
+            return tolakPengajuanTerkirim(idPengajuan, redirect);
+        }
         if (tanggalTenggat == null) {
             model.addAttribute("pesanError", "Tanggal tenggat wajib diisi");
             return tampilkanForm(idPengajuan, model);
@@ -77,6 +83,9 @@ public class TenggatController {
                                      @RequestAttribute(AuthInterceptor.ATTR_AKUN) AkunPengguna akun,
                                      Model model, RedirectAttributes redirect) {
         pastikanPemilik(idPengajuan, akun);
+        if (!masihDraft(idPengajuan)) {
+            return tolakPengajuanTerkirim(idPengajuan, redirect);
+        }
         if (!unggahPersyaratanService.cekKelengkapanItemWajib(idPengajuan)) {
             model.addAttribute("pesanError", "Masih ada persyaratan wajib yang belum diunggah");
             model.addAttribute("tanggalTenggat", tanggalTenggat);
@@ -109,6 +118,15 @@ public class TenggatController {
         model.addAttribute("pesanError", hasil.pesan());
         model.addAttribute("tandaiPersyaratanKosong", true);
         return tampilkanForm(idPengajuan, model);
+    }
+
+    private boolean masihDraft(Integer idPengajuan) {
+        return "Draft".equals(tenggatService.getDataPengajuan(idPengajuan).getStatus());
+    }
+
+    private String tolakPengajuanTerkirim(Integer idPengajuan, RedirectAttributes redirect) {
+        redirect.addFlashAttribute("pesanError", "Pengajuan sudah dikirim sehingga tenggat tidak dapat diubah.");
+        return "redirect:/pengajuan/" + idPengajuan;
     }
 
     private void pastikanPemilik(Integer idPengajuan, AkunPengguna akun) {
