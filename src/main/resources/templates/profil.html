@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: kepala('Profil')}"></head>
+<body>
+<div class="aplikasi">
+  <aside th:replace="~{fragments/layout :: sidebar('profil')}"></aside>
+  <div class="utama">
+    <header th:replace="~{fragments/layout :: topbar('Akun', 'Profil')}"></header>
+    <main class="konten" th:with="labelNomor=${profil.peran == 'Mahasiswa'} ? 'NIM' : 'NIP'">
+      <div class="judul-halaman"><div>
+        <h1>Profil</h1>
+        <p>Data akun yang dipakai untuk pengajuan dan pemberitahuan layanan kemahasiswaan.</p>
+      </div></div>
+
+      <div class="dua-kolom">
+        <section class="kartu" th:unless="${modeUbah}">
+          <header class="kepala-kartu">
+            <h2>Data profil</h2>
+            <a class="tombol sekunder" th:href="@{/profil(ubah=true)}">
+              <svg th:replace="~{fragments/layout :: ikon('pensil')}"></svg> Ubah Data</a>
+          </header>
+          <dl class="data grid-profil">
+            <div><dt>Nama lengkap</dt><dd th:text="${profil.nama}">Sal Priadi</dd></div>
+            <div><dt th:text="${labelNomor}">NIM</dt><dd th:text="${profil.nimNip}">215150200111045</dd></div>
+            <div><dt>Email</dt><dd th:text="${profil.email}">sal.priadi@student.ub.ac.id</dd></div>
+            <div><dt>Nomor telepon</dt>
+              <dd th:text="${profil.noTelepon != null and !#strings.isEmpty(profil.noTelepon)} ? ${profil.noTelepon} : '-'">081234567890</dd></div>
+            <div><dt>Peran</dt>
+              <dd th:text="${profil.peran == 'Pejabat'} ? 'Pejabat Fakultas' : ${profil.peran}">Mahasiswa</dd></div>
+          </dl>
+        </section>
+
+        <section class="kartu" th:if="${modeUbah}">
+          <header>
+            <h2>Data profil</h2>
+            <p th:text="'Nama dan ' + ${labelNomor} + ' mengikuti data SIAM dan tidak dapat diubah di sini.'">Nama dan NIM mengikuti data SIAM dan tidak dapat diubah di sini.</p>
+          </header>
+          <div class="alert error" th:if="${pesanError}">
+            <svg th:replace="~{fragments/layout :: ikon('info')}"></svg>
+            <span th:text="${pesanError}">Perubahan data profil gagal disimpan.</span>
+          </div>
+          <form th:action="@{/profil}" method="post" novalidate>
+            <div class="grid-profil">
+              <div class="field">
+                <label for="nama">Nama lengkap</label>
+                <input type="text" id="nama" th:value="${profil.nama}" disabled>
+                <p class="bantuan">Mengikuti data SIAM</p>
+              </div>
+              <div class="field">
+                <label for="nimNip" th:text="${labelNomor}">NIM</label>
+                <input type="text" id="nimNip" th:value="${profil.nimNip}" disabled>
+                <p class="bantuan">Mengikuti data SIAM</p>
+              </div>
+              <div class="field" th:classappend="${kesalahan['email']} ? 'salah'">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" maxlength="100" required
+                       th:value="${dataProfilBaru.email}">
+                <p class="pesan-salah" th:if="${kesalahan['email']}" th:text="${kesalahan['email']}">Format email tidak valid.</p>
+                <p class="bantuan" th:unless="${kesalahan['email']}">Dipakai untuk pemberitahuan status pengajuan.</p>
+              </div>
+              <div class="field" th:classappend="${kesalahan['noTelepon']} ? 'salah'">
+                <label for="noTelepon">Nomor telepon</label>
+                <input type="tel" id="noTelepon" name="noTelepon" maxlength="15" inputmode="numeric" required
+                       th:value="${dataProfilBaru.noTelepon}">
+                <p class="pesan-salah" th:if="${kesalahan['noTelepon']}" th:text="${kesalahan['noTelepon']}">Nomor telepon wajib diisi.</p>
+                <p class="bantuan" th:unless="${kesalahan['noTelepon']}">Nomor WhatsApp aktif, contoh 081234567890.</p>
+              </div>
+            </div>
+            <div class="aksi-form">
+              <a class="tombol hantu" th:href="@{/profil}">Tutup</a>
+              <button type="submit">Simpan</button>
+            </div>
+          </form>
+        </section>
+
+        <aside class="kartu">
+          <header>
+            <h2>Keamanan akun</h2>
+            <p>Keluar dari akun di perangkat ini. Anda perlu login kembali untuk mengakses layanan.</p>
+          </header>
+          <button type="button" class="bahaya penuh" onclick="document.getElementById('dlgKeluar').showModal()">
+            <svg th:replace="~{fragments/layout :: ikon('keluar')}"></svg> Keluar dari akun</button>
+        </aside>
+      </div>
+
+      <div class="alert sukses toast" th:if="${pesanSukses}">
+        <svg th:replace="~{fragments/layout :: ikon('centang')}"></svg>
+        <span th:text="${pesanSukses}">Perubahan data profil berhasil disimpan.</span>
+        <button type="button" class="hantu" style="margin-left:auto;padding:0 4px"
+                onclick="this.closest('.toast').remove()" aria-label="Tutup">&times;</button>
+      </div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

@@ -22,12 +22,12 @@ Aturan dan rencana lengkap: `docs/ai/PROMPT.md`. Cara pakai untuk anggota: `docs
 | T14 | Memperbarui status pengajuan | MR | Rasil | rasil/t14-perbarui-status | Selesai |
 | T15 | Keputusan legalisasi oleh Pejabat | MR | Rasil | rasil/t15-legalisasi-pejabat | Selesai |
 | T16 | Merevisi pengajuan yang ditolak | JA | Jasmine | jasmine/t16-revisi-pengajuan | Selesai |
-| T17 | Melihat dan memperbarui profil | AT | Ammar | - | Belum |
+| T17 | Melihat dan memperbarui profil | AT | Ammar | ammar/t17-profil-pengguna | Selesai |
 | T18 | Integrasi akhir, README, dan penutupan | AT | Ammar | - | Belum |
 
 ## Task berikutnya
 
-T17: Melihat dan memperbarui profil. Pelaksana: Ammar (AT).
+T18: Integrasi akhir, README, dan penutupan. Pelaksana: Ammar (AT).
 
 ## Log pengerjaan
 
@@ -326,4 +326,27 @@ T17: Melihat dan memperbarui profil. Pelaksana: Ammar (AT).
 - Status build: Lulus (`.\mvnw.cmd -q -DskipTests package`)
 - Catatan untuk task berikutnya:
   - Alur revisi telah terhubung dengan rute detail riwayat (`GET /pengajuan/{idPengajuan}`) dari T11 dan antrean Staf Kemahasiswaan (`GET /antrean`) dari T12.
+  - Sisa `.gitkeep`: `src/test` dan `uploads`.
+
+### T17: Melihat dan memperbarui profil
+- Tanggal: 2026-11-24
+- Pelaksana: Ammar (AT)
+- Ringkasan: Halaman profil (UC-02, PC-04 sampai PC-06, SR-03, SR-04) ditambahkan untuk ketiga peran melalui `ProfilController` (`GET /profil` dengan mode lihat dan mode ubah `?ubah=true`, `POST /profil`, `@RequiredRole` Mahasiswa, Staf Kemahasiswaan, dan Pejabat), `ProfilService` (PC-04 `requestDataProfil`, PC-05 `updateDataProfil`, PC-06 `validasiDataProfil`, dan `periksaDataProfil` untuk pesan per field), DTO `DataProfil`, serta template `profil.html`. Halaman menampilkan nama, NIM/NIP, email, nomor telepon, dan peran; mode ubah menampilkan notifikasi gagal beserta pesan per field; penyimpanan berhasil menampilkan toast "Perubahan data profil berhasil disimpan."; dan kartu "Keamanan akun" membuka dialog Keluar dari `layout.html`.
+- File dibuat atau diubah:
+  - Dibuat: `src/main/java/id/ac/ub/layanan/controller/ProfilController.java`, `src/main/java/id/ac/ub/layanan/service/ProfilService.java`, `src/main/java/id/ac/ub/layanan/dto/DataProfil.java`, `src/main/resources/templates/profil.html`
+  - Diubah: `src/main/java/id/ac/ub/layanan/repository/AkunPenggunaRepository.java`, `src/main/resources/static/css/app.css`, `PROGRESS.md`
+  - Dihapus: Tidak ada
+- Keputusan dan penyimpangan dari modul (beserta alasannya):
+  - Field yang dapat diubah hanya email dan nomor telepon. Nama dan NIM/NIP ditampilkan read-only dengan keterangan "Mengikuti data SIAM", sesuai deskripsi elemen UI-02 dan sketsa mode ubah di Modul 2. SR-04 di Modul 1 menyebut nama dan NIM/NIP juga dapat diubah, tetapi Modul 2 berada di urutan prioritas lebih tinggi (bagian 3.1 `PROMPT.md`). Karena nama tidak bisa diubah, nama di sesi tidak perlu diperbarui setelah simpan.
+  - Aturan validasi PC-06 dirinci sebagai berikut. Email wajib diisi, berformat email, dan maksimal 100 karakter (sesuai DDL). Email juga tidak boleh dipakai akun lain, karena kolomnya `UNIQUE`, supaya tidak muncul error database. Nomor telepon wajib diisi dan harus 10 sampai 15 digit angka diawali 0, sesuai `VARCHAR(15)` dan contoh "081234567890" di sketsa.
+  - Parameter `dataProfilBaru` pada PC-05 dan PC-06 memakai record `DataProfil(email, noTelepon)` karena `AkunPengguna` tidak bisa dibuat dari luar package entity (konstruktor `protected`). `validasiDataProfil` menerima `idPengguna` tambahan untuk pemeriksaan email unik.
+  - Method entity `AkunPengguna.getDataProfil` dan `updateProfil` pada CD-02 diimplementasikan lewat `AkunPenggunaRepository.findById` serta setter dan `save` di `ProfilService`, mengikuti pola pemetaan method entity di `modul-3.md`, supaya kelas entity T01 tidak perlu diubah.
+  - Field "Unit" dan "Jabatan" pada sketsa UI-02 tidak ditampilkan karena tidak ada kolomnya di tabel `AkunPengguna`. Ikon gembok pada field read-only juga tidak ditambahkan karena belum ada ikonnya di `layout.html`.
+  - Di `docs/referensi/sketsa-ui/`, `UI-02-000.jpg` dan `UI-02-001.jpg` ternyata berisi halaman login, dan gambar "UI-02 Profil – Validasi Gagal" tidak tersedia. Tampilan validasi gagal mengikuti pola yang sudah ada (`alert error`, kelas `salah`, dan `pesan-salah`).
+- Perubahan di luar cakupan:
+  - Menambahkan `boolean existsByEmailAndIdPenggunaNot(String email, Integer idPengguna)` pada `src/main/java/id/ac/ub/layanan/repository/AkunPenggunaRepository.java` untuk validasi email unik.
+  - Menambahkan gaya `input[type=email]`, `input[type=tel]`, `.kepala-kartu`, `.grid-profil`, `.aksi-form`, dan `.tombol.hantu`, serta media query satu kolom untuk `.grid-profil`, di bagian akhir `src/main/resources/static/css/app.css` memakai variabel warna yang sudah ada.
+- Status build: Lulus (`./mvnw -q -DskipTests package`). Aplikasi tidak dijalankan karena kredensial MySQL lokal tidak tersedia untuk agent. Sebagai gantinya, `profil.html` dirender langsung dengan `SpringTemplateEngine` dalam tiga keadaan (lihat Mahasiswa, mode ubah dengan validasi gagal, dan toast berhasil untuk Pejabat) tanpa error.
+- Catatan untuk task berikutnya:
+  - Untuk T18: menu "Profil" di sidebar ketiga peran sekarang mengarah ke rute yang tersedia. Mohon dicoba langsung di aplikasi bersama alur lain: simpan email dan nomor telepon yang valid, coba email milik akun lain, dan coba nomor berisi huruf.
   - Sisa `.gitkeep`: `src/test` dan `uploads`.

@@ -189,3 +189,14 @@ tr.baris-revisi { background: rgba(219, 234, 254, .35); }
 .lampiran-ringkas .teks { flex: 1; min-width: 0; }
 .lampiran-ringkas .teks b { display: block; font-size: 13px; }
 .lampiran-ringkas .teks small { display: block; word-break: break-word; }
+input[type=email], input[type=tel] {
+  width: 100%; padding: 9px 12px; border: 1px solid var(--garis); border-radius: 6px; font: inherit; background: #fff; }
+.kartu > header.kepala-kartu { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.grid-profil { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 24px; margin: 0; }
+.grid-profil .field { margin-bottom: 0; }
+.grid-profil dd { word-break: break-word; }
+.aksi-form { display: flex; justify-content: flex-end; gap: 8px; border-top: 1px solid var(--garis-2); padding-top: 16px; margin-top: 20px; }
+.tombol.hantu { background: none; border-color: transparent; color: var(--teks-2); }
+@media (max-width: 900px) {
+  .grid-profil { grid-template-columns: 1fr; }
+}
