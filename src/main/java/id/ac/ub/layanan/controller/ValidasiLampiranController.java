@@ -8,6 +8,7 @@ import id.ac.ub.layanan.entity.Pengajuan;
 import id.ac.ub.layanan.security.AuthInterceptor;
 import id.ac.ub.layanan.security.RequiredRole;
 import id.ac.ub.layanan.service.AntreanService;
+import id.ac.ub.layanan.service.PengajuanService;
 import id.ac.ub.layanan.service.ValidasiLampiranService;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -27,10 +28,14 @@ public class ValidasiLampiranController {
 
     private final ValidasiLampiranService validasiService;
     private final AntreanService antreanService;
+    private final PengajuanService pengajuanService;
 
-    public ValidasiLampiranController(ValidasiLampiranService validasiService, AntreanService antreanService) {
+    public ValidasiLampiranController(ValidasiLampiranService validasiService,
+                                      AntreanService antreanService,
+                                      PengajuanService pengajuanService) {
         this.validasiService = validasiService;
         this.antreanService = antreanService;
+        this.pengajuanService = pengajuanService;
     }
 
     @GetMapping("/pengajuan/{idPengajuan}/checklist")
@@ -41,6 +46,9 @@ public class ValidasiLampiranController {
         model.addAttribute("pengajuan", pengajuan);
         model.addAttribute("checklist", checklist);
         model.addAttribute("hasilValidasi", validasiService.hitungHasilValidasi(checklist));
+        model.addAttribute("opsiStatus", pengajuanService.getOpsiStatusByJalur(
+                pengajuan.getJenisDokumen().getPerluLegalisasi()));
+        model.addAttribute("riwayatSingkat", pengajuanService.getRiwayatSingkat(idPengajuan));
         if (pengajuan.getTanggalTenggat() != null) {
             model.addAttribute("prioritas", new BarisAntrean(pengajuan,
                     antreanService.hitungSisaWaktu(List.of(pengajuan)).get(0),
