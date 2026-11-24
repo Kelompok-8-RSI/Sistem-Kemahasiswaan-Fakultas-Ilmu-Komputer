@@ -9,4 +9,6 @@ public interface AkunPenggunaRepository extends JpaRepository<AkunPengguna, Inte
     Optional<AkunPengguna> findByUsername(String username);
 
     Optional<AkunPengguna> findBySessionToken(String sessionToken);
+
+    boolean existsByEmailAndIdPenggunaNot(String email, Integer idPengguna);
 }
