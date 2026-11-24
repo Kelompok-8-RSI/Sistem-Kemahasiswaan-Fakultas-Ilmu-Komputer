@@ -80,7 +80,7 @@
             </div>
             <div class="progres"><span th:classappend="${persyaratanLengkap} ? 'penuh'" th:style="|width: ${persyaratan.size() == 0 ? 100 : (persyaratan.?[statusUnggah == 'Terunggah'].size() * 100 / persyaratan.size())}%;|"></span></div>
             <article class="item" th:each="item : ${persyaratan}"
-                     th:classappend="${tandaiPersyaratanKosong and item.statusUnggah != 'Terunggah'} ? 'salah'">
+                     th:classappend="${tandaiPersyaratanKosong == true and item.statusUnggah != 'Terunggah'} ? 'salah'">
               <div class="kepala">
                 <div>
                   <h3 th:text="${item.namaPersyaratan}">Bukti pendaftaran lomba</h3>
@@ -93,7 +93,7 @@
                 <span th:text="${item.namaFile}">bukti.pdf</span>
                 <span th:text="${item.ukuran}">842 KB</span>
               </p>
-              <p class="pesan-salah" th:if="${tandaiPersyaratanKosong and item.statusUnggah != 'Terunggah'}">Persyaratan ini wajib diunggah.</p>
+              <p class="pesan-salah" th:if="${tandaiPersyaratanKosong == true and item.statusUnggah != 'Terunggah'}">Persyaratan ini wajib diunggah.</p>
               <div class="aksi-lampiran">
                 <form th:action="@{/pengajuan/{id}/lampiran(id=${idPengajuan})}" method="post" enctype="multipart/form-data">
                   <input type="hidden" name="idPersyaratan" th:value="${item.idPersyaratan}">
@@ -123,7 +123,7 @@
             <dd th:if="${pesanError == null and tanggalTenggat == null}" class="redup">Belum diisi</dd>
           </dl>
           <hr style="border:0;border-top:1px solid var(--garis-2);margin:16px 0">
-          <button type="submit" form="formTenggat" class="penuh" th:disabled="${tenggatMendesak or !persyaratanLengkap}">Submit Pengajuan</button>
+          <button type="submit" form="formTenggat" class="penuh" th:disabled="${tenggatMendesak == true or !persyaratanLengkap}">Submit Pengajuan</button>
           <p class="bantuan">Submit aktif setelah tenggat diisi dan semua persyaratan wajib terunggah.</p>
           <a class="tombol penuh" style="background:none;border-color:transparent;color:var(--teks)" href="javascript:history.back()">Kembali</a>
         </aside>
