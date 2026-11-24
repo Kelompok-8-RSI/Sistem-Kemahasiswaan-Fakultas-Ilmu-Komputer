@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: kepala('Antrean Legalisasi')}"></head>
+<body>
+<div class="aplikasi" th:with="jumlahMenu=${#lists.size(antrean)}">
+  <aside th:replace="~{fragments/layout :: sidebar('legalisasi')}"></aside>
+  <div class="utama">
+    <header th:replace="~{fragments/layout :: topbar('Layanan', 'Antrean Legalisasi')}"></header>
+    <main class="konten" style="max-width:none">
+      <div class="judul-halaman"><div>
+        <h1>Antrean legalisasi</h1>
+        <p>Dokumen yang diteruskan Staf Kemahasiswaan untuk disetujui atau ditolak.</p>
+      </div></div>
+
+      <div class="alert sukses toast" th:if="${konfirmasi}">
+        <svg th:replace="~{fragments/layout :: ikon('centang')}"></svg><span th:text="${konfirmasi}">Keputusan berhasil disimpan.</span>
+      </div>
+
+      <section class="kartu kosong" th:if="${#lists.isEmpty(antrean)}">
+        <svg th:replace="~{fragments/layout :: ikon('kotak')}"></svg>
+        <b>Tidak ada dokumen yang menunggu legalisasi.</b>
+        Dokumen yang diteruskan Staf Kemahasiswaan akan muncul di sini.
+      </section>
+
+      <section class="kartu tanpa-isi" th:unless="${#lists.isEmpty(antrean)}">
+        <table>
+          <thead><tr><th>No.</th><th>Mahasiswa</th><th>Jenis Dokumen</th><th>Tenggat</th>
+            <th>Diteruskan</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody>
+            <tr th:each="b : ${antrean}" th:with="p=${b.pengajuan}">
+              <td><b th:text="'#' + ${p.idPengajuan}">#1003</b></td>
+              <td><span th:text="${p.pengguna.nama}">Sal Priadi</span><small th:text="${p.pengguna.nimNip}">215150200111045</small></td>
+              <td th:text="${p.jenisDokumen.namaJenis}">Surat Tugas Delegasi Lomba</td>
+              <td><span class="baris" style="gap:8px;flex-wrap:nowrap" th:if="${p.tanggalTenggat}">
+                <svg th:replace="~{fragments/layout :: ikon('kalender')}"></svg>
+                <span th:text="${#temporals.format(p.tanggalTenggat, 'd MMM yyyy')}">25 Okt 2026</span></span></td>
+              <td><th:block th:if="${b.diteruskan}"><span th:text="${b.diteruskan.namaPelaku}">Dwi Lestari</span>
+                <small th:text="${#temporals.format(b.diteruskan.waktu, 'd MMM yyyy HH.mm')}">15 Okt 2026 10.40</small></th:block></td>
+              <td><span class="badge menunggu-legalisasi-pejabat" th:text="${p.status}">Menunggu Legalisasi Pejabat</span></td>
+              <td><a th:href="@{/legalisasi/{id}(id=${p.idPengajuan})}"><b>Tinjau</b></a></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="kaki-tabel" th:text="'Menampilkan ' + ${#lists.size(antrean)} + ' dari ' + ${#lists.size(antrean)} + ' dokumen'">Menampilkan 3 dari 3 dokumen</div>
+      </section>
+    </main>
+  </div>
+</div>
+</body>
+</html>
