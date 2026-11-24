@@ -18,7 +18,7 @@ Aturan dan rencana lengkap: `docs/ai/PROMPT.md`. Cara pakai untuk anggota: `docs
 | T10 | Mengunggah persyaratan dan submit pengajuan | AA | Amirah | amirah/t10-unggah-persyaratan | Selesai |
 | T11 | Riwayat status pengajuan (Pengajuan Saya) | MR | Rasil | rasil/t11-riwayat-pengajuan | Selesai |
 | T12 | Antrean pengajuan berdasarkan prioritas | AT | Ammar | ammar/t12-antrean-prioritas | Selesai |
-| T13 | Validasi kelengkapan lampiran | JA | Jasmine | - | Belum |
+| T13 | Validasi kelengkapan lampiran | JA | Jasmine | jasmine/t13-validasi-lampiran | Selesai |
 | T14 | Memperbarui status pengajuan | MR | Rasil | - | Belum |
 | T15 | Keputusan legalisasi oleh Pejabat | MR | Rasil | - | Belum |
 | T16 | Merevisi pengajuan yang ditolak | JA | Jasmine | - | Belum |
@@ -27,7 +27,7 @@ Aturan dan rencana lengkap: `docs/ai/PROMPT.md`. Cara pakai untuk anggota: `docs
 
 ## Task berikutnya
 
-T13: Validasi kelengkapan lampiran. Pelaksana: Jasmine (JA).
+T14: Memperbarui status pengajuan. Pelaksana: Rasil (MR).
 
 ## Log pengerjaan
 
@@ -255,4 +255,23 @@ T13: Validasi kelengkapan lampiran. Pelaksana: Jasmine (JA).
 - Catatan untuk task berikutnya:
   - Tombol "Proses" di setiap baris antrean menautkan ke `GET /pengajuan/{idPengajuan}/checklist`, yang dibuat pada T13 (`ValidasiLampiranController`).
   - `ValidasiLampiranController` di Modul 3 memakai `AntreanService.hitungSisaWaktu` dan `beriLabelPrioritas` untuk kartu sisa waktu di halaman checklist. Kedua method itu sudah `public` dan siap dipakai.
+  - Sisa `.gitkeep`: `src/test` dan `uploads`.
+
+### T13: Validasi kelengkapan lampiran
+- Tanggal: 2026-11-24
+- Pelaksana: Jasmine (JA)
+- Ringkasan: Fitur validasi kelengkapan berkas lampiran oleh Staf Kemahasiswaan (UC-07) diimplementasikan melalui `ValidasiLampiranController` (`GET /pengajuan/{idPengajuan}/checklist` dan `POST /lampiran/{idLampiran}/validasi`), `ValidasiLampiranService` (PC-25 `requestChecklist`, PC-26 `susunChecklist`, PC-27 `prosesValidasiItem`, PC-28 `validasiInputItem`, PC-29 `hitungHasilValidasi`), `BerkasController` (`GET /lampiran/{idLampiran}/berkas` untuk membaca berkas fisik dari storage), dan template `checklist.html` (UI-07 antarmuka penilaian kelengkapan lampiran, badge prioritas tenggat, form catatan alasan, penilaian interaktif tanpa reload halaman, dan toast notifikasi). Semua berkas disalin dari kode Modul 3 tanpa komentar.
+- File dibuat atau diubah:
+  - Dibuat: `src/main/java/id/ac/ub/layanan/controller/ValidasiLampiranController.java`, `src/main/java/id/ac/ub/layanan/controller/BerkasController.java`, `src/main/java/id/ac/ub/layanan/service/ValidasiLampiranService.java`, `src/main/resources/templates/checklist.html`
+  - Diubah: `PROGRESS.md`
+  - Dihapus: Tidak ada
+- Keputusan dan penyimpangan dari modul (beserta alasannya):
+  - Seluruh berkas disalin persis dari `docs/referensi/kode-modul-3/` dengan seluruh komentar dihapus.
+  - Komentar penanda kartu "Perbarui status" di kolom kanan `checklist.html` diganti dengan elemen kosong `<div id="slotPerbaruiStatus"></div>` sesuai cakupan T13 untuk diisi pada T14.
+  - Pada inline JavaScript di `checklist.html`, penulisan template natural Thymeleaf diubah menjadi `const idPengajuan = [[${pengajuan.idPengajuan}]];` sesuai ketentuan format tanpa komentar.
+- Perubahan di luar cakupan: Tidak ada
+- Status build: Lulus (`.\mvnw.cmd -q -DskipTests package`)
+- Catatan untuk task berikutnya:
+  - Kartu "Perbarui status" (UI-08) pada T14 dapat dipasang pada `<div id="slotPerbaruiStatus"></div>` di kolom kanan `checklist.html`.
+  - Hasil validasi lampiran (`Lengkap`, `Tidak Lengkap`, `Belum Selesai`) dari `ValidasiLampiranService.hitungHasilValidasi` dapat langsung dimanfaatkan oleh T14 (`PengajuanService`) sebagai syarat penentuan status pengajuan berikutnya.
   - Sisa `.gitkeep`: `src/test` dan `uploads`.
