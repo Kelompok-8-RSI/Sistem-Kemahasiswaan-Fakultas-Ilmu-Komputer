@@ -30,9 +30,6 @@ Satu aplikasi **Spring Boot 3.3 (Java 17)** dengan arsitektur berlapis berbasis 
 │   ├── schema.sql                 DDL 7 tabel (Modul 3 bagian 3.1)
 │   └── seed.sql                   akun demo dan data contoh
 ├── uploads/                       storage berkas lampiran (isinya tidak di-commit)
-├── docs/
-│   ├── ai/                        aturan dan cara pakai workflow AI agent
-│   └── referensi/                 kode Modul 3, Modul 1, Modul 2, dan sketsa UI
 └── src/main/
     ├── java/id/ac/ub/layanan/
     │   ├── LayananKemahasiswaanApplication.java
@@ -162,15 +159,11 @@ Setiap perubahan status tercatat di `RiwayatStatus` beserta pelaku dan waktunya 
 ---
 
 ## 6. Pembagian Implementasi
-Implementasi kode dikerjakan bergiliran dengan bantuan AI agent, satu task per sesi, dengan urutan T01 sampai T18. Seluruh task sudah selesai. Rincian setiap task, keputusan desain, dan perubahan di luar cakupan tercatat di [`PROGRESS.md`](PROGRESS.md).
-
-- Cara pakai workflow untuk anggota: [`docs/ai/CARA-PAKAI.md`](docs/ai/CARA-PAKAI.md)
-- Aturan dan rencana lengkap untuk AI agent: [`docs/ai/PROMPT.md`](docs/ai/PROMPT.md)
-- Sumber acuan (kode Modul 3, Modul 1, Modul 2, dan sketsa UI): [`docs/referensi/`](docs/referensi/)
+Implementasi kode dikerjakan secara bertahap (T01 sampai T18) mengikuti pembagian modul dan ketergantungan antarkomponen pada Modul 1, Modul 2, dan Modul 3.
 
 | Task | Judul | Pemilik modul | Pelaksana | Use case / kode modul |
 |---|---|---|---|---|
-| T01 | Fondasi proyek, workflow AI, entity akun dan jenis dokumen | AA | Ammar (mengambil alih AA) | SC11, SC06 |
+| T01 | Fondasi proyek, entity akun dan jenis dokumen | AA | Ammar (mengambil alih AA) | SC11, SC06 |
 | T02 | Konfigurasi, keamanan, layout, dan CSS | MR | Rasil | SC10, IM-12 |
 | T03 | Entity lampiran dan antrean verifikasi | AT | Ammar | SC08 |
 | T04 | Entity persyaratan dokumen dan pengajuan | MR | Rasil | SC07 |

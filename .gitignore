@@ -28,12 +28,12 @@ uploads/*
 .DS_Store
 Thumbs.db
 
-# AI agent files and configs
+# Local docs and tool configs
 AGENTS.md
 CLAUDE.md
 GEMINI.md
 PROGRESS.md
-docs/ai/
+docs/
 .claude/
 .gemini/
 .cursor/
