@@ -27,3 +27,18 @@ uploads/*
 # OS generated files
 .DS_Store
 Thumbs.db
+
+# Local docs and tool configs
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+PROGRESS.md
+docs/
+.claude/
+.gemini/
+.cursor/
+.cursorrules
+.codex/
+.agent/
+.agents/
+.windsurf/
