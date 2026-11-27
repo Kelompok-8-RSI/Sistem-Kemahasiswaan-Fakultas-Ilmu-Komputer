@@ -160,11 +160,14 @@ public class UnggahPersyaratanService {
     }
 
     public String validasiFormatUkuran(MultipartFile file) {
-        if (file == null || file.isEmpty() || file.getSize() > UKURAN_MAKSIMAL) {
-            return "File harus berukuran lebih dari 0 dan maksimal 5 MB";
+        if (file == null || file.isEmpty()) {
+            return "File tidak boleh kosong. Silakan pilih file terlebih dahulu.";
+        }
+        if (file.getSize() > UKURAN_MAKSIMAL) {
+            return "Ukuran file melebihi batas maksimal 5 MB. Pilih file berukuran maksimal 5 MB.";
         }
         if (!FORMAT_DIIJINKAN.contains(ekstensiFile(file.getOriginalFilename()))) {
-            return "Format file harus PDF, JPG, atau PNG";
+            return "Ekstensi file tidak sesuai ketentuan. Unggah file berformat PDF, JPG, atau PNG.";
         }
         return null;
     }

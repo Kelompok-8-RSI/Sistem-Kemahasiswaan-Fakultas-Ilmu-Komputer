@@ -200,3 +200,4 @@ input[type=email], input[type=tel] {
 @media (max-width: 900px) {
   .grid-profil { grid-template-columns: 1fr; }
 }
+[hidden], .toast:empty { display: none !important; }

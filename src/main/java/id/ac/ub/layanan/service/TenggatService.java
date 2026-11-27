@@ -34,12 +34,11 @@ public class TenggatService {
         }
 
         int sisaHariKerja = hitungSisaHariKerja(tanggalPengajuan, tanggalTenggat);
+        pengajuan.simpanTenggat(tanggalTenggat);
+        pengajuanRepository.save(pengajuan);
         if (sisaHariKerja < BATAS_HARI_MENDESAK) {
             return TENGGAT_MENDESAK;
         }
-
-        pengajuan.simpanTenggat(tanggalTenggat);
-        pengajuanRepository.save(pengajuan);
         return TENGGAT_TERSIMPAN;
     }
 
@@ -49,7 +48,7 @@ public class TenggatService {
 
     public int hitungSisaHariKerja(LocalDate tanggalPengajuan, LocalDate tanggalTenggat) {
         int sisaHariKerja = 0;
-        for (LocalDate hari = tanggalPengajuan; !hari.isAfter(tanggalTenggat); hari = hari.plusDays(1)) {
+        for (LocalDate hari = tanggalPengajuan.plusDays(1); !hari.isAfter(tanggalTenggat); hari = hari.plusDays(1)) {
             DayOfWeek hariKe = hari.getDayOfWeek();
             if (hariKe != DayOfWeek.SATURDAY && hariKe != DayOfWeek.SUNDAY) {
                 sisaHariKerja++;

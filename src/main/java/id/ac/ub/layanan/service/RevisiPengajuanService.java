@@ -270,12 +270,15 @@ public class RevisiPengajuanService {
     }
 
     public String validasiFormatDanUkuran(MultipartFile file) {
-        if (file == null || file.isEmpty() || file.getSize() > UKURAN_MAKSIMAL) {
-            return "Format atau ukuran file tidak sesuai ketentuan. Unggah ulang file bertipe PDF, JPG, atau PNG maksimal 5 MB.";
+        if (file == null || file.isEmpty()) {
+            return "File tidak boleh kosong. Silakan unggah ulang dokumen revisi.";
+        }
+        if (file.getSize() > UKURAN_MAKSIMAL) {
+            return "Ukuran file melebihi batas maksimal 5 MB. Unggah ulang dokumen revisi maksimal 5 MB.";
         }
         String ekstensi = ekstensiFile(file.getOriginalFilename());
         if (!FORMAT_DIIJINKAN.contains(ekstensi)) {
-            return "Format atau ukuran file tidak sesuai ketentuan. Unggah ulang file bertipe PDF, JPG, atau PNG maksimal 5 MB.";
+            return "Ekstensi file tidak sesuai ketentuan. Unggah ulang dokumen revisi berformat PDF, JPG, atau PNG.";
         }
         return null;
     }

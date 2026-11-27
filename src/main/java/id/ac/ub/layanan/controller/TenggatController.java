@@ -1,6 +1,7 @@
 package id.ac.ub.layanan.controller;
 
 import id.ac.ub.layanan.entity.AkunPengguna;
+import id.ac.ub.layanan.entity.Pengajuan;
 import id.ac.ub.layanan.dto.HasilAksi;
 import id.ac.ub.layanan.security.AuthInterceptor;
 import id.ac.ub.layanan.security.RequiredRole;
@@ -66,10 +67,9 @@ public class TenggatController {
 
         String hasil = tenggatService.prosesTenggat(idPengajuan, tanggalTenggat);
         switch (hasil) {
-            case TenggatService.TENGGAT_TERSIMPAN -> {
+            case TenggatService.TENGGAT_TERSIMPAN, TenggatService.TENGGAT_MENDESAK -> {
                 return kirimPengajuan(idPengajuan, akun, model, redirect);
             }
-            case TenggatService.TENGGAT_MENDESAK -> model.addAttribute("tenggatMendesak", true);
             default -> model.addAttribute("pesanError",
                     "Tanggal tenggat tidak boleh lebih awal dari tanggal pengajuan");
         }
@@ -100,9 +100,19 @@ public class TenggatController {
     }
 
     private String tampilkanForm(Integer idPengajuan, Model model) {
+        LocalDate tanggalPengajuan = tenggatService.getTanggalPengajuan(idPengajuan);
+        Pengajuan pengajuan = tenggatService.getDataPengajuan(idPengajuan);
+        LocalDate tanggalTenggat = model.containsAttribute("tanggalTenggat")
+                ? (LocalDate) model.getAttribute("tanggalTenggat")
+                : pengajuan.getTanggalTenggat();
+        if (tanggalTenggat != null && tenggatService.validasiTanggalTenggat(tanggalTenggat, tanggalPengajuan)
+                && tenggatService.hitungSisaHariKerja(tanggalPengajuan, tanggalTenggat) < 3) {
+            model.addAttribute("tenggatMendesak", true);
+        }
         model.addAttribute("idPengajuan", idPengajuan);
-        model.addAttribute("tanggalPengajuan", tenggatService.getTanggalPengajuan(idPengajuan));
-        model.addAttribute("pengajuan", tenggatService.getDataPengajuan(idPengajuan));
+        model.addAttribute("tanggalPengajuan", tanggalPengajuan);
+        model.addAttribute("tanggalTenggat", tanggalTenggat);
+        model.addAttribute("pengajuan", pengajuan);
         model.addAttribute("persyaratan", unggahPersyaratanService.requestDaftarPersyaratan(idPengajuan));
         model.addAttribute("persyaratanLengkap", unggahPersyaratanService.cekKelengkapanItemWajib(idPengajuan));
         return "form-tenggat";

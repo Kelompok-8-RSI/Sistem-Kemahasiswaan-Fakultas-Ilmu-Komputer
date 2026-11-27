@@ -51,8 +51,14 @@
           </div>
         </div>
 
-        <div class="alert sukses" th:if="${pesanSuksesLampiran}" th:text="${pesanSuksesLampiran}"></div>
-        <div class="alert error" th:if="${pesanErrorLampiran}" th:text="${pesanErrorLampiran}"></div>
+        <div class="alert sukses" th:if="${pesanSuksesLampiran}">
+          <svg th:replace="~{fragments/layout :: ikon('centang')}"></svg>
+          <span th:text="${pesanSuksesLampiran}">Lampiran berhasil diperbarui</span>
+        </div>
+        <div id="kotakErrorRevisi" class="alert error" th:hidden="${pesanErrorLampiran == null}">
+          <svg th:replace="~{fragments/layout :: ikon('info')}"></svg>
+          <span id="teksErrorRevisi" th:text="${pesanErrorLampiran ?: 'Berkas revisi tidak sesuai ketentuan.'}">Berkas revisi tidak sesuai ketentuan.</span>
+        </div>
 
         <div class="dua-kolom">
           <div class="kolom">
@@ -71,6 +77,7 @@
               </div>
 
               <article class="item" th:each="item : ${items}"
+                       th:attr="data-tidak-sesuai=${!item.sesuai}"
                        th:classappend="${!item.sesuai} ? 'salah'">
                 <div class="kepala">
                   <div>
@@ -96,13 +103,15 @@
                   <span th:text="${item.catatanValidasi}">Alasan penolakan</span>
                 </div>
 
+                <p class="pesan-salah galat-berkas" hidden></p>
+
                 <div class="aksi-lampiran" style="margin-top:12px">
                   <a class="tombol sekunder" th:if="${item.idLampiran != null}"
                      th:href="@{/pengajuan/{id}/lampiran/{lampiran}(id=${pengajuan.idPengajuan}, lampiran=${item.idLampiran})}"
                      target="_blank" rel="noopener">
                     <svg th:replace="~{fragments/layout :: ikon('mata')}"></svg> Lihat
                   </a>
-                  <form th:action="@{/pengajuan/{id}/revisi/lampiran(id=${pengajuan.idPengajuan})}" method="post" enctype="multipart/form-data">
+                  <form class="form-unggah-revisi" th:action="@{/pengajuan/{id}/revisi/lampiran(id=${pengajuan.idPengajuan})}" method="post" enctype="multipart/form-data">
                     <input type="hidden" name="idPersyaratan" th:value="${item.idPersyaratan}">
                     <input class="pilih-berkas" type="file" name="file" accept=".pdf,.jpg,.jpeg,.png" required>
                     <button type="submit" class="sekunder" th:text="${item.statusValidasi == 'Tidak Lengkap'} ? 'Ganti Lampiran' : (${item.idLampiran != null} ? 'Ganti File' : 'Pilih File')">Ganti Lampiran</button>
@@ -142,5 +151,54 @@
     </main>
   </div>
 </div>
+
+<script th:unless="${terkirim}">
+  const BATAS_BERKAS = 5 * 1024 * 1024;
+  const EKSTENSI_SAH = ['pdf', 'jpg', 'jpeg', 'png'];
+  const kotakErrorRevisi = document.getElementById('kotakErrorRevisi');
+  const teksErrorRevisi = document.getElementById('teksErrorRevisi');
+
+  const periksaBerkasRevisi = (input, kartu) => {
+    const berkas = input.files && input.files[0];
+    const galatItem = kartu.querySelector('.galat-berkas');
+    if (!berkas) return true;
+    const nama = berkas.name || '';
+    const titik = nama.lastIndexOf('.');
+    const ekstensi = titik >= 0 ? nama.substring(titik + 1).toLowerCase() : '';
+    let pesan = null;
+    if (!EKSTENSI_SAH.includes(ekstensi)) {
+      pesan = 'Ekstensi file tidak sesuai ketentuan. Unggah ulang dokumen revisi berformat PDF, JPG, atau PNG.';
+    } else if (berkas.size === 0) {
+      pesan = 'File tidak boleh kosong. Silakan unggah ulang dokumen revisi.';
+    } else if (berkas.size > BATAS_BERKAS) {
+      pesan = 'Ukuran file melebihi batas maksimal 5 MB. Unggah ulang dokumen revisi maksimal 5 MB.';
+    }
+    if (pesan) {
+      input.value = '';
+      kartu.classList.add('salah');
+      galatItem.textContent = pesan;
+      galatItem.hidden = false;
+      teksErrorRevisi.textContent = pesan;
+      kotakErrorRevisi.hidden = false;
+      kotakErrorRevisi.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      return false;
+    }
+    if (kartu.dataset.tidakSesuai !== 'true') {
+      kartu.classList.remove('salah');
+    }
+    galatItem.hidden = true;
+    kotakErrorRevisi.hidden = true;
+    return true;
+  };
+
+  document.querySelectorAll('.form-unggah-revisi').forEach(form => {
+    const input = form.querySelector('.pilih-berkas');
+    const kartu = form.closest('.item');
+    input.addEventListener('change', () => periksaBerkasRevisi(input, kartu));
+    form.addEventListener('submit', e => {
+      if (!periksaBerkasRevisi(input, kartu)) e.preventDefault();
+    });
+  });
+</script>
 </body>
 </html>
