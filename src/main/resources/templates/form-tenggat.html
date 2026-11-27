@@ -44,36 +44,35 @@
           <section class="kartu">
             <header><h2>Tenggat kebutuhan</h2><p>Dipakai Staf Kemahasiswaan untuk mengurutkan antrean.</p></header>
             <form id="formTenggat" th:action="@{/pengajuan/{id}/tenggat(id=${idPengajuan})}" method="post">
-              <div class="field" style="max-width:280px;margin:0" th:classappend="${pesanError} ? 'salah'">
+              <div class="field" id="fieldTenggat" style="max-width:280px;margin:0" th:classappend="${pesanError} ? 'salah'">
                 <label for="tanggalTenggat">Tanggal tenggat kebutuhan</label>
                 <input type="date" id="tanggalTenggat" name="tanggalTenggat"
                        th:value="${tanggalTenggat}" th:min="${tanggalPengajuan}" required>
-                <p class="pesan-salah" th:if="${pesanError}" th:text="${pesanError}">Tanggal tenggat tidak boleh lebih awal dari tanggal pengajuan.</p>
-                <p class="bantuan" th:unless="${pesanError}" th:text="'Tanggal saat dokumen paling lambat Anda butuhkan. Tidak boleh lebih awal dari '
+                <p class="pesan-salah" id="galatTenggat" th:hidden="${pesanError == null}"
+                   th:text="${pesanError ?: 'Tanggal tenggat tidak boleh lebih awal dari tanggal pengajuan.'}">Tanggal tenggat tidak boleh lebih awal dari tanggal pengajuan.</p>
+                <p class="bantuan" id="bantuanTenggat" th:hidden="${pesanError != null}" th:text="'Tanggal saat dokumen paling lambat Anda butuhkan. Tidak boleh lebih awal dari '
                      + ${#temporals.format(tanggalPengajuan, 'd MMM yyyy')} + '.'">Tidak boleh lebih awal dari tanggal pengajuan.</p>
               </div>
             </form>
-            <th:block th:if="${tenggatMendesak}">
-              <div class="alert peringatan" style="margin-top:16px">
-                <svg th:replace="~{fragments/layout :: ikon('peringatan')}"></svg>
-                <div><b>Tenggat mendesak</b>
-                  <p>Sisa waktu kurang dari 3 hari kerja. Pengajuan akan ditandai mendesak, namun waktu proses tidak dijamin.</p></div>
-              </div>
-              <form th:action="@{/pengajuan/{id}/tenggat/konfirmasi(id=${idPengajuan})}" method="post" class="baris">
-                <input type="hidden" name="tanggalTenggat" th:value="${tanggalTenggat}">
-                <a class="tombol sekunder" style="border-color:transparent;color:var(--teks)"
-                   th:href="@{/pengajuan/{id}/tenggat(id=${idPengajuan})}">Ubah tanggal</a>
-                <button type="submit" class="sekunder">Tetap lanjutkan</button>
-              </form>
-            </th:block>
+            <div id="peringatanMendesak" class="alert peringatan" style="margin-top:16px;margin-bottom:0" th:hidden="${tenggatMendesak != true}">
+              <svg th:replace="~{fragments/layout :: ikon('peringatan')}"></svg>
+              <div><b>Tenggat mendesak</b>
+                <p>Tanggal tenggat kurang dari 3 hari kerja dari tanggal pengajuan. Tanggal tetap dapat dipilih dan pengajuan akan ditandai mendesak, namun waktu proses tidak dijamin.</p></div>
+            </div>
           </section>
           <section class="kartu persyaratan">
             <header>
               <h2>Persyaratan dokumen</h2>
               <p>Semua persyaratan wajib. Format PDF, JPG, atau PNG, maksimal 5 MB per berkas.</p>
             </header>
-            <div class="alert sukses" th:if="${pesanSuksesLampiran}" th:text="${pesanSuksesLampiran}"></div>
-            <div class="alert error" th:if="${pesanErrorLampiran}" th:text="${pesanErrorLampiran}"></div>
+            <div class="alert sukses" th:if="${pesanSuksesLampiran}">
+              <svg th:replace="~{fragments/layout :: ikon('centang')}"></svg>
+              <span th:text="${pesanSuksesLampiran}">Lampiran berhasil diunggah</span>
+            </div>
+            <div id="kotakErrorLampiran" class="alert error" th:hidden="${pesanErrorLampiran == null}">
+              <svg th:replace="~{fragments/layout :: ikon('info')}"></svg>
+              <span id="teksErrorLampiran" th:text="${pesanErrorLampiran ?: 'Berkas tidak sesuai ketentuan.'}">Berkas tidak sesuai ketentuan.</span>
+            </div>
             <div class="kelengkapan">
               <b>Kelengkapan persyaratan wajib</b>
               <span th:text="${persyaratanLengkap} ? 'Lengkap' : 'Belum lengkap'">Belum lengkap</span>
@@ -94,13 +93,16 @@
                 <span th:text="${item.ukuran}">842 KB</span>
               </p>
               <p class="pesan-salah" th:if="${tandaiPersyaratanKosong == true and item.statusUnggah != 'Terunggah'}">Persyaratan ini wajib diunggah.</p>
+              <p class="pesan-salah galat-berkas" hidden></p>
               <div class="aksi-lampiran">
-                <form th:action="@{/pengajuan/{id}/lampiran(id=${idPengajuan})}" method="post" enctype="multipart/form-data">
+                <form class="form-unggah" th:action="@{/pengajuan/{id}/lampiran(id=${idPengajuan})}" method="post" enctype="multipart/form-data">
                   <input type="hidden" name="idPersyaratan" th:value="${item.idPersyaratan}">
+                  <input type="hidden" name="tanggalTenggat" class="sinkron-tenggat" th:value="${tanggalTenggat}">
                   <input class="pilih-berkas" type="file" name="file" accept=".pdf,.jpg,.jpeg,.png" required>
                   <button type="submit" class="sekunder" th:text="${item.statusUnggah == 'Terunggah'} ? 'Ganti File' : 'Pilih File'">Pilih File</button>
                 </form>
                 <form th:if="${item.idLampiran != null}" th:action="@{/pengajuan/{id}/lampiran/{lampiran}/hapus(id=${idPengajuan}, lampiran=${item.idLampiran})}" method="post">
+                  <input type="hidden" name="tanggalTenggat" class="sinkron-tenggat" th:value="${tanggalTenggat}">
                   <button type="submit" class="bahaya">Hapus</button>
                 </form>
               </div>
@@ -116,14 +118,14 @@
             <dt>Estimasi proses</dt><dd th:text="${pengajuan.jenisDokumen.estimasiHariKerja} + ' hari kerja'">3 hari kerja</dd>
             <dt>Legalisasi pejabat</dt><dd th:text="${pengajuan.jenisDokumen.perluLegalisasi} ? 'Ya' : 'Tidak'">Tidak</dd>
             <dt>Tenggat</dt>
-            <dd th:if="${pesanError}" class="teks-merah">Belum valid</dd>
-            <dd th:if="${pesanError == null and tanggalTenggat != null}" class="baris" style="gap:8px">
+            <dd id="ringkasanTenggatSalah" class="teks-merah" th:hidden="${pesanError == null}">Belum valid</dd>
+            <dd id="ringkasanTenggatIsi" class="baris" style="gap:8px" th:hidden="${pesanError != null or tanggalTenggat == null}">
               <svg th:replace="~{fragments/layout :: ikon('kalender')}"></svg>
-              <span th:text="${#temporals.format(tanggalTenggat, 'd MMM yyyy')}">30 Okt 2026</span></dd>
-            <dd th:if="${pesanError == null and tanggalTenggat == null}" class="redup">Belum diisi</dd>
+              <span id="teksRingkasanTenggat" th:text="${tanggalTenggat != null ? #temporals.format(tanggalTenggat, 'd MMM yyyy') : ''}">30 Okt 2026</span></dd>
+            <dd id="ringkasanTenggatKosong" class="redup" th:hidden="${pesanError != null or tanggalTenggat != null}">Belum diisi</dd>
           </dl>
           <hr style="border:0;border-top:1px solid var(--garis-2);margin:16px 0">
-          <button type="submit" form="formTenggat" class="penuh" th:disabled="${tenggatMendesak == true or !persyaratanLengkap}">Submit Pengajuan</button>
+          <button type="submit" form="formTenggat" id="btnSubmitPengajuan" class="penuh" th:disabled="${!persyaratanLengkap}">Submit Pengajuan</button>
           <p class="bantuan">Submit aktif setelah tenggat diisi dan semua persyaratan wajib terunggah.</p>
           <a class="tombol penuh" style="background:none;border-color:transparent;color:var(--teks)" href="javascript:history.back()">Kembali</a>
         </aside>
@@ -131,5 +133,125 @@
     </main>
   </div>
 </div>
+
+<script th:unless="${terkirim}">
+  const BATAS_BERKAS = 5 * 1024 * 1024;
+  const EKSTENSI_SAH = ['pdf', 'jpg', 'jpeg', 'png'];
+  const BULAN = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+
+  const inputTenggat = document.getElementById('tanggalTenggat');
+  const fieldTenggat = document.getElementById('fieldTenggat');
+  const galatTenggat = document.getElementById('galatTenggat');
+  const bantuanTenggat = document.getElementById('bantuanTenggat');
+  const peringatanMendesak = document.getElementById('peringatanMendesak');
+  const ringkasanSalah = document.getElementById('ringkasanTenggatSalah');
+  const ringkasanIsi = document.getElementById('ringkasanTenggatIsi');
+  const ringkasanKosong = document.getElementById('ringkasanTenggatKosong');
+  const teksRingkasan = document.getElementById('teksRingkasanTenggat');
+
+  const uraiTanggal = s => {
+    const [y, m, d] = s.split('-').map(Number);
+    return new Date(y, m - 1, d);
+  };
+
+  const hitungHariKerja = (awalStr, akhirStr) => {
+    const awal = uraiTanggal(awalStr);
+    const akhir = uraiTanggal(akhirStr);
+    let jumlah = 0;
+    const kursor = new Date(awal.getFullYear(), awal.getMonth(), awal.getDate() + 1);
+    while (kursor <= akhir) {
+      const hari = kursor.getDay();
+      if (hari !== 0 && hari !== 6) jumlah++;
+      kursor.setDate(kursor.getDate() + 1);
+    }
+    return jumlah;
+  };
+
+  const evaluasiTenggat = () => {
+    if (!inputTenggat) return;
+    const nilai = inputTenggat.value;
+    document.querySelectorAll('.sinkron-tenggat').forEach(el => { el.value = nilai; });
+    if (!nilai) {
+      fieldTenggat.classList.remove('salah');
+      galatTenggat.hidden = true;
+      bantuanTenggat.hidden = false;
+      peringatanMendesak.hidden = true;
+      ringkasanSalah.hidden = true;
+      ringkasanIsi.hidden = true;
+      ringkasanKosong.hidden = false;
+      return;
+    }
+    const min = inputTenggat.min;
+    if (min && nilai < min) {
+      fieldTenggat.classList.add('salah');
+      galatTenggat.textContent = 'Tanggal tenggat tidak boleh lebih awal dari tanggal pengajuan.';
+      galatTenggat.hidden = false;
+      bantuanTenggat.hidden = true;
+      peringatanMendesak.hidden = true;
+      ringkasanSalah.hidden = false;
+      ringkasanIsi.hidden = true;
+      ringkasanKosong.hidden = true;
+      return;
+    }
+    fieldTenggat.classList.remove('salah');
+    galatTenggat.hidden = true;
+    bantuanTenggat.hidden = false;
+    const sisaHariKerja = min ? hitungHariKerja(min, nilai) : 3;
+    peringatanMendesak.hidden = sisaHariKerja >= 3;
+    const tgl = uraiTanggal(nilai);
+    teksRingkasan.textContent = tgl.getDate() + ' ' + BULAN[tgl.getMonth()] + ' ' + tgl.getFullYear();
+    ringkasanSalah.hidden = true;
+    ringkasanIsi.hidden = false;
+    ringkasanKosong.hidden = true;
+  };
+
+  if (inputTenggat) {
+    inputTenggat.addEventListener('input', evaluasiTenggat);
+    inputTenggat.addEventListener('change', evaluasiTenggat);
+    if (inputTenggat.value) evaluasiTenggat();
+  }
+
+  const kotakErrorLampiran = document.getElementById('kotakErrorLampiran');
+  const teksErrorLampiran = document.getElementById('teksErrorLampiran');
+
+  const periksaBerkas = (input, kartu) => {
+    const berkas = input.files && input.files[0];
+    const galatItem = kartu.querySelector('.galat-berkas');
+    if (!berkas) return true;
+    const nama = berkas.name || '';
+    const titik = nama.lastIndexOf('.');
+    const ekstensi = titik >= 0 ? nama.substring(titik + 1).toLowerCase() : '';
+    let pesan = null;
+    if (!EKSTENSI_SAH.includes(ekstensi)) {
+      pesan = 'Ekstensi file tidak sesuai ketentuan. Unggah file berformat PDF, JPG, atau PNG.';
+    } else if (berkas.size === 0) {
+      pesan = 'File tidak boleh kosong. Silakan pilih file lain.';
+    } else if (berkas.size > BATAS_BERKAS) {
+      pesan = 'Ukuran file melebihi batas maksimal 5 MB. Pilih file berukuran maksimal 5 MB.';
+    }
+    if (pesan) {
+      input.value = '';
+      kartu.classList.add('salah');
+      galatItem.textContent = pesan;
+      galatItem.hidden = false;
+      teksErrorLampiran.textContent = pesan;
+      kotakErrorLampiran.hidden = false;
+      return false;
+    }
+    kartu.classList.remove('salah');
+    galatItem.hidden = true;
+    kotakErrorLampiran.hidden = true;
+    return true;
+  };
+
+  document.querySelectorAll('.form-unggah').forEach(form => {
+    const input = form.querySelector('.pilih-berkas');
+    const kartu = form.closest('.item');
+    input.addEventListener('change', () => periksaBerkas(input, kartu));
+    form.addEventListener('submit', e => {
+      if (!periksaBerkas(input, kartu)) e.preventDefault();
+    });
+  });
+</script>
 </body>
 </html>

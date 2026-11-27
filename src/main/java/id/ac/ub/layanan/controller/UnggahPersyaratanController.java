@@ -6,6 +6,8 @@ import id.ac.ub.layanan.security.AuthInterceptor;
 import id.ac.ub.layanan.security.RequiredRole;
 import id.ac.ub.layanan.service.TenggatService;
 import id.ac.ub.layanan.service.UnggahPersyaratanService;
+import java.time.LocalDate;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,9 +37,14 @@ public class UnggahPersyaratanController {
     public String requestUnggahLampiran(@PathVariable Integer idPengajuan,
                                         @RequestParam Integer idPersyaratan,
                                         @RequestParam MultipartFile file,
+                                        @RequestParam(required = false)
+                                        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate tanggalTenggat,
                                         @RequestAttribute(AuthInterceptor.ATTR_AKUN) AkunPengguna akun,
                                         RedirectAttributes redirect) {
         pastikanPemilik(idPengajuan, akun);
+        if (tanggalTenggat != null) {
+            redirect.addFlashAttribute("tanggalTenggat", tanggalTenggat);
+        }
         HasilAksi hasil = unggahPersyaratanService.requestUnggahLampiran(idPengajuan, idPersyaratan, file);
         redirect.addFlashAttribute(hasil.berhasil() ? "pesanSuksesLampiran" : "pesanErrorLampiran", hasil.pesan());
         return "redirect:/pengajuan/" + idPengajuan + "/tenggat";
@@ -45,9 +52,14 @@ public class UnggahPersyaratanController {
 
     @PostMapping("/{idLampiran}/hapus")
     public String hapusLampiran(@PathVariable Integer idPengajuan, @PathVariable Integer idLampiran,
+                                @RequestParam(required = false)
+                                @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate tanggalTenggat,
                                 @RequestAttribute(AuthInterceptor.ATTR_AKUN) AkunPengguna akun,
                                 RedirectAttributes redirect) {
         pastikanPemilik(idPengajuan, akun);
+        if (tanggalTenggat != null) {
+            redirect.addFlashAttribute("tanggalTenggat", tanggalTenggat);
+        }
         HasilAksi hasil = unggahPersyaratanService.hapusLampiran(idPengajuan, idLampiran);
         redirect.addFlashAttribute(hasil.berhasil() ? "pesanSuksesLampiran" : "pesanErrorLampiran", hasil.pesan());
         return "redirect:/pengajuan/" + idPengajuan + "/tenggat";
